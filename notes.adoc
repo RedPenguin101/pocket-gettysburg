@@ -16,6 +16,11 @@ A slimmed down version of general intended to operate at a small scale, similar 
 
 == Iteration goals
 
+* Moveable units
+* Combat
+* Terrain
+* AI
+
 === Iteration 1: A map with movable units
 
 * A small ~10x10 map with no terrain features

@@ -9,6 +9,10 @@
                  :turn :red
                  :turn-number 0})
 
+(general-slim.inputs/handle-input
+ game-state
+ [:red :inf1 :move [6 7]])
+
 (defn tick [game-state]
   (update game-state :turn-number inc))
 
