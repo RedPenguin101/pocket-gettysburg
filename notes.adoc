@@ -1,0 +1,37 @@
+= General Slim
+
+A slimmed down version of general intended to operate at a small scale, similar to Advance Wars, aimed at testing out some of the ideas I have for a larger scale version of this game. The intention is to build effectively a limited Advance wars-system clone, and then evolve some of the ideas. Expected features of the clone product are as follows, with differences from advance wars in italics
+
+* A small grid/tile based map
+* Multiple unit types with movement rates and attack characteristics
+* Terrain types affecting movement
+* Direct orders
+* No command structure
+* Turn based
+* Fog of war
+* AI enemy commander
+* Roads, rivers, cities
+* _No base building_
+* _No air or sea_
+
+== Iteration goals
+
+=== Iteration 1: A map with movable units
+
+* A small ~10x10 map with no terrain features
+* Two opposing forces of two infantry units each
+* Units can be issued orders to move 3 squares
+* No AI, player plays both sides
+* End turn
+
+== Iteration 2: Combat
+
+* Units can attack one another, reducing HP
+* Units are destroyed and removed from the map when their HP reaches zero 
+* A second, Cavalry unit type is added with different characteristics
+
+== Iteration 3: Terrain and features
+
+* Map has roads, and units have increased range on roads
+* Map has forests, with increased defence and lower movement rate
+* Map has mountains, impassible by cavalry
