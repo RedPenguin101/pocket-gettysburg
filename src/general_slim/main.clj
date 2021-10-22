@@ -7,16 +7,15 @@
                  :red forces/side2
                  :blue forces/side1
                  :turn :red
-                 :turn-number 0})
-
-(general-slim.inputs/handle-input
- game-state
- [:red :inf1 :move [6 7]])
+                 :turn-number 0
+                 :order [:red :inf1 :move [6 7]]})
 
 (defn tick [game-state]
-  (update game-state :turn-number inc))
+  (if-let [order (:order game-state)]
+    (inputs/handle-input (dissoc game-state :order) order)
+    (update game-state :turn-number inc)))
 
-(defn display [state]
+(defn interface [state]
   state)
 
 (defn main-loop [state]
@@ -24,7 +23,7 @@
     state
     (recur (-> state
                tick
-               display))))
+               interface))))
 
 (comment
-  (main-loop game-state))
+  (dissoc (main-loop game-state) :field))
