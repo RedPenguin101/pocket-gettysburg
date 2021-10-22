@@ -8,7 +8,7 @@
                  :blue forces/side1
                  :turn :red
                  :turn-number 0
-                 :order [:red :inf1 :move [6 7]]})
+                 :order [:move :red :inf1 [6 7]]})
 
 (defn tick [game-state]
   (if-let [order (:order game-state)]
@@ -26,4 +26,9 @@
                interface))))
 
 (comment
-  (dissoc (main-loop game-state) :field))
+  ;; basic move
+  (dissoc (main-loop game-state) :field)
+  ;; end turn
+  (dissoc (main-loop (assoc game-state :order [:end-turn :red])) :field)
+  ;; can't end turn if it's not your turn
+  (dissoc (main-loop (assoc game-state :order [:end-turn :blue])) :field))

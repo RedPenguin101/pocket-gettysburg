@@ -16,7 +16,13 @@
       (throw (ex-info "Cannot move to an occupied square" {:square to-square}))
       :else (assoc-in game-state [side :units unit-id :position] to-square))))
 
+(defn end-turn [game-state side]
+  (if (= side (:turn game-state))
+    (assoc game-state :turn (if (= :red side) :blue :red))
+    (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
+
 (defn handle-input [game-state input]
-  (let [[side unit order-type order] input]
+  (let [[order-type side unit order] input]
     (case order-type
-      :move (move-unit game-state side unit order))))
+      :move (move-unit game-state side unit order)
+      :end-turn (end-turn game-state side))))

@@ -25,9 +25,11 @@ A slimmed down version of general intended to operate at a small scale, similar 
 
 * A small ~10x10 map with no terrain features
 * Two opposing forces of two infantry units each
-* Units can be issued orders to move 3 squares
+* Units can be issued orders to move 1 square
 * No AI, player plays both sides
 * End turn
+
+* Iteration 1a: units can't move twice in a turn
 
 == Iteration 2: Combat
 
