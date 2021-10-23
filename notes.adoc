@@ -68,8 +68,8 @@ input    |     |
 * ~~move points refesh from max move points~~
 * ~~highlight shows manhattan distance based on move points~~
 * ~~Fix routing so you can't do that loop thing~~ Hacked!
-* can move 2 squares at once
-* Cavalry have different attack characteristics
+* ~~can move 2 squares at once~~
+* ~~Cavalry have different attack characteristics~~
 * Center unit text
 * Attack/Def chars in menu
 * Units block move for cav

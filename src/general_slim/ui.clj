@@ -105,19 +105,20 @@
     (q/text-font (q/create-font "Courier New" 30))
     (q/text (str "Turn: " (name (:turn game-state)))
             (+ 25 x-offset) (- 50 y-offset))
-    (q/text (str "Coords: " cursor)
-            (+ 25 x-offset) (- (+ line-offset 50) y-offset))
-    (q/text (str "Route sel: " (:route-selection game-state))
-            (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-    (q/text (str "Route: " (:route game-state))
-            (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-    #_(when unit
-        (q/text (str (name (:id unit)) ": " (:hp unit))
+    ;; route selection debug
+    #_#_#_(q/text (str "Coords: " cursor)
+                  (+ 25 x-offset) (- (+ line-offset 50) y-offset))
+        (q/text (str "Route sel: " (:route-selection game-state))
                 (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-        (q/text (str "Can attack: " (:can-attack unit))
-                (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-        (q/text (str "Move points: " (:move-points unit))
-                (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
+      (q/text (str "Route: " (:route game-state))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+    (when unit
+      (q/text (str (:hp unit) "hp")
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+      (q/text (str "Can attack: " (:can-attack unit))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+      (q/text (str "Move points: " (:move-points unit))
+              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
@@ -147,7 +148,9 @@
 
       ;; If there's a selected unit and the target is an enemy unit, attack it
       (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
-      (dissoc (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)]) :selected :highlight)
+      (dissoc
+       (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)])
+       :selected :highlight :route-selection :route)
 
       ;; if there's a selected unit and the target ISN'T an enemy, move
       (and selected-unit? (not unit-under-cursor?))
