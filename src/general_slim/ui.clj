@@ -9,12 +9,17 @@
 (def grid-size 10)
 (def cell-size (quot 1000 grid-size))
 (def colors {:cursor [183 183 183]
+             :map-highlight [220 220 220]
              :red {:default [211 61 61]
                    :spent [150 42 42]
                    :selected [252 126 126]}
              :blue {:default [61 106 211]
                     :spent [150 42 42]
                     :selected [106 149 252]}})
+
+(defn adjacents [[x y]]
+  #{[(inc x) y] [(dec x) y]
+    [x (inc y)] [x (dec y)]})
 
 (defn up [[x y]] [x (dec y)])
 (defn down [[x y]] [x (inc y)])
@@ -31,13 +36,16 @@
   (q/frame-rate 30)
   (assoc general-slim.main/game-state :cursor [5 5]))
 
+(defn draw-tile [x y color]
+  (q/stroke 0)
+  (q/stroke-weight 0)
+  (q/fill color)
+  (q/rect x y cell-size cell-size))
+
 (defn draw-unit [{:keys [position]} color]
-  (let [x (coord->px (first position))
-        y (coord->px (second position))]
-    (q/stroke 0)
-    (q/stroke-weight 0)
-    (q/fill color)
-    (q/rect x y cell-size cell-size)))
+  (draw-tile (coord->px (first position))
+             (coord->px (second position))
+             color))
 
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
@@ -47,13 +55,16 @@
       (draw-unit unit color))))
 
 (defn draw-cursor [[x y]]
-  (q/stroke 0)
-  (q/stroke-weight 0)
-  (q/fill (colors :cursor))
-  (q/rect (coord->px x) (coord->px y) cell-size cell-size))
+  (draw-tile (coord->px x) (coord->px y) (colors :cursor)))
+
+(defn draw-highlights [coords]
+  (doseq [[x y] coords]
+    (draw-tile (coord->px x) (coord->px y)
+               (colors :map-highlight))))
 
 (defn draw-state [game-state]
   (q/background 240)
+  (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
   (draw-cursor (:cursor game-state)))
@@ -67,9 +78,9 @@
     (cond
       ;; If no selection, and trying to select your unit, select
       (and (not selected?) (= side (:side unit-under-cursor?)))
-      (assoc game-state :selected cursor)
+      (assoc game-state :selected cursor :highlight (adjacents cursor))
       ;; If there's a selected unit, move it
-      selected-unit? (dissoc (assoc game-state :order [:move side (:id selected-unit?) cursor]) :selected)
+      selected-unit? (dissoc (assoc game-state :order [:move side (:id selected-unit?) cursor]) :selected :highlight)
       :else (do (println "Selection fall through") game-state))))
 
 (defn key-handler [game-state event]
@@ -79,6 +90,7 @@
     :left (update game-state :cursor (comp bound left))
     :right (update game-state :cursor (comp bound right))
     :space (handle-selection game-state)
+    :c (assoc game-state :order [:end-turn (:turn game-state)])
     game-state))
 
 (comment

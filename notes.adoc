@@ -24,10 +24,10 @@ A slimmed down version of general intended to operate at a small scale, similar 
 === Iteration 1: A map with movable units
 
 * ~~A small ~10x10 map with no terrain features~~
-* Two opposing forces of two infantry units each
+* ~~Two opposing forces of two infantry units each~~
 * ~~Units can be issued orders to move 1 square~~
-* No AI, player plays both sides
-* End turn~
+* ~~No AI, player plays both sides~~
+* ~~End turn on "c"~~
 * ~~UI for displaying field and issuing orders~~
 * ~~Cursor~~
 * ~~Select units~~
@@ -36,7 +36,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Highlight moveable area
 
 * Iteration 1a: units can't move twice in a turn
-* Iteration 1b: box display of cursor coord
+* Iteration 1b: box display of cursor coord, whose turn
 * Opacity for select
 
 == Iteration 2: Combat
