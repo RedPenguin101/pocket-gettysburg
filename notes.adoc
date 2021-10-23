@@ -63,16 +63,24 @@ input    |     |
 * ~~Attack power depends on strength~~
 
 * ~~Unit identfiers on tile~~
-* A second, Cavalry unit type is added with different move and combat characteristics
-* move points refesh from max move points
+* ~~A second, Cavalry unit type is added~~
+* ~~Cavalry can move 2 spaces~~
+* ~~move points refesh from max move points~~
+* ~~highlight shows manhattan distance based on move points~~
+* can move 2 squares at once
+* Cavalry have different attack characteristics
+* Center unit text
+* Attack/Def chars in menu
+* Units block move for cav
 
 == Iteration 3: Terrain and features
 
-* Map has roads, and units have increased range on roads
 * Map has forests, with increased defence and lower movement rate
 * Map has mountains, impassible by cavalry
+* Map has roads, and units have increased range on roads
+* rivers
 
 * time
 * Attacks take place over time
 * Move takes place over time
-* Order delay 
+* Order delay

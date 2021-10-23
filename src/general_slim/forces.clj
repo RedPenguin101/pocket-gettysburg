@@ -37,7 +37,7 @@
 
 (defn refresh-units [unit-map]
   (->> unit-map
-       (map-vals #(assoc % :move-points 1 :can-attack true))))
+       (map-vals #(assoc % :move-points (:max-move-points %) :can-attack true))))
 
 (comment
   (refresh-units (:units red)))

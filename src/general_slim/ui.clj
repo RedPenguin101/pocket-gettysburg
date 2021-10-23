@@ -12,7 +12,8 @@
                  :turn-number 0})
 
 (def ready-to-attack {:field (field/flat-field 10 10)
-                      :red {:units {:inf1 (make-unit :infantry :red :inf1 [6 6])}}
+                      :red {:units {:inf1 (make-unit :infantry :red :inf1 [6 6])
+                                    :cav1 (make-unit :cavalry :red :cav1 [3 3])}}
                       :blue {:units {:inf1 (make-unit :infantry :blue :inf1 [7 6])}}
                       :turn :red
                       :turn-number 0
@@ -30,9 +31,12 @@
                     :spent [37 68 142]
                     :selected [106 149 252]}})
 
-(defn adjacents [[x y]]
-  #{[(inc x) y] [(dec x) y]
-    [x (inc y)] [x (dec y)]})
+(defn manhattan [[x y] dist]
+  (set (for [d (range 1 (inc dist))
+             x' (range (- d) (inc d))
+             y' (range (- d) (inc d))
+             :when (= d (+ (Math/abs x') (Math/abs y')))]
+         [(+ x x') (+ y y')])))
 
 (defn up [[x y]] [x (dec y)])
 (defn down [[x y]] [x (inc y)])
@@ -122,7 +126,7 @@
     (cond
       ;; If no selection, and trying to select your unit, select
       (and (not selected?) (= my-side (:side unit-under-cursor?)) (can-move? unit-under-cursor?))
-      (assoc game-state :selected cursor :highlight (adjacents cursor))
+      (assoc game-state :selected cursor :highlight (manhattan cursor (:move-points unit-under-cursor?)))
 
       ;; If there's a selected unit and the target is an enemy unit, attack it
       (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
