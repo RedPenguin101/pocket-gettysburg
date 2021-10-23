@@ -74,7 +74,9 @@ input    |     |
 
 == Iteration 3: Terrain and features
 
-* Map has forests, with increased defence and lower movement rate
+* DONE Map has forests
+* and lower movement rate (Proper)
+* increased defence 
 * Map has mountains, impassible by cavalry
 * Map has roads, and units have increased range on roads
 * rivers

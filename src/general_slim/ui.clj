@@ -5,11 +5,12 @@
             [general-slim.field :as field] ;; just for testing
             [general-slim.forces :as forces :refer [make-unit unit-in-square can-move?]]))
 
-(def game-state {:field (field/flat-field 10 10)
-                 :red forces/red
-                 :blue forces/blue
-                 :turn :red
-                 :turn-number 0})
+(def basic {:field (field/flat-field 10 10)
+            :red forces/red
+            :blue forces/blue
+            :turn :red
+            :turn-number 0
+            :cursor [5 5]})
 
 (def ready-to-attack {:field (field/flat-field 10 10)
                       :red {:units {:inf1 (make-unit :infantry :red :inf1 [6 6])
@@ -19,12 +20,19 @@
                       :turn-number 0
                       :cursor [5 5]})
 
+(def trees {:field (assoc (field/flat-field 10 10) [4 4] {:grid [4 4] :terrain :trees})
+            :red {:units {:cav1 (make-unit :cavalry :red :cav1 [5 4])}}
+            :blue {:units {}}
+            :turn :red
+            :turn-number 0
+            :cursor [5 5]})
+
 (def debug (atom {}))
 (def grid-size 10)
 (def cell-size (quot 1000 grid-size))
 (def colors {:cursor [183 183 183 75]
-             :map-highlight [220 220 220]
-             :routing [101 252 90]
+             :map-highlight [220 220 220 50]
+             :routing [101 252 90 75]
              :red {:default [211 61 61]
                    :spent [150 42 42]
                    :selected [252 126 126]}
@@ -52,13 +60,29 @@
 
 (defn setup []
   (q/frame-rate 30)
-  ready-to-attack)
+  trees)
 
 (defn draw-tile [x y color]
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill color)
   (q/rect x y cell-size cell-size))
+
+(defn draw-tree [x y]
+  (q/stroke 0)
+  (q/stroke-weight 0)
+  (q/fill [36 119 23])
+  (q/rect (+ x 40) (+ y 50) 20 40)
+  (q/triangle (+ x 50) (+ y 10)
+              (+ x 20) (+ y 70)
+              (+ x 80) (+ y 70)))
+
+(defn draw-terrain [tiles]
+  (doseq [tile tiles]
+    (let [[x y] (:grid tile)]
+      (case (:terrain tile)
+        :trees (draw-tree (coord->px x) (coord->px y))
+        nil))))
 
 (defn draw-unit [{:keys [position id]} color]
   (let [x (coord->px (first position))
@@ -124,6 +148,7 @@
 
 (defn draw-state [game-state]
   (q/background 240)
+  (draw-terrain (vals (:field game-state)))
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)

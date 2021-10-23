@@ -15,12 +15,8 @@
       (assoc game-state :order [order-type side unit (rest route)]))))
 
 (defn move-order [game-state side unit-id route]
-  (let [unit (get-in game-state [side :units unit-id])
-        current-pos (:position unit)]
+  (let [unit (get-in game-state [side :units unit-id])]
     (cond
-      #_(nil? ((adjacents current-pos) (first route)))
-      #_(do (println "Cannot move to an non-adjacent square" side unit-id current-pos (first route))
-            game-state)
       (unit-in-square game-state (first route))
       (do (println "Cannot move to an occupied square")
           game-state)
