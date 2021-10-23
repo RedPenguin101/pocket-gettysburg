@@ -8,7 +8,7 @@
 (def debug (atom {}))
 (def grid-size 10)
 (def cell-size (quot 1000 grid-size))
-(def colors {:cursor [183 183 183]
+(def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220]
              :red {:default [211 61 61]
                    :spent [150 42 42]

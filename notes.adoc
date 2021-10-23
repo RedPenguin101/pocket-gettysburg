@@ -33,11 +33,11 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * ~~Select units~~
 * ~~cursor doesn't go OOB~~
 * ~~error handling for movement~
-* Highlight moveable area
+* ~~Highlight moveable area~~
 
+* ~~Opacity for select~~
 * Iteration 1a: units can't move twice in a turn
 * Iteration 1b: box display of cursor coord, whose turn
-* Opacity for select
 
 == Iteration 2: Combat
 
