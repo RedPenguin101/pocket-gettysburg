@@ -2,7 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
-            [general-slim.forces :refer [unit-in-square]]))
+            [general-slim.forces :refer [unit-in-square can-move?]]))
 
 
 (def debug (atom {}))
@@ -34,7 +34,7 @@
 
 (defn setup []
   (q/frame-rate 30)
-  (assoc general-slim.main/game-state :cursor [5 5]))
+  (assoc general-slim.game/game-state :cursor [5 5]))
 
 (defn draw-tile [x y color]
   (q/stroke 0)
@@ -49,9 +49,11 @@
 
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
-    (let [color (if (= (:position unit) (:selected game-state))
+    (let [color (cond
+                  (not (can-move? unit)) (get-in colors [side :spent])
+                  (= (:position unit) (:selected game-state))
                   (get-in colors [side :selected])
-                  (get-in colors [side :default]))]
+                  :else (get-in colors [side :default]))]
       (draw-unit unit color))))
 
 (defn draw-cursor [[x y]]
@@ -77,7 +79,7 @@
         selected-unit? (unit-in-square game-state selected?)]
     (cond
       ;; If no selection, and trying to select your unit, select
-      (and (not selected?) (= side (:side unit-under-cursor?)))
+      (and (not selected?) (= side (:side unit-under-cursor?)) (can-move? unit-under-cursor?))
       (assoc game-state :selected cursor :highlight (adjacents cursor))
       ;; If there's a selected unit, move it
       selected-unit? (dissoc (assoc game-state :order [:move side (:id selected-unit?) cursor]) :selected :highlight)

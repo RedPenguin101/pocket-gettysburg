@@ -14,7 +14,6 @@
     (inputs/handle-input (dissoc game-state :order) order)
     (update game-state :turn-number inc)))
 
-
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
     state
