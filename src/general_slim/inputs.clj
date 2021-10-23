@@ -8,22 +8,29 @@
 
 (def other-side {:red :blue :blue :red})
 
+(defn update-move-order [game-state]
+  (let [[order-type side unit route] (:order game-state)]
+    (if (= 1 (count route))
+      (dissoc game-state :order)
+      (assoc game-state :order [order-type side unit (rest route)]))))
+
 (defn move-order [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
         current-pos (:position unit)]
     (cond
-      (nil? ((adjacents current-pos) (first route)))
-      (do (println "Cannot move to an non-adjacent square" side unit-id current-pos (first route))
-          game-state)
+      #_(nil? ((adjacents current-pos) (first route)))
+      #_(do (println "Cannot move to an non-adjacent square" side unit-id current-pos (first route))
+            game-state)
       (unit-in-square game-state (first route))
       (do (println "Cannot move to an occupied square")
           game-state)
-      (not (can-move? unit)) ;; probably should use can-move
+      (not (can-move? unit))
       (do (println "Unit doesn't have enough move points")
           game-state)
       :else (-> game-state
                 (assoc-in [side :units unit-id :position] (first route))
-                (update-in [side :units unit-id :move-points] dec)))))
+                (update-in [side :units unit-id :move-points] dec)
+                (update-move-order)))))
 
 '[:attack my-side (:id selected-unit?) cursor]
 
@@ -45,17 +52,19 @@
         [u1 u2] (resolve-combat my-unit enemy-unit)]
     (-> game-state
         (update-unit u1)
-        (update-unit u2))))
+        (update-unit u2)
+        (dissoc :order))))
 
 (defn end-turn [game-state side]
   (if (= side (:turn game-state))
     (-> game-state
         (assoc :turn (if (= :red side) :blue :red))
-        (update-in [side :units] refresh-units))
+        (update-in [side :units] refresh-units)
+        (dissoc :order))
     (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
 
-(defn handle-input [game-state input]
-  (let [[order-type side unit target] input]
+(defn handle-input [game-state order]
+  (let [[order-type side unit target] order]
     (case order-type
       :move (move-order game-state side unit target)
       :end-turn (end-turn game-state side)
@@ -63,4 +72,4 @@
 
 '[:end-turn (:turn game-state)]
 '[:attack my-side (:id selected-unit?) (:id unit-under-cursor?)]
-'[:move my-side (:id selected-unit?) cursor]
+'[:move my-side (:id selected-unit?) [cursor]]

@@ -152,7 +152,7 @@
       ;; if there's a selected unit and the target ISN'T an enemy, move
       (and selected-unit? (not unit-under-cursor?))
       (dissoc
-       (assoc game-state :order [:move my-side (:id selected-unit?) [cursor]])
+       (assoc game-state :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
        :selected :highlight :route-selection :route)
 
       :else (do (println "Selection fall through") game-state))))

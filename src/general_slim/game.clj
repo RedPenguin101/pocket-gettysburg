@@ -11,7 +11,7 @@
 
 (defn tick [game-state]
   (if-let [order (:order game-state)]
-    (inputs/handle-input (dissoc game-state :order) order)
+    (inputs/handle-input game-state order)
     (update game-state :turn-number inc)))
 
 (defn main-loop [state]
