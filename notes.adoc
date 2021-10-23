@@ -57,9 +57,11 @@ input    |     |
 
 * ~~units have HP~~
 * ~~Units name and HP displayed in status box~~
-* Units can attack one another, reducing HP
-* Units are destroyed and removed from the map when their HP reaches zero 
-* A second, Cavalry unit type is added with different characteristics
+* ~~Units are destroyed and removed from the map when their HP reaches zero~~
+* ~~Units can attack one another~~
+* Units have attack and defense power, which impacts the HP they lose in combat
+
+* A second, Cavalry unit type is added with different move and combat characteristics
 
 == Iteration 3: Terrain and features
 

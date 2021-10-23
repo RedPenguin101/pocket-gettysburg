@@ -2,8 +2,23 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
-            [general-slim.forces :refer [unit-in-square can-move?]]))
+            [general-slim.field :as field] ;; just for testing
+            [general-slim.forces :as forces :refer [unit-in-square can-move?]]))
 
+(def game-state {:field (field/flat-field 10 10)
+                 :red forces/red
+                 :blue forces/blue
+                 :turn :red
+                 :turn-number 0})
+
+(def ready-to-attack {:field (field/flat-field 10 10)
+                      :red {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
+                                           :position [6 6] :side :red :move-points 1}}}
+                      :blue {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
+                                            :position [7 6] :side :blue :move-points 1}}}
+                      :turn :red
+                      :turn-number 0
+                      :cursor [5 5]})
 
 (def debug (atom {}))
 (def grid-size 10)
@@ -34,7 +49,7 @@
 
 (defn setup []
   (q/frame-rate 30)
-  (assoc general-slim.game/game-state :cursor [5 5]))
+  ready-to-attack)
 
 (defn draw-tile [x y color]
   (q/stroke 0)
@@ -94,15 +109,21 @@
 (defn handle-selection [game-state]
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
-        side (:turn game-state)
+        my-side (:turn game-state)
         selected? (:selected game-state)
         selected-unit? (unit-in-square game-state selected?)]
     (cond
       ;; If no selection, and trying to select your unit, select
-      (and (not selected?) (= side (:side unit-under-cursor?)) (can-move? unit-under-cursor?))
+      (and (not selected?) (= my-side (:side unit-under-cursor?)) (can-move? unit-under-cursor?))
       (assoc game-state :selected cursor :highlight (adjacents cursor))
-      ;; If there's a selected unit, move it
-      selected-unit? (dissoc (assoc game-state :order [:move side (:id selected-unit?) cursor]) :selected :highlight)
+      ;; If there's a selected unit and the target is an enemy unit, attack it
+      (and selected-unit? (not= my-side (:side unit-under-cursor?)))
+      (dissoc (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)]) :selected :highlight)
+      ;; if there's a selected unit and the target ISN'T an enemy, move
+      selected-unit?
+      (dissoc
+       (assoc game-state :order [:move my-side (:id selected-unit?) cursor])
+       :selected :highlight)
       :else (do (println "Selection fall through") game-state))))
 
 (defn key-handler [game-state event]

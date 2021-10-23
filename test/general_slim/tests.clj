@@ -1,11 +1,13 @@
 (ns general-slim.tests
   (:require [clojure.test :refer [is deftest]]
-            [general-slim.game :as SUT]))
+            [general-slim.game :as SUT]
+            [general-slim.field :as field]
+            [general-slim.forces :as forces]))
 
 (def basic-start-state
-  {:field (general-slim.field/flat-field 10 10)
-   :red general-slim.forces/red
-   :blue general-slim.forces/blue
+  {:field (field/flat-field 10 10)
+   :red forces/red
+   :blue forces/blue
    :turn :red
    :turn-number 0})
 
@@ -35,3 +37,17 @@
                      (assoc :order [:move :red :inf1 [2 3]])
                      (SUT/main-loop))
                  [:red :units :inf1 :position]))))
+
+(def ready-to-attack {:field (field/flat-field 10 10)
+                      :red {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
+                                           :position [6 6] :side :red :move-points 1}}}
+                      :blue {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
+                                            :position [7 6] :side :blue :move-points 1}}}
+                      :turn :red
+                      :turn-number 0
+                      :cursor [5 5]})
+
+(deftest attacking-units
+  (is (empty? (get-in (SUT/tick (assoc ready-to-attack :order [:attack :red :inf1 :inf1]))
+                      [:blue :units]))))
+
