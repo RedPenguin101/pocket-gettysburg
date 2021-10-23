@@ -79,6 +79,7 @@ input    |     |
 * Map has roads, and units have increased range on roads
 * rivers
 
+* Battle predictor, AW style 
 * Attack after move
 * Only move once ('has moved')
 * Units block move for cav
@@ -86,3 +87,4 @@ input    |     |
 * FOW
 * AI
 * Center unit text
+* Commander skill
