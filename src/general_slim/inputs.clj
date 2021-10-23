@@ -32,7 +32,7 @@
 
 (defn resolve-combat [atkr defdr]
   [(assoc (update-hp atkr (:defence defdr)) :can-attack false)
-   (update-hp defdr (:attack atkr))])
+   (update-hp defdr (int (* (/ (:hp atkr) 10) (:attack atkr))))])
 
 (defn update-unit [game-state unit]
   (if (> (:hp unit) 0)

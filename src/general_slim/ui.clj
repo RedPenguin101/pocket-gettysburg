@@ -120,11 +120,11 @@
       (assoc game-state :selected cursor :highlight (adjacents cursor))
 
       ;; If there's a selected unit and the target is an enemy unit, attack it
-      (and selected-unit? (not= my-side (:side unit-under-cursor?)))
+      (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
       (dissoc (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)]) :selected :highlight)
 
       ;; if there's a selected unit and the target ISN'T an enemy, move
-      selected-unit?
+      (and selected-unit? (not unit-under-cursor?))
       (dissoc
        (assoc game-state :order [:move my-side (:id selected-unit?) cursor])
        :selected :highlight)
