@@ -51,6 +51,7 @@ input    |     |
 * ~~Iteration 1a: units can't move twice in a turn~~
 * ~~ending turn refreshes sides move-points~~
 * ~~Iteration 1b: box display of cursor coord, whose turn~~
+* ~~Status box moves if cursor is over it~~
 
 == Iteration 2: Combat
 

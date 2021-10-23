@@ -65,16 +65,18 @@
                (colors :map-highlight))))
 
 (defn draw-status-box [game-state]
-  (let [x-offset 497 y-offset 3
+  (let [[x y :as cursor] (:cursor game-state)
+        x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
         line-offset 30]
     (q/stroke 1)
+    (q/fill [252 252 252])
     (q/stroke-weight 6)
-    (q/rect x-offset y-offset 500 250)
+    (q/rect x-offset y-offset 500 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
     (q/text (str "Turn: " (name (:turn game-state)))
             (+ 25 x-offset) (- 50 y-offset))
-    (q/text (str "Coords: " (:cursor game-state))
+    (q/text (str "Coords: " cursor)
             (+ 25 x-offset) (- (+ line-offset 50) y-offset))))
 
 (defn draw-state [game-state]
