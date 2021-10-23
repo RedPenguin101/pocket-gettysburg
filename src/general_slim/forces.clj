@@ -14,11 +14,7 @@
   (concat (map #(assoc % :side :red) (vals (get-in game-state [:red :units])))
           (map #(assoc % :side :blue) (vals (get-in game-state [:blue :units])))))
 
-(comment (units general-slim.main/game-state))
-
 (defn unit-in-square
   "Returns the unit occupying the square, or nil if none"
   [game-state square]
   (first (filter #(= square (:position %)) (units game-state))))
-
-(comment (unit-in-square general-slim.main/game-state [2 2]))

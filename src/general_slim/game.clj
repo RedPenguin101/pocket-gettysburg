@@ -1,4 +1,4 @@
-(ns general-slim.main
+(ns general-slim.game
   (:require [general-slim.field :as field]
             [general-slim.forces :as forces]
             [general-slim.inputs :as inputs]))
@@ -14,15 +14,12 @@
     (inputs/handle-input (dissoc game-state :order) order)
     (update game-state :turn-number inc)))
 
-(defn interface [state]
-  state)
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
     state
     (recur (-> state
-               tick
-               interface))))
+               tick))))
 
 (comment
   ;; basic move

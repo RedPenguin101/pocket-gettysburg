@@ -1,7 +1,7 @@
 (ns general-slim.ui
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [general-slim.main :refer [tick]]
+            [general-slim.game :refer [tick]]
             [general-slim.forces :refer [unit-in-square]]))
 
 
