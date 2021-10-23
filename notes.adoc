@@ -35,42 +35,42 @@ input    |     |
 
 === Iteration 1: A map with movable units
 
-* ~~A small ~10x10 map with no terrain features~~
-* ~~Two opposing forces of two infantry units each~~
-* ~~Units can be issued orders to move 1 square~~
-* ~~No AI, player plays both sides~~
-* ~~End turn on "c"~~
-* ~~UI for displaying field and issuing orders~~
-* ~~Cursor~~
-* ~~Select units~~
-* ~~cursor doesn't go OOB~~
-* ~~error handling for movement~
-* ~~Highlight moveable area~~
+* DONE A small ~10x10 map with no terrain features 
+* DONE Two opposing forces of two infantry units eachDONE 
+* DONE Units can be issued orders to move 1 squareDONE 
+* DONE No AI, player plays both sidesDONE 
+* DONE End turn on "c"DONE 
+* DONE UI for displaying field and issuing ordersDONE 
+* DONE CursorDONE 
+* DONE Select unitsDONE 
+* DONE cursor doesn't go OOBDONE 
+* DONE error handling for movement~
+* DONE Highlight moveable areaDONE 
 
-* ~~Opacity for select~~
-* ~~Iteration 1a: units can't move twice in a turn~~
-* ~~ending turn refreshes sides move-points~~
-* ~~Iteration 1b: box display of cursor coord, whose turn~~
-* ~~Status box moves if cursor is over it~~
+* DONE Opacity for selectDONE 
+* DONE Iteration 1a: units can't move twice in a turnDONE 
+* DONE ending turn refreshes sides move-pointsDONE 
+* DONE Iteration 1b: box display of cursor coord, whose turnDONE 
+* DONE Status box moves if cursor is over itDONE 
 
 == Iteration 2: Combat
 
-* ~~units have HP~~
-* ~~Units name and HP displayed in status box~~
-* ~~Units are destroyed and removed from the map when their HP reaches zero~~
-* ~~Units can attack one another~~
-* ~~Units have attack and defense power, which impacts the HP they lose in combat~~
-* ~~Attack power depends on strength~~
+* DONE units have HPDONE 
+* DONE Units name and HP displayed in status boxDONE 
+* DONE Units are destroyed and removed from the map when their HP reaches zeroDONE 
+* DONE Units can attack one anotherDONE 
+* DONE Units have attack and defense power, which impacts the HP they lose in combatDONE 
+* DONE Attack power depends on strengthDONE 
 
-* ~~Unit identfiers on tile~~
-* ~~A second, Cavalry unit type is added~~
-* ~~Cavalry can move 2 spaces~~
-* ~~move points refesh from max move points~~
-* ~~highlight shows manhattan distance based on move points~~
-* ~~Fix routing so you can't do that loop thing~~ Hacked!
-* ~~can move 2 squares at once~~
-* ~~Cavalry have different attack characteristics~~
-* ~~Attack/Def chars in menu~~
+* DONE Unit identfiers on tileDONE 
+* DONE A second, Cavalry unit type is addedDONE 
+* DONE Cavalry can move 2 spacesDONE 
+* DONE move points refesh from max move pointsDONE 
+* DONE highlight shows manhattan distance based on move points 
+* DONE Fix routing so you can't do that loop thingDONE  Hacked!
+* DONE can move 2 squares at onceDONE 
+* DONE Cavalry have different attack characteristicsDONE 
+* DONE Attack/Def chars in menuDONE 
 
 == Iteration 3: Terrain and features
 
