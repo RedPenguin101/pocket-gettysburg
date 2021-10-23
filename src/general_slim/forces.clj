@@ -1,4 +1,5 @@
-(ns general-slim.forces)
+(ns general-slim.forces
+  (:require [general-slim.utils :refer [map-vals]]))
 
 (def red {:units {:inf1 {:id :inf1 :unit-type :infantry
                          :position [2 2] :side :red :move-points 1}
@@ -23,3 +24,9 @@
 
 (defn can-move? [unit]
   (> (:move-points unit) 0))
+
+(defn refresh-move-points [unit-map]
+  (map-vals #(assoc % :move-points 1) unit-map))
+
+(comment
+  (refresh-move-points (:units red)))

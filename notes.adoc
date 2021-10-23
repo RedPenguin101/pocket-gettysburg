@@ -36,7 +36,8 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * ~~Highlight moveable area~~
 
 * ~~Opacity for select~~
-* Iteration 1a: units can't move twice in a turn
+* ~~Iteration 1a: units can't move twice in a turn~~
+* ~~ending turn refreshes sides move-points~~
 * Iteration 1b: box display of cursor coord, whose turn
 
 == Iteration 2: Combat

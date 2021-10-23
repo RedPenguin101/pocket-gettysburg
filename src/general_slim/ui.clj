@@ -14,7 +14,7 @@
                    :spent [150 42 42]
                    :selected [252 126 126]}
              :blue {:default [61 106 211]
-                    :spent [150 42 42]
+                    :spent [37 68 142]
                     :selected [106 149 252]}})
 
 (defn adjacents [[x y]]
