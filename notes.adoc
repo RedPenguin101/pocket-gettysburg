@@ -67,6 +67,7 @@ input    |     |
 * ~~Cavalry can move 2 spaces~~
 * ~~move points refesh from max move points~~
 * ~~highlight shows manhattan distance based on move points~~
+* ~~Fix routing so you can't do that loop thing~~ Hacked!
 * can move 2 squares at once
 * Cavalry have different attack characteristics
 * Center unit text
@@ -80,7 +81,5 @@ input    |     |
 * Map has roads, and units have increased range on roads
 * rivers
 
-* time
-* Attacks take place over time
-* Move takes place over time
-* Order delay
+* FOW
+* AI

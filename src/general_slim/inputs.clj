@@ -8,21 +8,21 @@
 
 (def other-side {:red :blue :blue :red})
 
-(defn move-unit [game-state side unit-id to-square]
+(defn move-order [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
         current-pos (:position unit)]
     (cond
-      (nil? ((adjacents current-pos) to-square))
-      (do (println "Cannot move to an non-adjacent square" side unit-id current-pos to-square)
+      (nil? ((adjacents current-pos) (first route)))
+      (do (println "Cannot move to an non-adjacent square" side unit-id current-pos (first route))
           game-state)
-      (unit-in-square game-state to-square)
+      (unit-in-square game-state (first route))
       (do (println "Cannot move to an occupied square")
           game-state)
       (not (can-move? unit)) ;; probably should use can-move
       (do (println "Unit doesn't have enough move points")
           game-state)
       :else (-> game-state
-                (assoc-in [side :units unit-id :position] to-square)
+                (assoc-in [side :units unit-id :position] (first route))
                 (update-in [side :units unit-id :move-points] dec)))))
 
 '[:attack my-side (:id selected-unit?) cursor]
@@ -57,7 +57,7 @@
 (defn handle-input [game-state input]
   (let [[order-type side unit target] input]
     (case order-type
-      :move (move-unit game-state side unit target)
+      :move (move-order game-state side unit target)
       :end-turn (end-turn game-state side)
       :attack (do (println "Attacking") (attack-order game-state side unit target)))))
 

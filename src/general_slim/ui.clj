@@ -24,6 +24,7 @@
 (def cell-size (quot 1000 grid-size))
 (def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220]
+             :routing [101 252 90]
              :red {:default [211 61 61]
                    :spent [150 42 42]
                    :selected [252 126 126]}
@@ -32,7 +33,7 @@
                     :selected [106 149 252]}})
 
 (defn manhattan [[x y] dist]
-  (set (for [d (range 1 (inc dist))
+  (set (for [d (range 0 (inc dist))
              x' (range (- d) (inc d))
              y' (range (- d) (inc d))
              :when (= d (+ (Math/abs x') (Math/abs y')))]
@@ -86,6 +87,11 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :map-highlight))))
 
+(defn draw-routing [coords]
+  (doseq [[x y] coords]
+    (draw-tile (coord->px x) (coord->px y)
+               (colors :routing))))
+
 (defn draw-status-box [game-state]
   (let [[x y :as cursor] (:cursor game-state)
         unit (unit-in-square game-state cursor)
@@ -101,17 +107,22 @@
             (+ 25 x-offset) (- 50 y-offset))
     (q/text (str "Coords: " cursor)
             (+ 25 x-offset) (- (+ line-offset 50) y-offset))
-    (when unit
-      (q/text (str (name (:id unit)) ": " (:hp unit))
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-      (q/text (str "Can attack: " (:can-attack unit))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-      (q/text (str "Move points: " (:move-points unit))
-              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
+    (q/text (str "Route sel: " (:route-selection game-state))
+            (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+    (q/text (str "Route: " (:route game-state))
+            (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+    #_(when unit
+        (q/text (str (name (:id unit)) ": " (:hp unit))
+                (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+        (q/text (str "Can attack: " (:can-attack unit))
+                (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+        (q/text (str "Move points: " (:move-points unit))
+                (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
+  (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
   (draw-cursor (:cursor game-state))
@@ -124,9 +135,15 @@
         selected? (:selected game-state)
         selected-unit? (unit-in-square game-state selected?)]
     (cond
-      ;; If no selection, and trying to select your unit, select
-      (and (not selected?) (= my-side (:side unit-under-cursor?)) (can-move? unit-under-cursor?))
-      (assoc game-state :selected cursor :highlight (manhattan cursor (:move-points unit-under-cursor?)))
+      ;; If no selection, and trying to select your unit, select and turn on route selection
+      (and (not selected?)
+           (= my-side (:side unit-under-cursor?))
+           (can-move? unit-under-cursor?))
+      (assoc game-state
+             :route-selection true
+             :route (list cursor)
+             :selected cursor
+             :highlight (manhattan cursor (:move-points unit-under-cursor?)))
 
       ;; If there's a selected unit and the target is an enemy unit, attack it
       (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
@@ -135,17 +152,34 @@
       ;; if there's a selected unit and the target ISN'T an enemy, move
       (and selected-unit? (not unit-under-cursor?))
       (dissoc
-       (assoc game-state :order [:move my-side (:id selected-unit?) cursor])
-       :selected :highlight)
+       (assoc game-state :order [:move my-side (:id selected-unit?) [cursor]])
+       :selected :highlight :route-selection :route)
 
       :else (do (println "Selection fall through") game-state))))
 
+(defn update-route [route new-coord]
+  (cond ((manhattan (last route) 1) new-coord)
+        (list new-coord (last route))
+        (= new-coord (second route))
+        (rest route)
+        :else (conj route new-coord)))
+
+(defn cursor-move [game-state mv-fn]
+  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))]
+    (if (:route-selection game-state)
+      (if ((:highlight game-state) new-cursor)
+        (-> game-state
+            (assoc :cursor new-cursor)
+            (update :route update-route new-cursor))
+        game-state)
+      (assoc game-state :cursor new-cursor))))
+
 (defn key-handler [game-state event]
   (case (:key event)
-    :up (update game-state :cursor (comp bound up))
-    :down (update game-state :cursor (comp bound down))
-    :left (update game-state :cursor (comp bound left))
-    :right (update game-state :cursor (comp bound right))
+    :up (cursor-move game-state up)
+    :down (cursor-move game-state down)
+    :left (cursor-move game-state left)
+    :right (cursor-move game-state right)
     :space (handle-selection game-state)
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     game-state))
