@@ -114,10 +114,12 @@
               (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
     (when unit
       (q/text (str (:hp unit) "hp")
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
       (q/text (str "Can attack: " (:can-attack unit))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
       (q/text (str "Move points: " (:move-points unit))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+      (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
               (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]

@@ -70,9 +70,7 @@ input    |     |
 * ~~Fix routing so you can't do that loop thing~~ Hacked!
 * ~~can move 2 squares at once~~
 * ~~Cavalry have different attack characteristics~~
-* Center unit text
-* Attack/Def chars in menu
-* Units block move for cav
+* ~~Attack/Def chars in menu~~
 
 == Iteration 3: Terrain and features
 
@@ -81,5 +79,10 @@ input    |     |
 * Map has roads, and units have increased range on roads
 * rivers
 
+* Attack after move
+* Only move once ('has moved')
+* Units block move for cav
+* Facing and flanking
 * FOW
 * AI
+* Center unit text
