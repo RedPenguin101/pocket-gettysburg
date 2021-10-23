@@ -60,8 +60,9 @@ input    |     |
 * ~~Units are destroyed and removed from the map when their HP reaches zero~~
 * ~~Units can attack one another~~
 * ~~Units have attack and defense power, which impacts the HP they lose in combat~~
-* Attack power depends on strength
+* ~~Attack power depends on strength~~
 
+* ~~Unit identfiers on tile~~
 * A second, Cavalry unit type is added with different move and combat characteristics
 * move points refesh from max move points
 

@@ -55,10 +55,15 @@
   (q/fill color)
   (q/rect x y cell-size cell-size))
 
-(defn draw-unit [{:keys [position]} color]
-  (draw-tile (coord->px (first position))
-             (coord->px (second position))
-             color))
+(defn draw-unit [{:keys [position id]} color]
+  (let [x (coord->px (first position))
+        y (coord->px (second position))]
+    (draw-tile x y color)
+    (q/stroke 1)
+    (q/stroke-weight 1)
+    (q/fill [255 255 255])
+    (q/text-font (q/create-font "Courier New" 40))
+    (q/text (name id) (+ x 10) (+ y 60))))
 
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
