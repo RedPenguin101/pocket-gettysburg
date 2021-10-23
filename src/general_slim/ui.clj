@@ -64,12 +64,26 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :map-highlight))))
 
+(defn draw-status-box [game-state]
+  (let [x-offset 497 y-offset 3
+        line-offset 30]
+    (q/stroke 1)
+    (q/stroke-weight 6)
+    (q/rect x-offset y-offset 500 250)
+    (q/fill 0)
+    (q/text-font (q/create-font "Courier New" 30))
+    (q/text (str "Turn: " (name (:turn game-state)))
+            (+ 25 x-offset) (- 50 y-offset))
+    (q/text (str "Coords: " (:cursor game-state))
+            (+ 25 x-offset) (- (+ line-offset 50) y-offset))))
+
 (defn draw-state [game-state]
   (q/background 240)
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
-  (draw-cursor (:cursor game-state)))
+  (draw-cursor (:cursor game-state))
+  (draw-status-box game-state))
 
 (defn handle-selection [game-state]
   (let [cursor (:cursor game-state)
@@ -95,15 +109,15 @@
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     game-state))
 
-(comment
-  (q/defsketch game
-    :host "map"
-    :size [1000 1000]
-    :setup setup
-    :settings #(q/smooth 2)
-    :draw draw-state
-    :update #(do (reset! debug %) (tick %))
-    :key-pressed key-handler
-    :middleware [m/fun-mode]))
+(comment)
+(q/defsketch game
+  :host "map"
+  :size [1000 1000]
+  :setup setup
+  :settings #(q/smooth 2)
+  :draw draw-state
+  :update #(do (reset! debug %) (tick %))
+  :key-pressed key-handler
+  :middleware [m/fun-mode])
 
 (dissoc @debug :field)

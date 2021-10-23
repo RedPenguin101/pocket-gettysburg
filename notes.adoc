@@ -14,6 +14,18 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * _No base building_
 * _No air or sea_
 
+== Code structure
+
+----
+        ui
+  |------|
+game     |
+  |------|-----|
+input    |     |
+  |-----||     |
+       forces field
+----
+
 == Iteration goals
 
 * Moveable units
@@ -38,7 +50,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * ~~Opacity for select~~
 * ~~Iteration 1a: units can't move twice in a turn~~
 * ~~ending turn refreshes sides move-points~~
-* Iteration 1b: box display of cursor coord, whose turn
+* ~~Iteration 1b: box display of cursor coord, whose turn~~
 
 == Iteration 2: Combat
 
