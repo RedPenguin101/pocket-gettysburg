@@ -1,14 +1,14 @@
 (ns general-slim.forces
   (:require [general-slim.utils :refer [map-vals]]))
 
-(def red {:units {:inf1 {:id :inf1 :unit-type :infantry
+(def red {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
                          :position [2 2] :side :red :move-points 1}
-                  :inf2 {:id :inf2 :unit-type :infantry
+                  :inf2 {:id :inf2 :unit-type :infantry :hp 10
                          :position [3 3] :side :red :move-points 1}}})
 
-(def blue {:units {:inf1 {:id :inf1 :unit-type :infantry
+(def blue {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
                           :position [7 7] :side :blue :move-points 1}
-                   :inf2 {:id :inf2 :unit-type :infantry
+                   :inf2 {:id :inf2 :unit-type :infantry :hp 10
                           :position [8 8] :side :blue :move-points 1}}})
 
 (defn units

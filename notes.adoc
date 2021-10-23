@@ -55,6 +55,8 @@ input    |     |
 
 == Iteration 2: Combat
 
+* ~~units have HP~~
+* ~~Units name and HP displayed in status box~~
 * Units can attack one another, reducing HP
 * Units are destroyed and removed from the map when their HP reaches zero 
 * A second, Cavalry unit type is added with different characteristics

@@ -66,6 +66,7 @@
 
 (defn draw-status-box [game-state]
   (let [[x y :as cursor] (:cursor game-state)
+        unit (unit-in-square game-state cursor)
         x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
         line-offset 30]
     (q/stroke 1)
@@ -77,7 +78,10 @@
     (q/text (str "Turn: " (name (:turn game-state)))
             (+ 25 x-offset) (- 50 y-offset))
     (q/text (str "Coords: " cursor)
-            (+ 25 x-offset) (- (+ line-offset 50) y-offset))))
+            (+ 25 x-offset) (- (+ line-offset 50) y-offset))
+    (when unit
+      (q/text (str (name (:id unit)) ": " (:hp unit))
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
