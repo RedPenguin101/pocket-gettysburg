@@ -10,10 +10,11 @@
     (println "current pos" current-pos)
     (cond
       (nil? ((adjacents current-pos) to-square))
-      (throw (ex-info "Cannot move to an non-adjacent square" {:current-square current-pos
-                                                               :target-square to-square}))
+      (do (println "Cannot move to an non-adjacent square" side unit-id current-pos to-square)
+          game-state)
       (unit-in-square game-state to-square)
-      (throw (ex-info "Cannot move to an occupied square" {:square to-square}))
+      (do (println "Cannot move to an occupied square")
+          game-state)
       :else (assoc-in game-state [side :units unit-id :position] to-square))))
 
 (defn end-turn [game-state side]

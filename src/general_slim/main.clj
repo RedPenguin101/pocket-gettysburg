@@ -4,11 +4,10 @@
             [general-slim.inputs :as inputs]))
 
 (def game-state {:field (field/flat-field 10 10)
-                 :red forces/side2
-                 :blue forces/side1
+                 :red forces/red
+                 :blue forces/blue
                  :turn :red
-                 :turn-number 0
-                 :order [:move :red :inf1 [6 7]]})
+                 :turn-number 0})
 
 (defn tick [game-state]
   (if-let [order (:order game-state)]
