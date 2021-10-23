@@ -1,5 +1,5 @@
 (ns general-slim.inputs
-  (:require [general-slim.forces :refer [unit-in-square refresh-move-points]]
+  (:require [general-slim.forces :refer [can-move? unit-in-square refresh-units]]
             [general-slim.utils :refer [dissoc-in]]))
 
 (defn adjacents [[x y]]
@@ -9,8 +9,8 @@
 (def other-side {:red :blue :blue :red})
 
 (defn move-unit [game-state side unit-id to-square]
-  (let [current-pos (get-in game-state [side :units unit-id :position])
-        move-points (get-in game-state [side :units unit-id :move-points])]
+  (let [unit (get-in game-state [side :units unit-id])
+        current-pos (:position unit)]
     (cond
       (nil? ((adjacents current-pos) to-square))
       (do (println "Cannot move to an non-adjacent square" side unit-id current-pos to-square)
@@ -18,7 +18,7 @@
       (unit-in-square game-state to-square)
       (do (println "Cannot move to an occupied square")
           game-state)
-      (zero? move-points) ;; probably should use can-move
+      (not (can-move? unit)) ;; probably should use can-move
       (do (println "Unit doesn't have enough move points")
           game-state)
       :else (-> game-state
@@ -27,11 +27,12 @@
 
 '[:attack my-side (:id selected-unit?) cursor]
 
-(defn resolve-combat [unit1 unit2]
-  [unit1 (assoc unit2 :hp 0)])
+(defn update-hp [unit hit-for]
+  (update unit :hp - hit-for))
 
-(resolve-combat {:id :inf1, :unit-type :infantry, :hp 10, :position [7 6], :side :red, :move-points 1}
-                {:id :inf1, :unit-type :infantry, :hp 10, :position [7 6], :side :blue, :move-points 1})
+(defn resolve-combat [atkr defdr]
+  [(assoc (update-hp atkr (:defence defdr)) :can-attack false)
+   (update-hp defdr (:attack atkr))])
 
 (defn update-unit [game-state unit]
   (if (> (:hp unit) 0)
@@ -46,15 +47,11 @@
         (update-unit u1)
         (update-unit u2))))
 
-(attack-order {:red {:units {:inf1 {:id :inf1, :unit-type :infantry, :hp 10, :position [7 6], :side :red, :move-points 1}}}
-               :blue {:units {:inf1 {:id :inf1, :unit-type :infantry, :hp 10, :position [7 6], :side :blue, :move-points 1}}}}
-              :red :inf1 :inf1)
-
 (defn end-turn [game-state side]
   (if (= side (:turn game-state))
     (-> game-state
         (assoc :turn (if (= :red side) :blue :red))
-        (update-in [side :units] refresh-move-points))
+        (update-in [side :units] refresh-units))
     (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
 
 (defn handle-input [game-state input]

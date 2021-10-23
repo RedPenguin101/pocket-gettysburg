@@ -1,15 +1,25 @@
 (ns general-slim.forces
   (:require [general-slim.utils :refer [map-vals]]))
 
-(def red {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
-                         :position [2 2] :side :red :move-points 1}
-                  :inf2 {:id :inf2 :unit-type :infantry :hp 10
-                         :position [3 3] :side :red :move-points 1}}})
+(def unit-templates
+  {:infantry {:unit-type :infantry :hp 10
+              :move-points 1 :max-move-points 1
+              :can-attack true
+              :attack 5 :defence 3}
+   :cavalry {:unit-type :cavalry :hp 5
+             :move-points 2 :max-move-points 2
+             :can-attack true
+             :attack 3 :defence 1}})
 
-(def blue {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
-                          :position [7 7] :side :blue :move-points 1}
-                   :inf2 {:id :inf2 :unit-type :infantry :hp 10
-                          :position [8 8] :side :blue :move-points 1}}})
+(defn make-unit [type side id pos]
+  (assoc (type unit-templates)
+         :id id :side side :position pos))
+
+(def red {:units {:inf1 (make-unit :infantry :red :inf1 [2 2])
+                  :inf2 (make-unit :infantry :red :inf2 [3 3])}})
+
+(def blue {:units {:inf1 (make-unit :infantry :blue :inf1 [7 7])
+                   :inf2 (make-unit :infantry :blue :inf2 [8 8])}})
 
 (defn units
   "Returns a sequence of every unit"
@@ -23,10 +33,11 @@
   (first (filter #(= square (:position %)) (units game-state))))
 
 (defn can-move? [unit]
-  (> (:move-points unit) 0))
+  (and (:can-attack unit) (> (:move-points unit) 0)))
 
-(defn refresh-move-points [unit-map]
-  (map-vals #(assoc % :move-points 1) unit-map))
+(defn refresh-units [unit-map]
+  (->> unit-map
+       (map-vals #(assoc % :move-points 1 :can-attack true))))
 
 (comment
-  (refresh-move-points (:units red)))
+  (refresh-units (:units red)))

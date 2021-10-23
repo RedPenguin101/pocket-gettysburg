@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
             [general-slim.field :as field] ;; just for testing
-            [general-slim.forces :as forces :refer [unit-in-square can-move?]]))
+            [general-slim.forces :as forces :refer [make-unit unit-in-square can-move?]]))
 
 (def game-state {:field (field/flat-field 10 10)
                  :red forces/red
@@ -12,10 +12,8 @@
                  :turn-number 0})
 
 (def ready-to-attack {:field (field/flat-field 10 10)
-                      :red {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
-                                           :position [6 6] :side :red :move-points 1}}}
-                      :blue {:units {:inf1 {:id :inf1 :unit-type :infantry :hp 10
-                                            :position [7 6] :side :blue :move-points 1}}}
+                      :red {:units {:inf1 (make-unit :infantry :red :inf1 [6 6])}}
+                      :blue {:units {:inf1 (make-unit :infantry :blue :inf1 [7 6])}}
                       :turn :red
                       :turn-number 0
                       :cursor [5 5]})
@@ -96,7 +94,11 @@
             (+ 25 x-offset) (- (+ line-offset 50) y-offset))
     (when unit
       (q/text (str (name (:id unit)) ": " (:hp unit))
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset)))))
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+      (q/text (str "Can attack: " (:can-attack unit))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+      (q/text (str "Move points: " (:move-points unit))
+              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
