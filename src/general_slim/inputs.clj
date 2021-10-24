@@ -38,7 +38,8 @@
    move-points
    (->> (manhattan position move-points)
         (field/terrain-map (:field game-state))
-        (map-vals movement-table))))
+        (map-vals movement-table)
+        (remove #(nil? (val %))))))
 
 (defn route-cost
   "Given a game state, a unit and a route starting at
