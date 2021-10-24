@@ -3,11 +3,11 @@
 
 (def unit-templates
   {:infantry {:unit-type :infantry :hp 10
-              :move-points 2 :max-move-points 2
+              :move-points 3 :max-move-points 3
               :movement-table {:field 1
                                :road 0.5
                                :trees 1
-                               :mountains 2}
+                               :mountains 3}
               :can-attack true
               :attack 5
               :defence {:base 3
