@@ -85,6 +85,7 @@ input    |     |
 * Map has roads, and units have increased range on roads
 * Rivers
 
+* Message display system (-> message, seconds to display)
 * Battle predictor, AW style 
 * Attack after move
 * Only move once ('has moved')
