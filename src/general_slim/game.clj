@@ -1,5 +1,5 @@
 (ns general-slim.game
-  (:require [general-slim.forces :refer [can-move? unit-in-square]]
+  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.game-states :as gs]))
 
@@ -161,6 +161,26 @@
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
+
+;; debug
+
+(defn debug-data [game-state]
+  (let [cursor (:cursor game-state)
+        selected (:selected game-state)
+        uuc (unit-in-square game-state cursor)
+        su (unit-in-square game-state selected)]
+    {:cursor cursor
+     :selected selected
+     :unit-under-cursor uuc
+     :uuc-defence (when uuc (defence-value uuc (get-in game-state [:field (:position uuc) :terrain])))
+     :unit-selected su
+     :selected-defence (when su (defence-value su (get-in game-state [:field (:position su) :terrain])))
+     :route-selection (:route-selection game-state)
+     :route (:route game-state)
+     :route-cost (when (:route game-state) (route-cost game-state su (reverse (:route game-state))))
+     :attack-option (:attack-option game-state)}))
+
+(debug-data @general-slim.ui/debug)
 
 ;; Top lvl tick
 

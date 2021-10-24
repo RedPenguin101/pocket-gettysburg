@@ -2,8 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.game :as game :refer [tick key-handler coord->px]]
-            [general-slim.inputs :as inputs :refer [route-cost]] ;; needed for debug, maybe move this too
-            [general-slim.forces :as forces :refer [unit-in-square can-move?]] ;; and this
+            [general-slim.forces :as forces :refer [can-move?]] ;; and this
             ))
 
 ;; state and constants
@@ -149,9 +148,11 @@
     (q/rect (+ x-offset (scale 10)) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset (scale 10))) (scale 250) (scale 35))))
 
 (defn draw-debug-box [game-state]
-  (let [cursor (:cursor game-state)
-        unit (unit-in-square game-state cursor)
-        selected-unit (unit-in-square game-state (:selected game-state))
+  (let [{:keys [cursor selected
+                unit-under-cursor uuc-defence
+                selected-unit selected-defence
+                route-selection route route-cost
+                attack-option]} (game/debug-data game-state)
         x-offset (scale 3) y-offset (scale 3)
         line-offset (scale 30)]
     (q/stroke 1)
@@ -160,34 +161,34 @@
     (q/rect x-offset y-offset (scale 1000) (scale 300))
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" (scale 30)))
-    (q/text (str "Cursor: " (:cursor game-state) " Selected: " (:selected game-state))
+    (q/text (str "Cursor: " cursor " Selected: " selected)
             (+ (scale 25) x-offset) (- (scale 50) y-offset))
 
     ;; refactor this text stuff
-    (when unit
-      (q/text (str "CURSOR" (:hp unit) "hp")
+    (when unit-under-cursor
+      (q/text (str "CURSOR" (:hp unit-under-cursor) "hp")
               (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
-      (q/text (str "Attack option: " (:attack-option game-state))
+      (q/text (str "Attack option: " attack-option)
               (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
-      (q/text (str "Move points: " (:move-points unit))
+      (q/text (str "Move points: " (:move-points unit-under-cursor))
               (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
-      (q/text (str "Att/Def: " (:attack unit) "/" (forces/defence-value unit (get-in game-state [:field (:position unit) :terrain])))
+      (q/text (str "Att/Def: " (:attack unit-under-cursor) "/" uuc-defence)
               (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
-    (when selected-unit
+    (when selected
       (q/text (str "SELECTED" (:hp selected-unit) "hp")
               (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
-      (q/text (str "Attack option: " (:attack-option game-state))
+      (q/text (str "Attack option: " attack-option)
               (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
       (q/text (str "Move points: " (:move-points selected-unit))
               (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
-      (q/text (str "Att/Def: " (:attack selected-unit) "/" (forces/defence-value selected-unit (get-in game-state [:field (:position selected-unit) :terrain])))
+      (q/text (str "Att/Def: " (:attack selected-unit) "/" selected-defence)
               (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
-    (when (:route-selection game-state)
+    (when route-selection
       (q/text (str "Coords: " cursor)
               (+ (scale 25) x-offset) (- (+ (* 5 line-offset) (scale 50)) y-offset))
-      (q/text (str "Route: " (:route game-state))
+      (q/text (str "Route: " route)
               (+ (scale 25) x-offset) (- (+ (* 6 line-offset) (scale 50)) y-offset))
-      (q/text (str "Route cost: " (route-cost game-state selected-unit (reverse (:route game-state))))
+      (q/text (str "Route cost: " route-cost)
               (+ (scale 25) x-offset) (- (+ (* 7 line-offset) (scale 50)) y-offset)))))
 
 (defn draw-state [game-state]
@@ -213,4 +214,7 @@
   :key-pressed key-handler
   :middleware [m/fun-mode])
 
-(dissoc @debug :field)
+
+(comment
+  (dissoc @debug :field)
+  (game/debug-data @debug))
