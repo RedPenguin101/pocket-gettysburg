@@ -147,49 +147,38 @@
     (q/fill (colors :menu-select))
     (q/rect (+ x-offset (scale 10)) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset (scale 10))) (scale 250) (scale 35))))
 
+(defn debug-text-item [line-num text]
+  (q/text text
+          (+ (scale 25) (scale 3))
+          (- (+ (* line-num (scale 30)) (scale 50)) (scale 3))))
+
 (defn draw-debug-box [game-state]
   (let [{:keys [cursor selected
                 unit-under-cursor uuc-defence
-                selected-unit selected-defence
+                unit-selected selected-defence
                 route-selection route route-cost
-                attack-option]} (game/debug-data game-state)
-        x-offset (scale 3) y-offset (scale 3)
-        line-offset (scale 30)]
+                attack-option]} (game/debug-data game-state)]
     (q/stroke 1)
     (q/fill (colors :white))
     (q/stroke-weight (scale 6))
-    (q/rect x-offset y-offset (scale 1000) (scale 300))
+    (q/rect (scale 3) (scale 3) (scale 1000) (scale 300))
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" (scale 30)))
-    (q/text (str "Cursor: " cursor " Selected: " selected)
-            (+ (scale 25) x-offset) (- (scale 50) y-offset))
+    (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected))
 
-    ;; refactor this text stuff
     (when unit-under-cursor
-      (q/text (str "CURSOR" (:hp unit-under-cursor) "hp")
-              (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
-      (q/text (str "Attack option: " attack-option)
-              (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
-      (q/text (str "Move points: " (:move-points unit-under-cursor))
-              (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
-      (q/text (str "Att/Def: " (:attack unit-under-cursor) "/" uuc-defence)
-              (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
-    (when selected
-      (q/text (str "SELECTED" (:hp selected-unit) "hp")
-              (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
-      (q/text (str "Attack option: " attack-option)
-              (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
-      (q/text (str "Move points: " (:move-points selected-unit))
-              (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
-      (q/text (str "Att/Def: " (:attack selected-unit) "/" selected-defence)
-              (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
+      (debug-text-item 1 (str "CURSOR: " (:hp unit-under-cursor) "hp"))
+      (debug-text-item 2 (str "Attack option: " attack-option))
+      (debug-text-item 3 (str "Move points: " (:move-points unit-under-cursor)))
+      (debug-text-item 4 (str "Att/Def: " (:attack unit-under-cursor) "/" uuc-defence)))
+    (when (and selected (not unit-under-cursor))
+      (debug-text-item 1 (str "SELECTED: " (:hp unit-selected) "hp"))
+      (debug-text-item 2 (str "Attack option: " attack-option))
+      (debug-text-item 3 (str "Move points: " (:move-points unit-selected)))
+      (debug-text-item 4 (str "Att/Def: " (:attack unit-selected) "/" selected-defence)))
     (when route-selection
-      (q/text (str "Coords: " cursor)
-              (+ (scale 25) x-offset) (- (+ (* 5 line-offset) (scale 50)) y-offset))
-      (q/text (str "Route: " route)
-              (+ (scale 25) x-offset) (- (+ (* 6 line-offset) (scale 50)) y-offset))
-      (q/text (str "Route cost: " route-cost)
-              (+ (scale 25) x-offset) (- (+ (* 7 line-offset) (scale 50)) y-offset)))))
+      (debug-text-item 5 (str "Route: " route))
+      (debug-text-item 6 (str "Route cost: " route-cost)))))
 
 (defn draw-state [game-state]
   (q/background 240)
@@ -199,9 +188,9 @@
   (draw-units game-state :blue)
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (draw-cursor (:cursor game-state))
-  (draw-turn-indicator (:turn game-state))
   (when (:menu game-state) (draw-menu game-state))
-  (when (:debug game-state) (draw-debug-box game-state)))
+  (when (:debug game-state) (draw-debug-box game-state))
+  (draw-turn-indicator (:turn game-state)))
 
 (comment)
 (q/defsketch game
