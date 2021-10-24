@@ -89,18 +89,35 @@ input    |     |
 * DONE Fix attack / Attack after move
 ** DONE AW style wait menu after move
 ** DONE add attack option if enemy unit in adjacent
-* Rivers
 
+* DONE variable size levels
+
+* Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
 * Bug?: units can complete eliminate eachother in combat
+
+* Cursor to target on attack
+* Battle predictor, AW style
+* In battles, attackers losses are modified by the terrain they're on. AW shows 
+** terrain+def
+** target hp, supplies, fuel
+** damage %
+* Bug: in battle, attackers losses are not impacted by defenders hp
+
+* REPLICATE FIRST AW LEVEL
+
+* Map builder stuff, level persistence
+* Rivers
 * Message display system (-> message, seconds to display)
-* Battle predictor, AW style 
 * Only move once ('has moved')
-* Units block move for cav
-* Facing and flanking
 * FOW
 * AI
-* Center unit text
-* Commander skill
-* Supplies / Wagons
 * Sprites
+* Draw terrain on static layer
+* Artillery
+
+== Post MVP
+
+* Commander skill
+* Facing and flanking
+* Supplies / Wagons
