@@ -88,15 +88,17 @@
         :trees (draw-tree (coord->px x) (coord->px y))
         nil))))
 
-(defn draw-unit [{:keys [position id]} color]
+(defn draw-unit [{:keys [position id hp]} color]
   (let [x (coord->px (first position))
         y (coord->px (second position))]
     (draw-tile x y color)
     (q/stroke 1)
     (q/stroke-weight 1)
     (q/fill [255 255 255])
-    (q/text-font (q/create-font "Courier New" 40))
-    (q/text (name id) (+ x 10) (+ y 60))))
+    (q/text-font (q/create-font "Courier New" 30))
+    (q/text (name id) (+ x 15) (+ y 30))
+    (q/text-font (q/create-font "Courier New" 20))
+    (q/text (str hp) (+ x 70) (+ y 90))))
 
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
@@ -120,7 +122,7 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :routing))))
 
-(defn draw-status-box [game-state]
+(defn draw-debug-box [game-state]
   (let [[x y :as cursor] (:cursor game-state)
         unit (unit-in-square game-state cursor)
         x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
@@ -131,24 +133,24 @@
     (q/rect x-offset y-offset 500 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
-    (q/text (str "Turn: " (name (:turn game-state)))
-            (+ 25 x-offset) (- 50 y-offset))
-    ;; route selection debug
-    (q/text (str "Coords: " cursor)
-            (+ 25 x-offset) (- (+ line-offset 50) y-offset))
-    (q/text (str "Route sel: " (:route-selection game-state))
-            (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-    (q/text (str "Route: " (:route game-state))
-            (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-    #_(when unit
-        (q/text (str (:hp unit) "hp")
-                (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
-        (q/text (str "Can attack: " (:can-attack unit))
-                (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-        (q/text (str "Move points: " (:move-points unit))
-                (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-        (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
-                (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
+    (when unit
+      (q/text (str "Can attack: " (:can-attack unit))
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+      (q/text (str "Move points: " (:move-points unit))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+      (q/text (str (name (:id unit)))
+              (+ 25 x-offset) (- 50 y-offset))
+      (q/text (str (:hp unit) "hp")
+              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
+      (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
+              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
+    (when (:route-selection game-state)
+      (q/text (str "Coords: " cursor)
+              (+ 25 x-offset) (- (+ (* 5 line-offset) 50) y-offset))
+      (q/text (str "Route sel: " (:route-selection game-state))
+              (+ 25 x-offset) (- (+ (* 6 line-offset) 50) y-offset))
+      (q/text (str "Route: " (:route game-state))
+              (+ 25 x-offset) (- (+ (* 7 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
@@ -158,7 +160,7 @@
   (draw-units game-state :red)
   (draw-units game-state :blue)
   (draw-cursor (:cursor game-state))
-  (draw-status-box game-state))
+  (when (:debug game-state) (draw-debug-box game-state)))
 
 (defn handle-selection [game-state]
   (let [cursor (:cursor game-state)
@@ -221,6 +223,7 @@
     :left (cursor-move game-state left)
     :right (cursor-move game-state right)
     :space (handle-selection game-state)
+    :d (update game-state :debug not)
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
