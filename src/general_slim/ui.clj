@@ -23,7 +23,8 @@
 
 (defn setup []
   (q/frame-rate fps)
-  (assoc game-state :cursor [5 5]))
+  (assoc game-state :cursor [(int (/ horiz-tiles 2))
+                             (int (/ vert-tiles 2))]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
