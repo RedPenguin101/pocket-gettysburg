@@ -5,7 +5,7 @@
 
 ;; state and constants
 
-(def game-state gs/ready-to-attack)
+(def game-state gs/aw-ft1)
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -109,6 +109,9 @@
         unit-under-cursor? (unit-in-square game-state cursor)
         my-side (:turn game-state)]
     (cond
+      (not unit-under-cursor?)
+      (do (println "No unit to select") game-state)
+
       ;; trying to select your unit, select and turn on route selection
       (and (= my-side (:side unit-under-cursor?))
            (can-move? unit-under-cursor?))
@@ -162,7 +165,6 @@
       game-state)))
 
 (defn action-attack [game-state]
-  (println "Action attack")
   (let [[side attacker-id] (:attack-mode game-state)
         defender-id (:id (unit-in-square game-state (:cursor game-state)))]
     (-> game-state
@@ -170,7 +172,6 @@
         (dissoc :attack-mode :selected))))
 
 (defn handle-action [game-state]
-  (println "Handle action")
   (cond (:menu game-state)        (action-menu game-state)
         (:attack-mode game-state) (action-attack game-state)
         (:selected game-state)    (action-move game-state)

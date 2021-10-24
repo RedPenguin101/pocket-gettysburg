@@ -101,7 +101,7 @@ input    |     |
 * DONE see move range on clicking enemy unit
 * DONE Bug: units can't _not_ move and then attack
 * DONE Bug: unit is still selected when finished move and no attack option
-* Bug?: units can completely eliminate eachother in combat
+* DONE BUG selecting no unit throws
 
 * Battle predictor, AW style
 ** terrain+def
@@ -125,7 +125,9 @@ input    |     |
 
 == Post MVP
 
+* Bug?: units can completely eliminate eachother in combat
 * Commander skill
 * Facing and flanking
 * Supplies / Wagons
 * Hills
+* Retreat and rout
