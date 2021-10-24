@@ -2,7 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
-            [general-slim.inputs :as inputs :refer [can-move-to]]
+            [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.field :as field] ;; just for testing
             [general-slim.forces :as forces :refer [make-unit unit-in-square can-move?]]))
 
@@ -204,13 +204,13 @@
     (cond (not (:route-selection game-state))
           (assoc game-state :cursor new-cursor)
 
-          ;; need an escape so you can always back out
+          ;; can always back out a selection
+          (= new-cursor (second (:route game-state)))
+          (-> game-state
+              (assoc :cursor new-cursor)
+              (update :route rest))
 
-          ;; If the cost of the new route is less
-          ;; than the units move points, move the cursor
-          ;; and update the route
-          ;; (Not implemented route cost)
-          (<= (inputs/route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
+          (<= (route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
               (:move-points selected-unit))
           (-> game-state
               (assoc :cursor new-cursor)
