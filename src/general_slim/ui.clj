@@ -14,7 +14,7 @@
 (def tiles 10)
 (def tile-size 100)
 (def colors {:cursor [183 183 183 75]
-             :map-highlight [220 220 220 50]
+             :map-highlight [220 220 220 75]
              :routing [101 252 90 75]
              :terrain {:trees [36 119 23]
                        :mountains [124 117 104]
@@ -49,36 +49,7 @@
   (q/frame-rate fps)
   (assoc game-state :cursor [5 5]))
 
-(defn handle-selection [game-state]
-  (let [cursor (:cursor game-state)
-        unit-under-cursor? (unit-in-square game-state cursor)
-        my-side (:turn game-state)
-        selected? (:selected game-state)
-        selected-unit? (unit-in-square game-state selected?)]
-    (cond
-      ;; If no selection, and trying to select your unit, select and turn on route selection
-      (and (not selected?)
-           (= my-side (:side unit-under-cursor?))
-           (can-move? unit-under-cursor?))
-      (assoc game-state
-             :route-selection true
-             :route (list cursor)
-             :selected cursor
-             :highlight (can-move-to game-state unit-under-cursor?))
-
-      ;; MOVE if there's a selected unit and the target ISN'T an enemy
-      (and selected-unit? (not unit-under-cursor?))
-
-      (-> game-state
-          (assoc :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
-          (assoc :selected (first (:route game-state)))
-          (dissoc :highlight :route-selection :route))
-
-      :else (do (println "Selection fall through") game-state))))
-
-(defn handle-attack [game-state] game-state)
-
-(defn cursor-move-map [game-state mv-fn]
+(defn handle-cursor-for-move [game-state mv-fn]
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
@@ -106,26 +77,71 @@
 
           :else game-state)))
 
-(defn cursor-move-menu [game-state dir]
+(defn handle-selection-for-move [game-state]
+  (let [cursor (:cursor game-state)
+        unit-under-cursor? (unit-in-square game-state cursor)
+        my-side (:turn game-state)
+        selected? (:selected game-state)
+        selected-unit? (unit-in-square game-state selected?)]
+    (cond
+      ;; If no selection, and trying to select your unit, select and turn on route selection
+      (and (not selected?)
+           (= my-side (:side unit-under-cursor?))
+           (can-move? unit-under-cursor?))
+      (assoc game-state
+             :route-selection true
+             :route (list cursor)
+             :selected cursor
+             :highlight (can-move-to game-state unit-under-cursor?))
+
+      ;; MOVE if there's a selected unit and the target ISN'T an enemy
+      (and selected-unit? (not unit-under-cursor?))
+
+      (-> game-state
+          (assoc :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
+          (assoc :selected (first (:route game-state)))
+          (dissoc :highlight :route-selection :route))
+
+      :else (do (println "Selection fall through") game-state))))
+
+(defn handle-menu-cursor [game-state dir]
   (let [menu-items (count (get-in game-state [:menu :options]))]
     (case dir
       :down (update-in game-state [:menu :selection] #(mod (inc %) menu-items))
       :up (update-in game-state [:menu :selection] #(mod (dec %) menu-items))
       game-state)))
 
-(defn cursor-move [game-state dir]
-  (cond (:menu game-state) (cursor-move-menu game-state dir)
-        :else (cursor-move-map game-state (dir grid-moves))))
+(defn handle-menu-selection [game-state]
+  (let [selected-option (nth (keys (get-in game-state [:menu :options]))
+                             (get-in game-state [:menu :selection]))]
+    (println "selected" selected-option)
+    (case (get-in game-state [:menu :name])
+      :attack-menu
+      (if (= :wait selected-option)
+        (dissoc game-state :selected :highlight :attack-option :menu)
+        (-> game-state
+            (assoc :highlight (last (:attack-option game-state))
+                   :attack-mode (:attack-option game-state))
+            (dissoc :menu :attack-option)))
+
+      game-state)))
+
+(defn handle-selection [game-state]
+  (cond (:menu game-state) (handle-menu-selection game-state)
+        :else (handle-selection-for-move game-state)))
+
+(defn handle-cursor [game-state dir]
+  (cond (:menu game-state)
+        (handle-menu-cursor game-state dir)
+        :else (handle-cursor-for-move game-state (dir grid-moves))))
 
 (defn key-handler [game-state event]
   (case (:key event)
-    :up (cursor-move game-state :up)
-    :down (cursor-move game-state :down)
-    :left (cursor-move game-state :left)
-    :right (cursor-move game-state :right)
-    :space (if (:attack-option game-state)
-             (handle-attack game-state)
-             (handle-selection game-state))
+    :up (handle-cursor game-state :up)
+    :down (handle-cursor game-state :down)
+    :left (handle-cursor game-state :left)
+    :right (handle-cursor game-state :right)
+    :space (handle-selection game-state)
     :d (update game-state :debug not)
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
@@ -134,7 +150,9 @@
 (defn tick-wrap [game-state]
   (let [next-state (tick game-state)]
     (if (and (not (:menu next-state)) (:attack-option next-state))
-      (assoc next-state :menu {:options ["> Attack" "> Wait"]
+      (assoc next-state :menu {:name :attack-menu
+                               :options {:attack "> Attack"
+                                         :wait "> Wait"}
                                :selection 0})
       next-state)))
 
@@ -257,7 +275,7 @@
     (q/rect x-offset y-offset 300 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
-    (doseq [[row item] (map-indexed vector (get-in game-state [:menu :options]))]
+    (doseq [[row item] (map-indexed vector (vals (get-in game-state [:menu :options])))]
       (q/text item (+ 20 x-offset) (+ (* row line-offset) 40 y-offset)))
     (q/stroke-weight 1)
     (q/fill (colors :menu-select))
@@ -306,10 +324,10 @@
 (defn draw-state [game-state]
   (q/background 240)
   (draw-terrain (vals (:field game-state)))
-  (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
+  (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (draw-cursor (:cursor game-state))
   (draw-turn-indicator (:turn game-state))
   (when (:menu game-state) (draw-menu game-state))
