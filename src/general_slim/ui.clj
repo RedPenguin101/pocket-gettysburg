@@ -192,22 +192,26 @@
       :else (do (println "Selection fall through") game-state))))
 
 (defn update-route [route new-coord]
-  (cond ((manhattan (last route) 1) new-coord)
+  (cond ((manhattan (last route) 1) new-coord) ;; this is no longer needed, kill it
         (list new-coord (last route))
         (= new-coord (second route))
         (rest route)
         :else (conj route new-coord)))
 
 (defn cursor-move [game-state mv-fn]
-  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))]
+  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
+        selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (not (:route-selection game-state))
           (assoc game-state :cursor new-cursor)
 
-          ;; If the cost of the calculated route is less
+          ;; need an escape so you can always back out
+
+          ;; If the cost of the new route is less
           ;; than the units move points, move the cursor
           ;; and update the route
           ;; (Not implemented route cost)
-          (< 1 (:move-points (unit-in-square game-state (:selected game-state))))
+          (<= (inputs/route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
+              (:move-points selected-unit))
           (-> game-state
               (assoc :cursor new-cursor)
               (update :route update-route new-cursor))

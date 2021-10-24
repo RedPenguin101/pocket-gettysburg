@@ -40,6 +40,19 @@
         (field/terrain-map (:field game-state))
         (map-vals movement-table))))
 
+(defn route-cost
+  "Given a game state, a unit and a route starting at
+   that units location, will return the cost of walking
+   that route"
+  [game-state {:keys [movement-table position] :as unit} route]
+  (if (not= position (first route))
+    (throw (ex-info "Invalid route, doesn't start with unit's current position" {:position position :route route}))
+    (->> (rest route)
+         (field/terrain-map (:field game-state))
+         (map-vals movement-table)
+         (vals)
+         (apply +))))
+
 (comment
   (count (can-move-to trees (unit-in-square trees [5 6]))))
 
