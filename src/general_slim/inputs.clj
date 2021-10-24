@@ -1,12 +1,39 @@
 (ns general-slim.inputs
   (:require [general-slim.forces :refer [can-move? unit-in-square refresh-units]]
-            [general-slim.utils :refer [dissoc-in]]))
+            [general-slim.utils :refer [dissoc-in]]
+            [general-slim.field :as field]
+            [general-slim.ui :as ui] ;; for testing only!
+            [general-slim.route-calc :as routing :refer [accessible-squares]]))
 
 (defn adjacents [[x y]]
   #{[(inc x) y] [(dec x) y]
     [x (inc y)] [x (dec y)]})
 
+(defn manhattan [[x y] dist]
+  (set (for [d (range 0 (inc dist))
+             x' (range (- d) (inc d))
+             y' (range (- d) (inc d))
+             :when (= d (+ (Math/abs x') (Math/abs y')))]
+         [(+ x x') (+ y y')])))
+
 (def other-side {:red :blue :blue :red})
+
+(defn possible-move-targets [game-state unit]
+  (let [possible-targets (manhattan (:position unit) (:move-points unit))
+        ttypes (into {} (map #(vector % (get-in game-state [:field % :terrain])) possible-targets))]
+    ttypes))
+
+(defn can-move-to [game-state unit]
+  (accessible-squares
+   (:position unit)
+   (possible-move-targets game-state unit)
+   (:move-points unit)
+   (:move-adjust unit)))
+
+(defn route-cost [game-state unit route]
+  (routing/route-cost (field/get-terrain-map (:field game-state)
+                                             route)
+                      (:move-adjust unit)))
 
 (defn update-move-order [game-state]
   (let [[order-type side unit route] (:order game-state)]

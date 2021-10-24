@@ -20,3 +20,6 @@
          (random-trees x-size y-size trees)))
 
 (build-map 10 10 5)
+
+(defn get-terrain-map [field coords]
+  (into {} (map (juxt identity #(get-in field [% :terrain])) coords)))

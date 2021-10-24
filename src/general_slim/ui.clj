@@ -2,6 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
+            [general-slim.inputs :as inputs :refer [can-move-to]]
             [general-slim.field :as field] ;; just for testing
             [general-slim.forces :as forces :refer [make-unit unit-in-square can-move?]]))
 
@@ -130,21 +131,21 @@
     (q/text (str "Turn: " (name (:turn game-state)))
             (+ 25 x-offset) (- 50 y-offset))
     ;; route selection debug
-    #_#_#_(q/text (str "Coords: " cursor)
-                  (+ 25 x-offset) (- (+ line-offset 50) y-offset))
-        (q/text (str "Route sel: " (:route-selection game-state))
+    (q/text (str "Coords: " cursor)
+            (+ 25 x-offset) (- (+ line-offset 50) y-offset))
+    (q/text (str "Route sel: " (:route-selection game-state))
+            (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+    (q/text (str "Route: " (:route game-state))
+            (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+    #_(when unit
+        (q/text (str (:hp unit) "hp")
+                (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
+        (q/text (str "Can attack: " (:can-attack unit))
                 (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-      (q/text (str "Route: " (:route game-state))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-    (when unit
-      (q/text (str (:hp unit) "hp")
-              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
-      (q/text (str "Can attack: " (:can-attack unit))
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
-      (q/text (str "Move points: " (:move-points unit))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-      (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
-              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
+        (q/text (str "Move points: " (:move-points unit))
+                (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+        (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
+                (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)
@@ -171,7 +172,7 @@
              :route-selection true
              :route (list cursor)
              :selected cursor
-             :highlight (manhattan cursor (:move-points unit-under-cursor?)))
+             :highlight (can-move-to game-state unit-under-cursor?))
 
       ;; If there's a selected unit and the target is an enemy unit, attack it
       (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
@@ -195,14 +196,21 @@
         :else (conj route new-coord)))
 
 (defn cursor-move [game-state mv-fn]
+  (println
+   (:move-points (unit-in-square game-state (:selected game-state)))
+   (count (:route game-state)))
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))]
-    (if (:route-selection game-state)
-      (if ((:highlight game-state) new-cursor)
-        (-> game-state
-            (assoc :cursor new-cursor)
-            (update :route update-route new-cursor))
-        game-state)
-      (assoc game-state :cursor new-cursor))))
+    (if (not (:route-selection game-state))
+      (assoc game-state :cursor new-cursor)
+      (let [selected-unit (unit-in-square game-state (:selected game-state))]
+        (if (> (:move-points selected-unit)
+               (inputs/route-cost game-state
+                                  selected-unit
+                                  (:route game-state)))
+          (-> game-state
+              (assoc :cursor new-cursor)
+              (update :route update-route new-cursor))
+          game-state)))))
 
 (defn key-handler [game-state event]
   (case (:key event)
