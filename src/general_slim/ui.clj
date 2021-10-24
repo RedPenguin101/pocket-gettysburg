@@ -194,7 +194,10 @@
 (defn cursor-move [game-state mv-fn]
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
-    (cond (not (:route-selection game-state))
+    (cond (= new-cursor (:cursor game-state))
+          game-state
+
+          (not (:route-selection game-state))
           (assoc game-state :cursor new-cursor)
 
           ;; can always back out a selection
