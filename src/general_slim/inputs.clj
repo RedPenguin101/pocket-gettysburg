@@ -74,8 +74,9 @@
 
 (defn move-order [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
+        target-occupied? (unit-in-square game-state (first route))
         move-cost ((:movement-table unit) (get-in game-state [:field (first route) :terrain]))]
-    (cond (unit-in-square game-state (first route))
+    (cond (and target-occupied? (not= target-occupied? unit))
           (do (println "Cannot move to an occupied square")
               game-state)
 

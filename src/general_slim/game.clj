@@ -5,7 +5,7 @@
 
 ;; state and constants
 
-(def game-state gs/aw-ft1)
+(def game-state gs/ready-to-attack)
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -127,12 +127,17 @@
         selected? (:selected game-state)
         selected-unit? (unit-in-square game-state selected?)]
     (cond
-      ;; MOVE if there's a selected unit (invalid move are not selectable)
-      (and selected-unit? (not unit-under-cursor?))
-
+      ;; MOVE if there's a selected unit (invalid moves are not selectable)
+      (and selected-unit? (not= unit-under-cursor? selected-unit?))
       (-> game-state
           (assoc :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
           (assoc :selected (first (:route game-state)))
+          (dissoc :highlight :route-selection :route))
+
+      ;; special case, no move
+      selected-unit?
+      (-> game-state
+          (assoc :order [:move my-side (:id selected-unit?) (:route game-state)])
           (dissoc :highlight :route-selection :route))
 
       :else (do (println "Move fall through") game-state))))
