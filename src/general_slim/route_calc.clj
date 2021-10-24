@@ -29,6 +29,7 @@
   (let [graph (build-graph target-points)]
     (->> (map first target-points)
          (map #(vector % (shortest-path graph current %)))
+         (remove #(nil? (second %)))
          (filter #(>= move-points (second %)))
          (map first) ;; get coord only
          (set))))
