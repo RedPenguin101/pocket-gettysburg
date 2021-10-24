@@ -1,9 +1,19 @@
 (ns general-slim.inputs
-  (:require [general-slim.forces :refer [can-move? unit-in-square refresh-units]]
-            [general-slim.utils :refer [dissoc-in]]
+  (:require [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units]]
+            [general-slim.utils :refer [dissoc-in map-vals]]
             [general-slim.field :as field]
-            [general-slim.ui :as ui] ;; for testing only!
             [general-slim.route-calc :as routing :refer [accessible-squares]]))
+
+;; for testing
+(def trees {:field (-> (field/flat-field 10 10)
+                       (assoc [4 6] {:grid [4 6] :terrain :trees})
+                       (assoc [5 4] {:grid [5 4] :terrain :trees})
+                       (assoc [5 9] {:grid [5 9] :terrain :trees}))
+            :red {:units {:cav1 (forces/make-unit :cavalry :red :cav1 [5 6])}}
+            :blue {:units {}}
+            :turn :red
+            :turn-number 0
+            :cursor [5 5]})
 
 (defn adjacents [[x y]]
   #{[(inc x) y] [(dec x) y]
@@ -18,17 +28,20 @@
 
 (def other-side {:red :blue :blue :red})
 
-(defn possible-move-targets [game-state unit]
-  (let [possible-targets (manhattan (:position unit) (:move-points unit))
-        ttypes (into {} (map #(vector % (get-in game-state [:field % :terrain])) possible-targets))]
-    ttypes))
-
-(defn can-move-to [game-state unit]
+(defn can-move-to
+  "Given a game state and a unit, will return a set of every
+   grid location that unit can validly move to based on its 
+   current movement points and the terrain."
+  [game-state {:keys [position move-points movement-table]}]
   (accessible-squares
-   (:position unit)
-   (possible-move-targets game-state unit)
-   (:move-points unit)
-   (:move-adjust unit)))
+   position
+   move-points
+   (->> (manhattan position move-points)
+        (field/get-terrain-map (:field game-state))
+        (map-vals movement-table))))
+
+(comment
+  (count (can-move-to trees (unit-in-square trees [5 6]))))
 
 (defn route-cost [game-state unit route]
   (routing/route-cost (field/get-terrain-map (:field game-state)
