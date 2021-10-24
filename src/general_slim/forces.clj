@@ -39,13 +39,18 @@
                    :inf2 (make-unit :infantry :blue :inf2 [8 8])}})
 
 (defn units
-  "Returns a sequence of every unit"
-  [game-state]
-  (concat (map #(assoc % :side :red) (vals (get-in game-state [:red :units])))
-          (map #(assoc % :side :blue) (vals (get-in game-state [:blue :units])))))
+  "Returns a sequence of every unit
+   The two arity version returns only units of one side"
+  ;; I think the assoc side is redundent now
+  ([game-state]
+   (concat (map #(assoc % :side :red) (vals (get-in game-state [:red :units])))
+           (map #(assoc % :side :blue) (vals (get-in game-state [:blue :units])))))
+  ([game-state side]
+   (map #(assoc % :side side) (vals (get-in game-state [side :units])))))
 
-(defn occupied-grids [game-state]
-  (set (map :position (units game-state))))
+(defn occupied-grids
+  ([game-state] (set (map :position (units game-state))))
+  ([game-state side] (set (map :position (units game-state side)))))
 
 (defn unit-in-square
   "Returns the unit occupying the square, or nil if none"
