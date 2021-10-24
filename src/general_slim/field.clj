@@ -15,9 +15,20 @@
                                     :terrain :trees}])
                   xs ys))))
 
+(defn add-terrain [field terrain locs]
+  (reduce (fn [fld loc]
+            (assoc fld loc {:grid loc :terrain terrain}))
+          field
+          locs))
+
 (defn build-map [x-size y-size trees]
   (merge (flat-field x-size y-size)
          (random-trees x-size y-size trees)))
+
+(defn field-size [field]
+  (->> field keys
+       (apply map vector)
+       (map #(inc (apply max %)))))
 
 (defn terrain-map
   "returns the terrain at each coordinate provided"
