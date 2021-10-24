@@ -3,47 +3,16 @@
             [quil.middleware :as m]
             [general-slim.game :refer [tick]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
-            [general-slim.field :as field] ;; just for testing
-            [general-slim.forces :as forces :refer [make-unit unit-in-square can-move?]]))
+            [general-slim.forces :as forces :refer [unit-in-square can-move?]]
+            [general-slim.game-states :as gs]))
 
-(def basic {:field (field/flat-field 10 10)
-            :red forces/red
-            :blue forces/blue
-            :turn :red
-            :turn-number 0
-            :cursor [5 5]})
-
-(def ready-to-attack {:field (field/flat-field 10 10)
-                      :red {:units {:inf1 (make-unit :infantry :red :inf1 [6 6])
-                                    :cav1 (make-unit :cavalry :red :cav1 [3 3])}}
-                      :blue {:units {:inf1 (make-unit :infantry :blue :inf1 [7 6])}}
-                      :turn :red
-                      :turn-number 0
-                      :cursor [5 5]})
-
-(def trees {:field (-> (field/flat-field 10 10)
-                       (assoc [4 6] {:grid [4 6] :terrain :trees})
-                       (assoc [5 4] {:grid [5 4] :terrain :trees})
-                       (assoc [5 9] {:grid [5 9] :terrain :trees}))
-            :red {:units {:y (make-unit :infantry :red :y [5 6])}}
-            :blue {:units {}}
-            :turn :red
-            :turn-number 0
-            :cursor [5 5]})
-
-(def mountains {:field (-> (field/flat-field 10 10)
-                           (assoc [4 6] {:grid [4 6] :terrain :mountains})
-                           (assoc [5 4] {:grid [5 4] :terrain :mountains})
-                           (assoc [5 9] {:grid [5 9] :terrain :mountains}))
-                :red {:units {:y (make-unit :infantry :red :y [5 6])}}
-                :blue {:units {}}
-                :turn :red
-                :turn-number 0
-                :cursor [5 5]})
+;; state and constants
 
 (def debug (atom {}))
-(def grid-size 10)
-(def cell-size (quot 1000 grid-size))
+(def game-state gs/mountains)
+(def fps 30)
+(def tiles 10)
+(def tile-size 100)
 (def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220 50]
              :routing [101 252 90 75]
@@ -54,16 +23,10 @@
                    :selected [252 126 126]}
              :blue {:default [61 106 211]
                     :spent [37 68 142]
-                    :selected [106 149 252]}})
+                    :selected [106 149 252]}
+             :white [252 252 252]})
 
 ;; utils
-
-(defn manhattan [[x y] dist]
-  (set (for [d (range 0 (inc dist))
-             x' (range (- d) (inc d))
-             y' (range (- d) (inc d))
-             :when (= d (+ (Math/abs x') (Math/abs y')))]
-         [(+ x x') (+ y y')])))
 
 (defn up [[x y]] [x (dec y)])
 (defn down [[x y]] [x (inc y)])
@@ -71,16 +34,16 @@
 (defn right [[x y]] [(inc x) y])
 
 (defn bound [[x y]]
-  [(min (max 0 x) (dec grid-size))
-   (min (max 0 y) (dec grid-size))])
+  [(min (max 0 x) (dec tiles))
+   (min (max 0 y) (dec tiles))])
 
-(defn coord->px [x] (int (* cell-size x)))
-
-(defn setup []
-  (q/frame-rate 30)
-  mountains)
+(defn coord->px [x] (int (* tile-size x)))
 
 ;; Handers
+
+(defn setup []
+  (q/frame-rate fps)
+  (assoc game-state :cursor [5 5]))
 
 (defn handle-selection [game-state]
   (let [cursor (:cursor game-state)
@@ -154,7 +117,7 @@
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill color)
-  (q/rect x y cell-size cell-size))
+  (q/rect x y tile-size tile-size))
 
 (defn draw-tree [x y]
   (q/stroke 0)
@@ -187,7 +150,7 @@
     (draw-tile x y color)
     (q/stroke 1)
     (q/stroke-weight 1)
-    (q/fill [255 255 255])
+    (q/fill (colors :white))
     (q/text-font (q/create-font "Courier New" 30))
     (q/text (name id) (+ x 15) (+ y 30))
     (q/text-font (q/create-font "Courier New" 20))
@@ -225,7 +188,7 @@
         x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
         line-offset 30]
     (q/stroke 1)
-    (q/fill [252 252 252])
+    (q/fill (colors :white))
     (q/stroke-weight 6)
     (q/rect x-offset y-offset 500 300)
     (q/fill 0)
@@ -263,7 +226,7 @@
 (comment)
 (q/defsketch game
   :host "map"
-  :size [1000 1000]
+  :size [(* tiles tile-size) (* tiles tile-size)]
   :setup setup
   :settings #(q/smooth 2)
   :draw draw-state
