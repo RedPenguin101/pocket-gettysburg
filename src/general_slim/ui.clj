@@ -122,6 +122,10 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :routing))))
 
+(defn draw-turn-indicator [side]
+  (q/fill (get-in colors [side :default]))
+  (q/rect 0 0 30 30))
+
 (defn draw-debug-box [game-state]
   (let [[x y :as cursor] (:cursor game-state)
         unit (unit-in-square game-state cursor)
@@ -160,6 +164,7 @@
   (draw-units game-state :red)
   (draw-units game-state :blue)
   (draw-cursor (:cursor game-state))
+  (draw-turn-indicator (:turn game-state))
   (when (:debug game-state) (draw-debug-box game-state)))
 
 (defn handle-selection [game-state]

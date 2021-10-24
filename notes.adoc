@@ -79,7 +79,7 @@ input    |     |
 * DONE Display HP on unit tile, get rid of status box
 * DONE Debug box
 * DONE Have moving into forests decrease movement rate accordingly
-* Top left turn indicator
+* DONE Top left turn indicator
 * increased defence 
 * Map has mountains, impassible by cavalry
 * Map has roads, and units have increased range on roads
