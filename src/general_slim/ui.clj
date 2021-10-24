@@ -199,21 +199,20 @@
         :else (conj route new-coord)))
 
 (defn cursor-move [game-state mv-fn]
-  (println
-   (:move-points (unit-in-square game-state (:selected game-state)))
-   (count (:route game-state)))
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))]
-    (if (not (:route-selection game-state))
-      (assoc game-state :cursor new-cursor)
-      (let [selected-unit (unit-in-square game-state (:selected game-state))]
-        (if (> (:move-points selected-unit)
-               (inputs/route-cost game-state
-                                  selected-unit
-                                  (:route game-state)))
+    (cond (not (:route-selection game-state))
+          (assoc game-state :cursor new-cursor)
+
+          ;; If the cost of the calculated route is less
+          ;; than the units move points, move the cursor
+          ;; and update the route
+          ;; (Not implemented route cost)
+          (< 1 (:move-points (unit-in-square game-state (:selected game-state))))
           (-> game-state
               (assoc :cursor new-cursor)
               (update :route update-route new-cursor))
-          game-state)))))
+
+          :else game-state)))
 
 (defn key-handler [game-state event]
   (case (:key event)
