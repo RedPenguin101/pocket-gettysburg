@@ -191,13 +191,6 @@
 
       :else (do (println "Selection fall through") game-state))))
 
-(defn update-route [route new-coord]
-  (cond ((manhattan (last route) 1) new-coord) ;; this is no longer needed, kill it
-        (list new-coord (last route))
-        (= new-coord (second route))
-        (rest route)
-        :else (conj route new-coord)))
-
 (defn cursor-move [game-state mv-fn]
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
@@ -214,7 +207,7 @@
               (:move-points selected-unit))
           (-> game-state
               (assoc :cursor new-cursor)
-              (update :route update-route new-cursor))
+              (update :route conj new-cursor))
 
           :else game-state)))
 
