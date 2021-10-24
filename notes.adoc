@@ -86,11 +86,13 @@ input    |     |
 * DONE Roads draw based on direction properly
 * DONE forked roads and crossroads
 * DONE (but broke attacking) Fix units moving though other units
-* Fix attack / Attack after move
-** AW style wait menu after move
-** add attack option if enemy unit in adjacent
+* DONE Fix attack / Attack after move
+** DONE AW style wait menu after move
+** DONE add attack option if enemy unit in adjacent
 * Rivers
 
+* Bug: units can't _not_ move and then attack
+* Bug?: units can complete eliminate eachother in combat
 * Message display system (-> message, seconds to display)
 * Battle predictor, AW style 
 * Only move once ('has moved')

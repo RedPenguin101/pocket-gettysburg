@@ -17,9 +17,9 @@
                       :turn-number 0})
 
 (def multi-dir-attack {:field (field/flat-field 10 10)
-                       :red {:units {:cav1 (forces/make-unit :cavalry :red :cav1 [7 3])}}
-                       :blue {:units {:inf1 (forces/make-unit :infantry :blue :inf1 [7 6])
-                                      :inf2 (forces/make-unit :infantry :blue :inf2 [6 5])}}
+                       :red {:units {:x (forces/make-unit :infantry :red :x [7 3])}}
+                       :blue {:units {:y (forces/make-unit :cavalry :blue :y [7 6])
+                                      :z (forces/make-unit :cavalry :blue :z [6 5])}}
                        :turn :red
                        :turn-number 0})
 
