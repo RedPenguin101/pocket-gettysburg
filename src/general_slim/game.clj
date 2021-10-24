@@ -154,12 +154,16 @@
 (defn key-handler [game-state event]
   (case (:key event)
     :up (handle-cursor game-state :up)
+    :w (handle-cursor game-state :up)
     :down (handle-cursor game-state :down)
+    :s (handle-cursor game-state :down)
     :left (handle-cursor game-state :left)
+    :a (handle-cursor game-state :left)
     :right (handle-cursor game-state :right)
+    :d (handle-cursor game-state :right)
     :space (handle-selection game-state)
-    :d (update game-state :debug not)
-    :c (assoc game-state :order [:end-turn (:turn game-state)])
+    :g (update game-state :debug not)
+    :e (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
 

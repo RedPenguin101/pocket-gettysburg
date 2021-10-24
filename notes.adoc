@@ -97,10 +97,12 @@ input    |     |
 * DONE Move debug stuff to game NS
 * DONE refactor debug text stuff
 * DONE Cursor to target on attack
+* DONE add wasd support
+* see move range on clicking enemy unit
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
-* Bug?: units can complete eliminate eachother in combat
+* Bug?: units can completely eliminate eachother in combat
 
 * Battle predictor, AW style
 ** terrain+def
@@ -120,6 +122,7 @@ input    |     |
 * Sprites
 * Draw terrain on static layer
 * Artillery
+* enemy unit info - attack range on button hold
 
 == Post MVP
 
