@@ -44,6 +44,8 @@
                     :spent [37 68 142]
                     :selected [106 149 252]}})
 
+;; utils
+
 (defn manhattan [[x y] dist]
   (set (for [d (range 0 (inc dist))
              x' (range (- d) (inc d))
@@ -65,6 +67,76 @@
 (defn setup []
   (q/frame-rate 30)
   trees)
+
+;; Handers
+
+(defn handle-selection [game-state]
+  (let [cursor (:cursor game-state)
+        unit-under-cursor? (unit-in-square game-state cursor)
+        my-side (:turn game-state)
+        selected? (:selected game-state)
+        selected-unit? (unit-in-square game-state selected?)]
+    (cond
+      ;; If no selection, and trying to select your unit, select and turn on route selection
+      (and (not selected?)
+           (= my-side (:side unit-under-cursor?))
+           (can-move? unit-under-cursor?))
+      (assoc game-state
+             :route-selection true
+             :route (list cursor)
+             :selected cursor
+             :highlight (can-move-to game-state unit-under-cursor?))
+
+      ;; If there's a selected unit and the target is an enemy unit, attack it
+      (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
+      (dissoc
+       (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)])
+       :selected :highlight :route-selection :route)
+
+      ;; if there's a selected unit and the target ISN'T an enemy, move
+      (and selected-unit? (not unit-under-cursor?))
+      (dissoc
+       (assoc game-state :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
+       :selected :highlight :route-selection :route)
+
+      :else (do (println "Selection fall through") game-state))))
+
+(defn cursor-move [game-state mv-fn]
+  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
+        selected-unit (unit-in-square game-state (:selected game-state))]
+    (cond (= new-cursor (:cursor game-state))
+          game-state
+
+          (not (:route-selection game-state))
+          (assoc game-state :cursor new-cursor)
+
+          ;; can always back out a selection
+          (= new-cursor (second (:route game-state)))
+          (-> game-state
+              (assoc :cursor new-cursor)
+              (update :route rest))
+
+          (<= (route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
+              (:move-points selected-unit))
+          (-> game-state
+              (assoc :cursor new-cursor)
+              (update :route conj new-cursor))
+
+          :else game-state)))
+
+(defn key-handler [game-state event]
+  (case (:key event)
+    :up (cursor-move game-state up)
+    :down (cursor-move game-state down)
+    :left (cursor-move game-state left)
+    :right (cursor-move game-state right)
+    :space (handle-selection game-state)
+    :d (update game-state :debug not)
+    :c (assoc game-state :order [:end-turn (:turn game-state)])
+    :q (dissoc game-state :route-selection :route :selected :highlight)
+    game-state))
+
+;; Drawing
 
 (defn draw-tile [x y color]
   (q/stroke 0)
@@ -166,72 +238,6 @@
   (draw-cursor (:cursor game-state))
   (draw-turn-indicator (:turn game-state))
   (when (:debug game-state) (draw-debug-box game-state)))
-
-(defn handle-selection [game-state]
-  (let [cursor (:cursor game-state)
-        unit-under-cursor? (unit-in-square game-state cursor)
-        my-side (:turn game-state)
-        selected? (:selected game-state)
-        selected-unit? (unit-in-square game-state selected?)]
-    (cond
-      ;; If no selection, and trying to select your unit, select and turn on route selection
-      (and (not selected?)
-           (= my-side (:side unit-under-cursor?))
-           (can-move? unit-under-cursor?))
-      (assoc game-state
-             :route-selection true
-             :route (list cursor)
-             :selected cursor
-             :highlight (can-move-to game-state unit-under-cursor?))
-
-      ;; If there's a selected unit and the target is an enemy unit, attack it
-      (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
-      (dissoc
-       (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)])
-       :selected :highlight :route-selection :route)
-
-      ;; if there's a selected unit and the target ISN'T an enemy, move
-      (and selected-unit? (not unit-under-cursor?))
-      (dissoc
-       (assoc game-state :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
-       :selected :highlight :route-selection :route)
-
-      :else (do (println "Selection fall through") game-state))))
-
-(defn cursor-move [game-state mv-fn]
-  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
-        selected-unit (unit-in-square game-state (:selected game-state))]
-    (cond (= new-cursor (:cursor game-state))
-          game-state
-
-          (not (:route-selection game-state))
-          (assoc game-state :cursor new-cursor)
-
-          ;; can always back out a selection
-          (= new-cursor (second (:route game-state)))
-          (-> game-state
-              (assoc :cursor new-cursor)
-              (update :route rest))
-
-          (<= (route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
-              (:move-points selected-unit))
-          (-> game-state
-              (assoc :cursor new-cursor)
-              (update :route conj new-cursor))
-
-          :else game-state)))
-
-(defn key-handler [game-state event]
-  (case (:key event)
-    :up (cursor-move game-state up)
-    :down (cursor-move game-state down)
-    :left (cursor-move game-state left)
-    :right (cursor-move game-state right)
-    :space (handle-selection game-state)
-    :d (update game-state :debug not)
-    :c (assoc game-state :order [:end-turn (:turn game-state)])
-    :q (dissoc game-state :route-selection :route :selected :highlight)
-    game-state))
 
 (comment)
 (q/defsketch game
