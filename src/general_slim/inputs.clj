@@ -4,20 +4,9 @@
             [general-slim.field :as field]
             [general-slim.route-calc :as routing :refer [accessible-squares]]))
 
-;; for testing
-(def trees {:field (-> (field/flat-field 10 10)
-                       (assoc [4 6] {:grid [4 6] :terrain :trees})
-                       (assoc [5 4] {:grid [5 4] :terrain :trees})
-                       (assoc [5 9] {:grid [5 9] :terrain :trees}))
-            :red {:units {:cav1 (forces/make-unit :cavalry :red :cav1 [5 6])}}
-            :blue {:units {}}
-            :turn :red
-            :turn-number 0
-            :cursor [5 5]})
+(def other-side {:red :blue :blue :red})
 
-(defn adjacents [[x y]]
-  #{[(inc x) y] [(dec x) y]
-    [x (inc y)] [x (dec y)]})
+;; Routing and accessibility
 
 (defn manhattan [[x y] dist]
   (set (for [d (range 0 (inc dist))
@@ -25,8 +14,6 @@
              y' (range (- d) (inc d))
              :when (= d (+ (Math/abs x') (Math/abs y')))]
          [(+ x x') (+ y y')])))
-
-(def other-side {:red :blue :blue :red})
 
 (defn can-move-to
   "Given a game state and a unit, will return a set of every
@@ -45,7 +32,7 @@
   "Given a game state, a unit and a route starting at
    that units location, will return the cost of walking
    that route"
-  [game-state {:keys [movement-table position] :as unit} route]
+  [game-state {:keys [movement-table position]} route]
   (if (not= position (first route))
     (throw (ex-info "Invalid route, doesn't start with unit's current position" {:position position :route route}))
     (->> (rest route)
@@ -54,10 +41,14 @@
          (vals)
          (apply +))))
 
-(comment
-  (count (can-move-to trees (unit-in-square trees [5 6]))))
+;; Movement stuff
 
-(defn update-move-order [game-state]
+(defn update-move-order
+  "A move order has a route, so if there are remaining steps
+   in the route the order needs to be updated after a move.
+   If there are no steps remaining the order needs to be
+   removed completely."
+  [game-state]
   (let [[order-type side unit route] (:order game-state)]
     (if (= 1 (count route))
       (dissoc game-state :order)
@@ -77,7 +68,7 @@
                 (update-in [side :units unit-id :move-points] dec)
                 (update-move-order)))))
 
-'[:attack my-side (:id selected-unit?) cursor]
+;; Combat stuff
 
 (defn update-hp [unit hit-for]
   (update unit :hp - hit-for))
@@ -114,7 +105,3 @@
       :move (move-order game-state side unit target)
       :end-turn (end-turn game-state side)
       :attack (do (println "Attacking") (attack-order game-state side unit target)))))
-
-'[:end-turn (:turn game-state)]
-'[:attack my-side (:id selected-unit?) (:id unit-under-cursor?)]
-'[:move my-side (:id selected-unit?) [cursor]]
