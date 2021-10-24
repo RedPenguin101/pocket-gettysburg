@@ -9,9 +9,11 @@
 ;; state and constants
 
 (def debug (atom {}))
-(def game-state gs/multi-dir-attack)
+(def game-state gs/aw-ft1)
 (def fps 30)
-(def tiles 10)
+(let [[x y] (:field-size game-state)]
+  (def horiz-tiles x)
+  (def vert-tiles y))
 (def tile-size 100)
 (def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220 75]
@@ -38,8 +40,8 @@
 (def grid-moves {:up up :down down :left left :right right})
 
 (defn bound [[x y]]
-  [(min (max 0 x) (dec tiles))
-   (min (max 0 y) (dec tiles))])
+  [(min (max 0 x) (dec horiz-tiles))
+   (min (max 0 y) (dec vert-tiles))])
 
 (defn coord->px [x] (int (* tile-size x)))
 
@@ -350,7 +352,7 @@
 (comment)
 (q/defsketch game
   :host "map"
-  :size [(* tiles tile-size) (* tiles tile-size)]
+  :size [(* horiz-tiles tile-size) (* vert-tiles tile-size)]
   :setup setup
   :settings #(q/smooth 2)
   :draw draw-state
