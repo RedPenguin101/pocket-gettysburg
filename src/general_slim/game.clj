@@ -12,6 +12,7 @@
   (def vert-tiles y))
 (def tile-size 75)
 (def colors {:cursor [183 183 183 75]
+             :attack-cursor [215 221 33 90]
              :map-highlight [220 220 220 75]
              :routing [101 252 90 75]
              :terrain {:trees [36 119 23]

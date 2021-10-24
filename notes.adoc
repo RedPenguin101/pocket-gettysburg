@@ -96,12 +96,12 @@ input    |     |
 * Separate order handling into own NS?
 * DONE Move debug stuff to game NS
 * DONE refactor debug text stuff
+* DONE Cursor to target on attack
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
 * Bug?: units can complete eliminate eachother in combat
 
-* Cursor to target on attack
 * Battle predictor, AW style
 ** terrain+def
 ** target hp, supplies, fuel

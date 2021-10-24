@@ -115,9 +115,18 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :routing))))
 
+(defn draw-attack-cursor [[x y]]
+  (q/fill nil)
+  (q/stroke (colors :attack-cursor))
+  (q/stroke-weight (scale 12))
+  (q/ellipse (+ (coord->px x) (scale 50))
+             (+ (coord->px y) (scale 50))
+             (scale 70) (scale 70)))
+
 ;; menus
 
 (defn draw-turn-indicator [side]
+  (q/stroke nil)
   (q/fill (get-in colors [side :default]))
   (q/rect 0 0 (scale 30) (scale 30)))
 
@@ -176,7 +185,9 @@
   (draw-units game-state :red)
   (draw-units game-state :blue)
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
-  (draw-cursor (:cursor game-state))
+  (if (:attack-mode game-state)
+    (draw-attack-cursor (:cursor game-state))
+    (draw-cursor (:cursor game-state)))
   (when (:menu game-state) (draw-menu game-state))
   (when (:debug game-state) (draw-debug-box game-state))
   (draw-turn-indicator (:turn game-state)))
