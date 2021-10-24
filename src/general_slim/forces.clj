@@ -2,31 +2,34 @@
   (:require [general-slim.utils :refer [map-vals]]))
 
 (def unit-templates
-  {:infantry {:unit-type :infantry :hp 10
+  {:infantry {:unit-type :infantry
+              :hp 10 :max-hp 10
               :move-points 3 :max-move-points 3
               :movement-table {:field 1
                                :road 0.5
                                :trees 1
                                :mountains 3}
               :can-attack true
-              :attack 5
-              :defence {:base 3
-                        :modifiers {:road 0
-                                    :field 1
-                                    :trees 3
-                                    :mountains 5}}}
-   :cavalry {:unit-type :cavalry :hp 5
+              :offensive-power 6
+              :defensive-power 3
+              :terrain-defense {:road 0
+                                :field 1
+                                :trees 3
+                                :mountains 5}}
+   :cavalry {:unit-type :cavalry
+             :hp 5 :max-hp 5
              :move-points 3 :max-move-points 3
              :movement-table {:road 0.5
                               :field 1
                               :trees 3
                               :mountains 4}
              :can-attack true
-             :attack 3
-             :defence {:base 4
-                       :modifiers {:road 0
-                                   :field 1
-                                   :trees 3}}}})
+             :offensive-power 8
+             :defensive-power 2
+             :terrain-defense {:road 0
+                               :field 1
+                               :trees 3
+                               :mountains 5}}})
 
 (defn make-unit [type side id pos]
   (assoc (type unit-templates)
@@ -65,8 +68,7 @@
        (map-vals #(assoc % :move-points (:max-move-points %) :can-attack true))))
 
 (defn defence-value [unit terrain]
-  (+ (get-in unit [:defence :base])
-     (get-in unit [:defence :modifiers terrain])))
+  (get-in unit [:terrain-defense terrain]))
 
 (comment
   (refresh-units (:units red)))

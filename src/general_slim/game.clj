@@ -5,7 +5,7 @@
 
 ;; state and constants
 
-(def game-state gs/aw-ft1)
+(def game-state gs/ready-to-attack)
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)

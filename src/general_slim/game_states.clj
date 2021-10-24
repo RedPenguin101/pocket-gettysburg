@@ -37,11 +37,17 @@
              {:units {:v (forces/make-unit :infantry :blue :v [13 5])
                       :w (forces/make-unit :infantry :blue :w [13 8])}}))
 
-(def ready-to-attack {:field (field/flat-field 10 10)
+(def ready-to-attack {:field (-> (field/flat-field 10 10)
+                                 (field/add-terrain :trees [[7 7]])
+                                 (field/add-terrain :mountains [[7 8]]))
                       :field-size [10 10]
                       :red {:units {:inf1 (forces/make-unit :infantry :red :inf1 [6 6])
+                                    :inf2 (forces/make-unit :infantry :red :inf2 [6 7])
+                                    :inf3 (forces/make-unit :infantry :red :inf3 [6 8])
                                     :cav1 (forces/make-unit :cavalry :red :cav1 [7 3])}}
-                      :blue {:units {:inf1 (forces/make-unit :infantry :blue :inf1 [7 6])}}
+                      :blue {:units {:inf1 (forces/make-unit :infantry :blue :inf1 [7 6])
+                                     :inf2 (forces/make-unit :infantry :blue :inf2 [7 7])
+                                     :inf3 (forces/make-unit :infantry :blue :inf3 [7 8])}}
                       :turn :red
                       :turn-number 0})
 

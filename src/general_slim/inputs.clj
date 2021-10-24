@@ -93,12 +93,15 @@
 
 ;; Combat stuff
 
-(defn update-hp [unit hit-for]
-  (update unit :hp - hit-for))
+(defn update-hp [unit hit-for terrain]
+  (update unit :hp - (max 0 (- hit-for (get-in unit [:terrain-defense terrain])))))
 
-(defn resolve-combat [atkr defdr terrain]
-  [(assoc (update-hp atkr (forces/defence-value defdr terrain)) :can-attack false)
-   (update-hp defdr (int (* (/ (:hp atkr) 10) (:attack atkr))))])
+(defn damage [unit offense?]
+  (int (/ (* ((if offense? :offensive-power :defensive-power) unit) (:hp unit)) (:max-hp unit))))
+
+(defn resolve-combat [atkr defdr a-terrain d-terrain]
+  [(assoc (update-hp atkr (damage defdr false) a-terrain) :can-attack false)
+   (update-hp defdr (damage atkr true) d-terrain)])
 
 (defn update-unit [game-state unit]
   (if (> (:hp unit) 0)
@@ -108,9 +111,10 @@
 (defn attack-order
   [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
+        my-terrain (get-in game-state [:field (:position my-unit) :terrain])
         enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
-        battle-terrain (get-in game-state [:field (:position enemy-unit) :terrain])
-        [u1 u2] (resolve-combat my-unit enemy-unit battle-terrain)]
+        enemy-terrain (get-in game-state [:field (:position enemy-unit) :terrain])
+        [u1 u2] (resolve-combat my-unit enemy-unit my-terrain enemy-terrain)]
     (-> game-state
         (update-unit u1)
         (update-unit u2)

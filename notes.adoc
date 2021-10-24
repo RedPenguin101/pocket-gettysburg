@@ -102,12 +102,9 @@ input    |     |
 * DONE Bug: units can't _not_ move and then attack
 * DONE Bug: unit is still selected when finished move and no attack option
 * DONE BUG selecting no unit throws
+* DONE Better combat system
 
-* Battle predictor, AW style
-** terrain+def
-** target hp, supplies, fuel
-** damage %
-* In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW). 
+* In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW).
 * Bug: in battle, attackers losses are not impacted by defenders hp
 
 * REPLICATE FIRST AW LEVEL
