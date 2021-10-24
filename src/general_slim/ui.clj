@@ -15,6 +15,9 @@
 (def vert-tiles game/vert-tiles)
 (def tile-size game/tile-size)
 (def colors game/colors)
+(def scale-factor (/ tile-size 100))
+
+(defn scale [x] (int (* scale-factor x)))
 
 ;; Handers
 
@@ -38,18 +41,18 @@
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill (get-in colors [:terrain :trees]))
-  (q/rect (+ x 40) (+ y 50) 20 40)
-  (q/triangle (+ x 50) (+ y 10)
-              (+ x 20) (+ y 70)
-              (+ x 80) (+ y 70)))
+  (q/rect (+ x (scale 40)) (+ y (scale 50)) (scale 20) (scale 40))
+  (q/triangle (+ x (scale 50)) (+ y (scale 10))
+              (+ x (scale 20)) (+ y (scale 70))
+              (+ x (scale 80)) (+ y (scale 70))))
 
 (defn draw-mountain [x y]
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill (get-in colors [:terrain :mountains]))
-  (q/triangle (+ x 50) (+ y 20)
-              (+ x 10) (+ y 90)
-              (+ x 90) (+ y 90)))
+  (q/triangle (+ x (scale 50)) (+ y (scale 20))
+              (+ x (scale 10)) (+ y (scale 90))
+              (+ x (scale 90)) (+ y (scale 90))))
 
 (defn draw-road [x y dirs]
   (doseq [d dirs]
@@ -94,10 +97,10 @@
     (q/stroke 1)
     (q/stroke-weight 1)
     (q/fill (colors :white))
-    (q/text-font (q/create-font "Courier New" 30))
-    (q/text (name id) (+ x 15) (+ y 30))
-    (q/text-font (q/create-font "Courier New" 20))
-    (q/text (str hp) (+ x 70) (+ y 90))))
+    (q/text-font (q/create-font "Courier New" (scale 30)))
+    (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
+    (q/text-font (q/create-font "Courier New" (scale 20)))
+    (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))))
 
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
@@ -127,65 +130,64 @@
 
 (defn draw-turn-indicator [side]
   (q/fill (get-in colors [side :default]))
-  (q/rect 0 0 30 30))
+  (q/rect 0 0 (scale 30) (scale 30)))
 
 (defn draw-menu [game-state]
-  (let [cursor (:cursor game-state)
-        unit (unit-in-square game-state cursor)
-        selected-unit (unit-in-square game-state (:selected game-state))
-        x-offset 50 y-offset 50
-        line-offset 35]
+  (let [x-offset (scale 50) y-offset (scale 50)
+        line-offset (scale 35)]
     (q/stroke 1)
     (q/fill (colors :white))
-    (q/stroke-weight 6)
-    (q/rect x-offset y-offset 300 300)
+    (q/stroke-weight (scale 6))
+    (q/rect x-offset y-offset (scale 300) (scale 300))
     (q/fill 0)
-    (q/text-font (q/create-font "Courier New" 30))
+    (q/text-font (q/create-font "Courier New" (scale 30)))
     (doseq [[row item] (map-indexed vector (vals (get-in game-state [:menu :options])))]
-      (q/text item (+ 20 x-offset) (+ (* row line-offset) 40 y-offset)))
+      (q/text item (+ (scale 20) x-offset) (+ (* row line-offset) (scale 40) y-offset)))
     (q/stroke-weight 1)
     (q/fill (colors :menu-select))
-    (q/rect (+ x-offset 10) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset 10)) 250 35)))
+    (q/rect (+ x-offset (scale 10)) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset (scale 10))) (scale 250) (scale 35))))
 
 (defn draw-debug-box [game-state]
   (let [cursor (:cursor game-state)
         unit (unit-in-square game-state cursor)
         selected-unit (unit-in-square game-state (:selected game-state))
-        x-offset 3 y-offset 3
-        line-offset 30]
+        x-offset (scale 3) y-offset (scale 3)
+        line-offset (scale 30)]
     (q/stroke 1)
     (q/fill (colors :white))
-    (q/stroke-weight 6)
-    (q/rect x-offset y-offset 1000 300)
+    (q/stroke-weight (scale 6))
+    (q/rect x-offset y-offset (scale 1000) (scale 300))
     (q/fill 0)
-    (q/text-font (q/create-font "Courier New" 30))
+    (q/text-font (q/create-font "Courier New" (scale 30)))
     (q/text (str "Cursor: " (:cursor game-state) " Selected: " (:selected game-state))
-            (+ 25 x-offset) (- 50 y-offset))
+            (+ (scale 25) x-offset) (- (scale 50) y-offset))
+
+    ;; refactor this text stuff
     (when unit
       (q/text (str "CURSOR" (:hp unit) "hp")
-              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
       (q/text (str "Attack option: " (:attack-option game-state))
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
       (q/text (str "Move points: " (:move-points unit))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
       (q/text (str "Att/Def: " (:attack unit) "/" (forces/defence-value unit (get-in game-state [:field (:position unit) :terrain])))
-              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
+              (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
     (when selected-unit
       (q/text (str "SELECTED" (:hp selected-unit) "hp")
-              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 1 line-offset) (scale 50)) y-offset))
       (q/text (str "Attack option: " (:attack-option game-state))
-              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 2 line-offset) (scale 50)) y-offset))
       (q/text (str "Move points: " (:move-points selected-unit))
-              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 3 line-offset) (scale 50)) y-offset))
       (q/text (str "Att/Def: " (:attack selected-unit) "/" (forces/defence-value selected-unit (get-in game-state [:field (:position selected-unit) :terrain])))
-              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
+              (+ (scale 25) x-offset) (- (+ (* 4 line-offset) (scale 50)) y-offset)))
     (when (:route-selection game-state)
       (q/text (str "Coords: " cursor)
-              (+ 25 x-offset) (- (+ (* 5 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 5 line-offset) (scale 50)) y-offset))
       (q/text (str "Route: " (:route game-state))
-              (+ 25 x-offset) (- (+ (* 6 line-offset) 50) y-offset))
+              (+ (scale 25) x-offset) (- (+ (* 6 line-offset) (scale 50)) y-offset))
       (q/text (str "Route cost: " (route-cost game-state selected-unit (reverse (:route game-state))))
-              (+ 25 x-offset) (- (+ (* 7 line-offset) 50) y-offset)))))
+              (+ (scale 25) x-offset) (- (+ (* 7 line-offset) (scale 50)) y-offset)))))
 
 (defn draw-state [game-state]
   (q/background 240)

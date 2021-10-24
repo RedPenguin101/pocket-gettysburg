@@ -1,6 +1,5 @@
 (ns general-slim.game
-  (:require [general-slim.field :as field]
-            [general-slim.forces :refer [can-move? unit-in-square]]
+  (:require [general-slim.forces :refer [can-move? unit-in-square]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.game-states :as gs]))
 
@@ -11,7 +10,7 @@
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
-(def tile-size 100)
+(def tile-size 75)
 (def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220 75]
              :routing [101 252 90 75]

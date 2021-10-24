@@ -92,8 +92,10 @@ input    |     |
 * DONE variable size levels
 
 * DONE Move non-quil specific handlers to game NS
-* Separate order handling?
-* Move debug stuff to game
+* DONE Scalable tile size
+* Separate order handling into own NS?
+* Move debug stuff to game NS
+* refactor debug text stuff
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
@@ -101,10 +103,10 @@ input    |     |
 
 * Cursor to target on attack
 * Battle predictor, AW style
-* In battles, attackers losses are modified by the terrain they're on. AW shows 
 ** terrain+def
 ** target hp, supplies, fuel
 ** damage %
+* In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW). 
 * Bug: in battle, attackers losses are not impacted by defenders hp
 
 * REPLICATE FIRST AW LEVEL
