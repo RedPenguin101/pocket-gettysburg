@@ -141,7 +141,7 @@
               (+ x 10) (+ y 90)
               (+ x 90) (+ y 90)))
 
-(defn draw-road [x y dir]
+(defn draw-road [x y dirs]
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill (get-in colors [:terrain :road]))
@@ -153,7 +153,7 @@
       (case (:terrain tile)
         :trees (draw-tree x y)
         :mountains (draw-mountain x y)
-        :road (draw-road x y (:dir tile))
+        :road (draw-road x y (:dirs tile))
         nil))))
 
 ;; units
