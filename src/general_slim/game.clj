@@ -49,9 +49,9 @@
 
 (defn coord->px [x] (int (* tile-size x)))
 
-;; Handers
+;; Cursor Handlers
 
-(defn cursor-move [game-state mv-fn]
+(defn cursor-move [game-state mv-fn] ;; and routing for now
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
@@ -79,8 +79,27 @@
 
           :else game-state)))
 
+(defn cursor-attack [game-state dir]
+  (let [attempted-selection ((grid-moves dir) (:selected game-state))]
+    (if ((last (:attack-mode game-state)) attempted-selection)
+      (assoc game-state :cursor attempted-selection)
+      game-state)))
+
+(defn cursor-menu [game-state dir]
+  (let [menu-items (count (get-in game-state [:menu :options]))]
+    (case dir
+      :down (update-in game-state [:menu :selection] #(mod (inc %) menu-items))
+      :up (update-in game-state [:menu :selection] #(mod (dec %) menu-items))
+      game-state)))
+
+(defn handle-cursor [game-state dir]
+  (cond (:menu game-state) (cursor-menu game-state dir)
+        (:attack-mode game-state) (cursor-attack game-state dir)
+        :else (cursor-move game-state (dir grid-moves))))
+
+;; action handlers
+
 (defn action-select [game-state]
-  (println "action select" (can-move-to game-state (unit-in-square game-state (:cursor game-state))))
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
         my-side (:turn game-state)]
@@ -97,13 +116,7 @@
 
       :else (do (println "Selection fall through") game-state))))
 
-(comment
-  (sort (can-move-to game-state (unit-in-square @general-slim.ui/debug
-                                                [11 8]))))
-
 (defn action-move [game-state]
-
-  (println "Action move")
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
         my-side (:turn game-state)
@@ -120,15 +133,7 @@
 
       :else (do (println "Selection fall through") game-state))))
 
-(defn cursor-menu [game-state dir]
-  (let [menu-items (count (get-in game-state [:menu :options]))]
-    (case dir
-      :down (update-in game-state [:menu :selection] #(mod (inc %) menu-items))
-      :up (update-in game-state [:menu :selection] #(mod (dec %) menu-items))
-      game-state)))
-
 (defn action-menu [game-state]
-  (println "Action menu")
   (let [selected-option (nth (keys (get-in game-state [:menu :options]))
                              (get-in game-state [:menu :selection]))]
     (println "selected" selected-option)
@@ -141,12 +146,6 @@
                    :attack-mode (:attack-option game-state))
             (dissoc :menu :attack-option)))
 
-      game-state)))
-
-(defn cursor-attack [game-state dir]
-  (let [attempted-selection ((grid-moves dir) (:selected game-state))]
-    (if ((last (:attack-mode game-state)) attempted-selection)
-      (assoc game-state :cursor attempted-selection)
       game-state)))
 
 (defn action-attack [game-state]
@@ -163,11 +162,6 @@
         (:attack-mode game-state) (action-attack game-state)
         (:selected game-state)    (action-move game-state)
         :else                     (action-select game-state)))
-
-(defn handle-cursor [game-state dir]
-  (cond (:menu game-state) (cursor-menu game-state dir)
-        (:attack-mode game-state) (cursor-attack game-state dir)
-        :else (cursor-move game-state (dir grid-moves))))
 
 (defn key-handler [game-state event]
   (println "keyhandler " event)
