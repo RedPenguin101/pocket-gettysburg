@@ -103,9 +103,8 @@
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
         my-side (:turn game-state)]
-    (println (can-move-to game-state unit-under-cursor?))
     (cond
-      ;; If no selection, and trying to select your unit, select and turn on route selection
+      ;; trying to select your unit, select and turn on route selection
       (and (= my-side (:side unit-under-cursor?))
            (can-move? unit-under-cursor?))
       (assoc game-state
@@ -113,6 +112,11 @@
              :route (list cursor)
              :selected cursor
              :highlight (can-move-to game-state unit-under-cursor?))
+
+      ;; selecting the other sides unit, show the movement range
+      (and (not= my-side (:side unit-under-cursor?))
+           (can-move? unit-under-cursor?))
+      (assoc game-state :highlight (can-move-to game-state unit-under-cursor?))
 
       :else (do (println "Selection fall through") game-state))))
 
@@ -123,7 +127,7 @@
         selected? (:selected game-state)
         selected-unit? (unit-in-square game-state selected?)]
     (cond
-      ;; MOVE if there's a selected unit and the target ISN'T an enemy
+      ;; MOVE if there's a selected unit (invalid move are not selectable)
       (and selected-unit? (not unit-under-cursor?))
 
       (-> game-state
@@ -131,12 +135,11 @@
           (assoc :selected (first (:route game-state)))
           (dissoc :highlight :route-selection :route))
 
-      :else (do (println "Selection fall through") game-state))))
+      :else (do (println "Move fall through") game-state))))
 
 (defn action-menu [game-state]
   (let [selected-option (nth (keys (get-in game-state [:menu :options]))
                              (get-in game-state [:menu :selection]))]
-    (println "selected" selected-option)
     (case (get-in game-state [:menu :name])
       :attack-menu
       (if (= :wait selected-option)

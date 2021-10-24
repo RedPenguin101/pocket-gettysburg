@@ -98,7 +98,7 @@ input    |     |
 * DONE refactor debug text stuff
 * DONE Cursor to target on attack
 * DONE add wasd support
-* see move range on clicking enemy unit
+* DONE see move range on clicking enemy unit
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
