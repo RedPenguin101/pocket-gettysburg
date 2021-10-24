@@ -9,7 +9,7 @@
 ;; state and constants
 
 (def debug (atom {}))
-(def game-state gs/ready-to-attack)
+(def game-state gs/multi-dir-attack)
 (def fps 30)
 (def tiles 10)
 (def tile-size 100)
@@ -120,19 +120,26 @@
       (if (= :wait selected-option)
         (dissoc game-state :selected :highlight :attack-option :menu)
         (-> game-state
-            (assoc :highlight (last (:attack-option game-state))
+            (assoc :cursor (first (last (:attack-option game-state)))
                    :attack-mode (:attack-option game-state))
             (dissoc :menu :attack-option)))
 
       game-state)))
 
+(defn handle-attack-cursor [game-state dir]
+  (let [attempted-selection ((grid-moves dir) (:selected game-state))]
+    (if ((last (:attack-mode game-state)) attempted-selection)
+      (assoc game-state :cursor attempted-selection)
+      game-state)))
+
 (defn handle-selection [game-state]
   (cond (:menu game-state) (handle-menu-selection game-state)
+        (:attack-mode game-state) game-state
         :else (handle-selection-for-move game-state)))
 
 (defn handle-cursor [game-state dir]
-  (cond (:menu game-state)
-        (handle-menu-cursor game-state dir)
+  (cond (:menu game-state) (handle-menu-cursor game-state dir)
+        (:attack-mode game-state) (handle-attack-cursor game-state dir)
         :else (handle-cursor-for-move game-state (dir grid-moves))))
 
 (defn key-handler [game-state event]

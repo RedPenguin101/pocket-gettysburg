@@ -16,6 +16,13 @@
                       :turn :red
                       :turn-number 0})
 
+(def multi-dir-attack {:field (field/flat-field 10 10)
+                       :red {:units {:cav1 (forces/make-unit :cavalry :red :cav1 [7 3])}}
+                       :blue {:units {:inf1 (forces/make-unit :infantry :blue :inf1 [7 6])
+                                      :inf2 (forces/make-unit :infantry :blue :inf2 [6 5])}}
+                       :turn :red
+                       :turn-number 0})
+
 (def trees {:field (-> (field/flat-field 10 10)
                        (assoc [4 6] {:grid [4 6] :terrain :trees})
                        (assoc [5 4] {:grid [5 4] :terrain :trees})
