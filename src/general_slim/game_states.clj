@@ -11,7 +11,7 @@
 
 (def ready-to-attack {:field (field/flat-field 10 10)
                       :red {:units {:inf1 (forces/make-unit :infantry :red :inf1 [6 6])
-                                    :cav1 (forces/make-unit :cavalry :red :cav1 [3 3])}}
+                                    :cav1 (forces/make-unit :cavalry :red :cav1 [7 3])}}
                       :blue {:units {:inf1 (forces/make-unit :infantry :blue :inf1 [7 6])}}
                       :turn :red
                       :turn-number 0})

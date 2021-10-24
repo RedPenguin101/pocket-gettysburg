@@ -25,7 +25,8 @@
              :blue {:default [61 106 211]
                     :spent [37 68 142]
                     :selected [106 149 252]}
-             :white [252 252 252]})
+             :white [252 252 252]
+             :menu-select [183 183 183 75]})
 
 ;; utils
 
@@ -33,6 +34,8 @@
 (defn down [[x y]] [x (inc y)])
 (defn left [[x y]] [(dec x) y])
 (defn right [[x y]] [(inc x) y])
+
+(def grid-moves {:up up :down down :left left :right right})
 
 (defn bound [[x y]]
   [(min (max 0 x) (dec tiles))
@@ -63,21 +66,19 @@
              :selected cursor
              :highlight (can-move-to game-state unit-under-cursor?))
 
-      ;; ATTACK If there's a selected unit and the target is an enemy unit
-      (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
-      (dissoc
-       (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)])
-       :selected :highlight :route-selection :route)
-
       ;; MOVE if there's a selected unit and the target ISN'T an enemy
       (and selected-unit? (not unit-under-cursor?))
-      (dissoc
-       (assoc game-state :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
-       :selected :highlight :route-selection :route)
+
+      (-> game-state
+          (assoc :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
+          (assoc :selected (first (:route game-state)))
+          (dissoc :highlight :route-selection :route))
 
       :else (do (println "Selection fall through") game-state))))
 
-(defn cursor-move [game-state mv-fn]
+(defn handle-attack [game-state] game-state)
+
+(defn cursor-move-map [game-state mv-fn]
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
@@ -105,17 +106,37 @@
 
           :else game-state)))
 
+(defn cursor-move-menu [game-state dir]
+  (let [menu-items (count (get-in game-state [:menu :options]))]
+    (case dir
+      :down (update-in game-state [:menu :selection] #(mod (inc %) menu-items))
+      :up (update-in game-state [:menu :selection] #(mod (dec %) menu-items))
+      game-state)))
+
+(defn cursor-move [game-state dir]
+  (cond (:menu game-state) (cursor-move-menu game-state dir)
+        :else (cursor-move-map game-state (dir grid-moves))))
+
 (defn key-handler [game-state event]
   (case (:key event)
-    :up (cursor-move game-state up)
-    :down (cursor-move game-state down)
-    :left (cursor-move game-state left)
-    :right (cursor-move game-state right)
-    :space (handle-selection game-state)
+    :up (cursor-move game-state :up)
+    :down (cursor-move game-state :down)
+    :left (cursor-move game-state :left)
+    :right (cursor-move game-state :right)
+    :space (if (:attack-option game-state)
+             (handle-attack game-state)
+             (handle-selection game-state))
     :d (update game-state :debug not)
     :c (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
+
+(defn tick-wrap [game-state]
+  (let [next-state (tick game-state)]
+    (if (and (not (:menu next-state)) (:attack-option next-state))
+      (assoc next-state :menu {:options ["> Attack" "> Wait"]
+                               :selection 0})
+      next-state)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
@@ -224,6 +245,24 @@
   (q/fill (get-in colors [side :default]))
   (q/rect 0 0 30 30))
 
+(defn draw-menu [game-state]
+  (let [cursor (:cursor game-state)
+        unit (unit-in-square game-state cursor)
+        selected-unit (unit-in-square game-state (:selected game-state))
+        x-offset 50 y-offset 50
+        line-offset 35]
+    (q/stroke 1)
+    (q/fill (colors :white))
+    (q/stroke-weight 6)
+    (q/rect x-offset y-offset 300 300)
+    (q/fill 0)
+    (q/text-font (q/create-font "Courier New" 30))
+    (doseq [[row item] (map-indexed vector (get-in game-state [:menu :options]))]
+      (q/text item (+ 20 x-offset) (+ (* row line-offset) 40 y-offset)))
+    (q/stroke-weight 1)
+    (q/fill (colors :menu-select))
+    (q/rect (+ x-offset 10) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset 10)) 250 35)))
+
 (defn draw-debug-box [game-state]
   (let [cursor (:cursor game-state)
         unit (unit-in-square game-state cursor)
@@ -236,10 +275,10 @@
     (q/rect x-offset y-offset 1000 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
-    (q/text (str (:cursor game-state))
+    (q/text (str "Cursor: " (:cursor game-state) " Selected: " (:selected game-state))
             (+ 25 x-offset) (- 50 y-offset))
     (when unit
-      (q/text (str (:hp unit) "hp")
+      (q/text (str "CURSOR" (:hp unit) "hp")
               (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
       (q/text (str "Attack option: " (:attack-option game-state))
               (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
@@ -248,7 +287,7 @@
       (q/text (str "Att/Def: " (:attack unit) "/" (forces/defence-value unit (get-in game-state [:field (:position unit) :terrain])))
               (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
     (when selected-unit
-      (q/text (str (:hp selected-unit) "hp")
+      (q/text (str "SELECTED" (:hp selected-unit) "hp")
               (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
       (q/text (str "Attack option: " (:attack-option game-state))
               (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
@@ -273,6 +312,7 @@
   (draw-units game-state :blue)
   (draw-cursor (:cursor game-state))
   (draw-turn-indicator (:turn game-state))
+  (when (:menu game-state) (draw-menu game-state))
   (when (:debug game-state) (draw-debug-box game-state)))
 
 (comment)
@@ -282,7 +322,7 @@
   :setup setup
   :settings #(q/smooth 2)
   :draw draw-state
-  :update #(do (reset! debug %) (tick %))
+  :update #(do (reset! debug %) (tick-wrap %))
   :key-pressed key-handler
   :middleware [m/fun-mode])
 
