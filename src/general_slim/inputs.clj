@@ -37,16 +37,11 @@
    position
    move-points
    (->> (manhattan position move-points)
-        (field/get-terrain-map (:field game-state))
+        (field/terrain-map (:field game-state))
         (map-vals movement-table))))
 
 (comment
   (count (can-move-to trees (unit-in-square trees [5 6]))))
-
-(defn route-cost [game-state unit route]
-  (routing/route-cost (field/get-terrain-map (:field game-state)
-                                             route)
-                      (:move-adjust unit)))
 
 (defn update-move-order [game-state]
   (let [[order-type side unit route] (:order game-state)]
