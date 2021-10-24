@@ -7,8 +7,6 @@
        (<= (Math/abs (- y1 y2)) 1)
        (not (and (not= x1 x2) (not= y1 y2)))))
 
-(adjacent? [0 0] [1 0])
-
 (defn build-graph [nodes]
   (ug/add-directed-edges*
    (ug/digraph)
@@ -17,48 +15,28 @@
          :when (adjacent? this-grid other-grid)]
      [this-grid other-grid mv])))
 
-(ug/pprint (build-graph [[[0 0] 1] [[1 0] 1] [[0 1] 2]
-                         [[1 1] 1]]))
-
-@(:list-of-edges
-  (alg/shortest-path (build-graph [[[0 0] 1] [[1 0] 2] [[0 1] 2]
-                                   [[1 1] 2]])
-                     {:start-node [0 0] :end-node [1 1]
-                      :cost-attr :weight}))
-
 (defn shortest-path [graph start end]
-  (:cost (alg/shortest-path graph {:start-node start :end-node end
+  (:cost (alg/shortest-path graph {:start-node start
+                                   :end-node end
                                    :cost-attr :weight})))
 
-(defn prep-cmap [c-map mv-table]
-  (for [[grid terr] c-map]
-    [grid (terr mv-table)]))
-
 (defn accessible-squares
-  "Given a map of candidate coords with terrain type,
-   with the unit's movement points and movement table
+  "Given a sequence of coords with their movement costs,
+   as well as the unit's location and movement points
    will return a set of the squares that can be reached
    by the unit on that turn"
-  [current-loc candidate-map move-points movement-table]
-  (set (map first (filter #(>= move-points (second %))
-                          (map #(vector % (shortest-path (build-graph (prep-cmap candidate-map movement-table))
-                                                         current-loc
-                                                         %))
-                               (keys candidate-map))))))
+  [current move-points target-points]
+  (let [graph (build-graph target-points)]
+    (->> (map first target-points)
+         (map #(vector % (shortest-path graph current %)))
+         (filter #(>= move-points (second %)))
+         (map first) ;; get coord only
+         (set))))
 
-(accessible-squares
- [0 0]
- {[0 0] :field
-  [1 0] :trees
-  [0 1] :trees
-  [1 1] :field}
- 2
- {:field 1 :trees 2})
-
-(defn route-cost [route-with-terrain movement-table]
-  (let [cmap (into {} (prep-cmap route-with-terrain movement-table))]
-    (reduce (fn [acc loc]
-              (+ acc (cmap loc)))
-            route-with-terrain)))
-
-()
+(comment
+  (let [cr [5 6] mp 3
+       ;; grids within 3 squares of 5,6, with trees at 3 locations
+        tp [[[2 6] 1] [[3 5] 1] [[3 6] 1] [[3 7] 1] [[4 4] 1] [[4 5] 1] [[4 6] 3] [[4 7] 1] [[4 8] 1] [[5 3] 1] [[5 4] 3] [[5 5] 1] [[5 6] 1] [[5 7] 1] [[5 8] 1] [[5 9] 3] [[6 4] 1] [[6 5] 1] [[6 6] 1] [[6 7] 1] [[6 8] 1] [[7 5] 1] [[7 6] 1] [[7 7] 1] [[8 6] 1]]]
+    (count (accessible-squares cr mp tp)))
+  ;; => 20
+  )
