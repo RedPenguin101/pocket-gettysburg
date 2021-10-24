@@ -94,8 +94,8 @@ input    |     |
 * DONE Move non-quil specific handlers to game NS
 * DONE Scalable tile size
 * Separate order handling into own NS?
-* Move debug stuff to game NS
-* refactor debug text stuff
+* DONE Move debug stuff to game NS
+* DONE refactor debug text stuff
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack

@@ -18,13 +18,6 @@
 
 (defn scale [x] (int (* scale-factor x)))
 
-;; Handers
-
-(defn setup []
-  (q/frame-rate fps)
-  (assoc game-state :cursor [(int (/ horiz-tiles 2))
-                             (int (/ vert-tiles 2))]))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,7 +104,7 @@
                   :else (get-in colors [side :default]))]
       (draw-unit unit color))))
 
-;; other
+;; other on-map
 
 (defn draw-cursor [[x y]]
   (draw-tile (coord->px x) (coord->px y) (colors :cursor)))
@@ -192,7 +185,13 @@
   (when (:debug game-state) (draw-debug-box game-state))
   (draw-turn-indicator (:turn game-state)))
 
-(comment)
+;; Setup and run
+
+(defn setup []
+  (q/frame-rate fps)
+  (assoc game-state :cursor [(int (/ horiz-tiles 2))
+                             (int (/ vert-tiles 2))]))
+
 (q/defsketch game
   :host "map"
   :size [(* horiz-tiles tile-size) (* vert-tiles tile-size)]
@@ -202,7 +201,6 @@
   :update #(do (reset! debug %) (tick %))
   :key-pressed key-handler
   :middleware [m/fun-mode])
-
 
 (comment
   (dissoc @debug :field)
