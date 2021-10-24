@@ -25,11 +25,21 @@
                        (assoc [4 6] {:grid [4 6] :terrain :trees})
                        (assoc [5 4] {:grid [5 4] :terrain :trees})
                        (assoc [5 9] {:grid [5 9] :terrain :trees}))
-            :red {:units {:cav1 (make-unit :cavalry :red :cav1 [5 6])}}
+            :red {:units {:y (make-unit :infantry :red :y [5 6])}}
             :blue {:units {}}
             :turn :red
             :turn-number 0
             :cursor [5 5]})
+
+(def mountains {:field (-> (field/flat-field 10 10)
+                           (assoc [4 6] {:grid [4 6] :terrain :mountains})
+                           (assoc [5 4] {:grid [5 4] :terrain :mountains})
+                           (assoc [5 9] {:grid [5 9] :terrain :mountains}))
+                :red {:units {:y (make-unit :infantry :red :y [5 6])}}
+                :blue {:units {}}
+                :turn :red
+                :turn-number 0
+                :cursor [5 5]})
 
 (def debug (atom {}))
 (def grid-size 10)
@@ -37,6 +47,8 @@
 (def colors {:cursor [183 183 183 75]
              :map-highlight [220 220 220 50]
              :routing [101 252 90 75]
+             :terrain {:trees [36 119 23]
+                       :mountains [124 117 104]}
              :red {:default [211 61 61]
                    :spent [150 42 42]
                    :selected [252 126 126]}
@@ -66,7 +78,7 @@
 
 (defn setup []
   (q/frame-rate 30)
-  trees)
+  mountains)
 
 ;; Handers
 
@@ -147,17 +159,26 @@
 (defn draw-tree [x y]
   (q/stroke 0)
   (q/stroke-weight 0)
-  (q/fill [36 119 23])
+  (q/fill (get-in colors [:terrain :trees]))
   (q/rect (+ x 40) (+ y 50) 20 40)
   (q/triangle (+ x 50) (+ y 10)
               (+ x 20) (+ y 70)
               (+ x 80) (+ y 70)))
+
+(defn draw-mountain [x y]
+  (q/stroke 0)
+  (q/stroke-weight 0)
+  (q/fill (get-in colors [:terrain :mountains]))
+  (q/triangle (+ x 50) (+ y 20)
+              (+ x 10) (+ y 90)
+              (+ x 90) (+ y 90)))
 
 (defn draw-terrain [tiles]
   (doseq [tile tiles]
     (let [[x y] (:grid tile)]
       (case (:terrain tile)
         :trees (draw-tree (coord->px x) (coord->px y))
+        :mountains (draw-mountain (coord->px x) (coord->px y))
         nil))))
 
 (defn draw-unit [{:keys [position id hp]} color]

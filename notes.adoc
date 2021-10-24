@@ -81,7 +81,7 @@ input    |     |
 * DONE Have moving into forests decrease movement rate accordingly
 * DONE Top left turn indicator
 * DONE increased defence 
-* Map has mountains, impassible by cavalry
+* DONE Map has mountains, impassible by cavalry
 * Map has roads, and units have increased range on roads
 * Rivers
 
