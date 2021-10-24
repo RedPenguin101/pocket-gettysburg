@@ -56,7 +56,7 @@
 (defn add-attack-option [game-state side unit-id unit-loc]
   (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
     (if (empty? targets)
-      game-state
+      (assoc game-state :attack-option :no-targets)
       (assoc game-state :attack-option [side unit-id targets]))))
 
 (defn update-move-order

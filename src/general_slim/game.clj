@@ -29,10 +29,15 @@
 
 ;; Menus
 
-(def attack-menu {:name :attack-menu
-                  :options {:attack "> Attack"
-                            :wait "> Wait"}
-                  :selection 0})
+(defn attack-menu [attack-option]
+  (if (= :no-targets attack-option)
+    {:name :attack-menu
+     :options {:wait "> Wait"}
+     :selection 0}
+    {:name :attack-menu
+     :options {:attack "> Attack"
+               :wait "> Wait"}
+     :selection 0}))
 
 ;; utils
 
@@ -213,7 +218,7 @@
         (inputs/handle-input game-state (:order game-state))
 
         (and (not (:menu game-state)) (:attack-option game-state))
-        (assoc game-state :menu attack-menu)
+        (assoc game-state :menu (attack-menu (:attack-option game-state)))
 
         :else game-state))
 

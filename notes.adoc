@@ -100,8 +100,7 @@ input    |     |
 * DONE add wasd support
 * DONE see move range on clicking enemy unit
 * DONE Bug: units can't _not_ move and then attack
-
-* Bug: unit is still selected when finished move and no attack option
+* DONE Bug: unit is still selected when finished move and no attack option
 * Bug?: units can completely eliminate eachother in combat
 
 * Battle predictor, AW style
