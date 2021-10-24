@@ -33,3 +33,23 @@
                 :blue {:units {}}
                 :turn :red
                 :turn-number 0})
+
+;; road dirs
+[:hor :vert :up-right :up-left :down-right :down-left]
+
+(def road {:field (-> (field/flat-field 10 10)
+                      (assoc [0 7] {:grid [0 7] :terrain :road :dir :hor})
+                      (assoc [1 7] {:grid [1 7] :terrain :road :dir :hor})
+                      (assoc [2 7] {:grid [2 7] :terrain :road :dir :hor})
+                      (assoc [3 7] {:grid [3 7] :terrain :road :dir :hor})
+                      (assoc [4 7] {:grid [4 7] :terrain :road :dir :hor})
+                      (assoc [5 7] {:grid [5 7] :terrain :road :dir :hor})
+                      (assoc [6 7] {:grid [6 7] :terrain :road :dir :hor})
+                      (assoc [7 7] {:grid [7 7] :terrain :road :dir :hor})
+                      (assoc [8 7] {:grid [8 7] :terrain :road :dir :hor})
+                      (assoc [9 7] {:grid [9 7] :terrain :road :dir :hor}))
+           :red {:units {:x (forces/make-unit :infantry :red :x [1 7])
+                         :y (forces/make-unit :infantry :red :y [8 6])}}
+           :blue {:units {}}
+           :turn :red
+           :turn-number 0})

@@ -9,7 +9,7 @@
 ;; state and constants
 
 (def debug (atom {}))
-(def game-state gs/mountains)
+(def game-state gs/road)
 (def fps 30)
 (def tiles 10)
 (def tile-size 100)
@@ -17,7 +17,8 @@
              :map-highlight [220 220 220 50]
              :routing [101 252 90 75]
              :terrain {:trees [36 119 23]
-                       :mountains [124 117 104]}
+                       :mountains [124 117 104]
+                       :road [140 101 33]}
              :red {:default [211 61 61]
                    :spent [150 42 42]
                    :selected [252 126 126]}
@@ -140,12 +141,19 @@
               (+ x 10) (+ y 90)
               (+ x 90) (+ y 90)))
 
+(defn draw-road [x y dir]
+  (q/stroke 0)
+  (q/stroke-weight 0)
+  (q/fill (get-in colors [:terrain :road]))
+  (q/rect x (+ y 40) 100 20))
+
 (defn draw-terrain [tiles]
   (doseq [tile tiles]
-    (let [[x y] (:grid tile)]
+    (let [[x y] (map coord->px (:grid tile))]
       (case (:terrain tile)
-        :trees (draw-tree (coord->px x) (coord->px y))
-        :mountains (draw-mountain (coord->px x) (coord->px y))
+        :trees (draw-tree x y)
+        :mountains (draw-mountain x y)
+        :road (draw-road x y (:dir tile))
         nil))))
 
 ;; units

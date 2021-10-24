@@ -23,10 +23,17 @@
   (accessible-squares
    position
    move-points
-   (->> (manhattan position move-points)
+   (->> (manhattan position (+ 3 move-points)) ;; might have to expand this, maybe do some cacheing
         (field/terrain-map (:field game-state))
         (map-vals movement-table)
         (remove #(nil? (val %))))))
+
+(comment
+  ;; get last run gamestate and fiddle with it
+  (def gs @general-slim.ui/debug)
+  gs
+  (sort (let [unit (unit-in-square gs [1 7])]
+          (can-move-to gs unit))))
 
 (defn route-cost
   "Given a game state, a unit and a route starting at

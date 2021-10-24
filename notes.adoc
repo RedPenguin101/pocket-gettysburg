@@ -82,7 +82,10 @@ input    |     |
 * DONE Top left turn indicator
 * DONE increased defence 
 * DONE Map has mountains, impassible by cavalry
-* Map has roads, and units have increased range on roads
+* DONE Map has roads, and units have increased range on roads
+* Roads draw based on direction properly
+* forked roads and crossroads
+* Fix units moving though other units
 * Rivers
 
 * Message display system (-> message, seconds to display)
