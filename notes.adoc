@@ -126,3 +126,4 @@ input    |     |
 * Commander skill
 * Facing and flanking
 * Supplies / Wagons
+* Hills

@@ -1,9 +1,7 @@
 (ns general-slim.ui
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [general-slim.game :as game :refer [tick key-handler coord->px]]
-            [general-slim.forces :as forces :refer [can-move?]] ;; and this
-            ))
+            [general-slim.game :as game :refer [tick key-handler coord->px]]))
 
 ;; state and constants
 
@@ -98,9 +96,7 @@
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
     (let [color (cond
-                  (not (can-move? unit)) (get-in colors [side :spent])
-                  (= (:position unit) (:selected game-state))
-                  (get-in colors [side :selected])
+                  (zero? (:move-points unit)) (get-in colors [side :spent])
                   :else (get-in colors [side :default]))]
       (draw-unit unit color))))
 
