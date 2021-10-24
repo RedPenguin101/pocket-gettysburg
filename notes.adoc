@@ -89,8 +89,11 @@ input    |     |
 * DONE Fix attack / Attack after move
 ** DONE AW style wait menu after move
 ** DONE add attack option if enemy unit in adjacent
-
 * DONE variable size levels
+
+* DONE Move non-quil specific handlers to game NS
+* Separate order handling?
+* Move debug stuff to game
 
 * Bug: unit is still selected when finished move and no attack option
 * Bug: units can't _not_ move and then attack
