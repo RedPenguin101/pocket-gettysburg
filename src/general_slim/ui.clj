@@ -222,6 +222,7 @@
     :right (cursor-move game-state right)
     :space (handle-selection game-state)
     :c (assoc game-state :order [:end-turn (:turn game-state)])
+    :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
 
 (comment)
