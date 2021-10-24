@@ -51,7 +51,7 @@
 
 ;; Handers
 
-(defn handle-cursor-for-move [game-state mv-fn]
+(defn cursor-move [game-state mv-fn]
   (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
         selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
@@ -79,23 +79,15 @@
 
           :else game-state)))
 
-(defn handle-attack-selection [game-state]
-  (let [[side attacker-id] (:attack-mode game-state)
-        defender-id (:id (unit-in-square game-state (:cursor game-state)))]
-    (-> game-state
-        (assoc :order [:attack side attacker-id defender-id])
-        (dissoc :attack-mode :selected))))
-
-(defn handle-selection-for-move [game-state]
+(defn action-select [game-state]
+  (println "action select" (can-move-to game-state (unit-in-square game-state (:cursor game-state))))
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
-        my-side (:turn game-state)
-        selected? (:selected game-state)
-        selected-unit? (unit-in-square game-state selected?)]
+        my-side (:turn game-state)]
+    (println (can-move-to game-state unit-under-cursor?))
     (cond
       ;; If no selection, and trying to select your unit, select and turn on route selection
-      (and (not selected?)
-           (= my-side (:side unit-under-cursor?))
+      (and (= my-side (:side unit-under-cursor?))
            (can-move? unit-under-cursor?))
       (assoc game-state
              :route-selection true
@@ -103,6 +95,21 @@
              :selected cursor
              :highlight (can-move-to game-state unit-under-cursor?))
 
+      :else (do (println "Selection fall through") game-state))))
+
+(comment
+  (sort (can-move-to game-state (unit-in-square @general-slim.ui/debug
+                                                [11 8]))))
+
+(defn action-move [game-state]
+
+  (println "Action move")
+  (let [cursor (:cursor game-state)
+        unit-under-cursor? (unit-in-square game-state cursor)
+        my-side (:turn game-state)
+        selected? (:selected game-state)
+        selected-unit? (unit-in-square game-state selected?)]
+    (cond
       ;; MOVE if there's a selected unit and the target ISN'T an enemy
       (and selected-unit? (not unit-under-cursor?))
 
@@ -113,14 +120,15 @@
 
       :else (do (println "Selection fall through") game-state))))
 
-(defn handle-menu-cursor [game-state dir]
+(defn cursor-menu [game-state dir]
   (let [menu-items (count (get-in game-state [:menu :options]))]
     (case dir
       :down (update-in game-state [:menu :selection] #(mod (inc %) menu-items))
       :up (update-in game-state [:menu :selection] #(mod (dec %) menu-items))
       game-state)))
 
-(defn handle-menu-selection [game-state]
+(defn action-menu [game-state]
+  (println "Action menu")
   (let [selected-option (nth (keys (get-in game-state [:menu :options]))
                              (get-in game-state [:menu :selection]))]
     (println "selected" selected-option)
@@ -135,23 +143,34 @@
 
       game-state)))
 
-(defn handle-attack-cursor [game-state dir]
+(defn cursor-attack [game-state dir]
   (let [attempted-selection ((grid-moves dir) (:selected game-state))]
     (if ((last (:attack-mode game-state)) attempted-selection)
       (assoc game-state :cursor attempted-selection)
       game-state)))
 
-(defn handle-selection [game-state]
-  (cond (:menu game-state) (handle-menu-selection game-state)
-        (:attack-mode game-state) (handle-attack-selection game-state)
-        :else (handle-selection-for-move game-state)))
+(defn action-attack [game-state]
+  (println "Action attack")
+  (let [[side attacker-id] (:attack-mode game-state)
+        defender-id (:id (unit-in-square game-state (:cursor game-state)))]
+    (-> game-state
+        (assoc :order [:attack side attacker-id defender-id])
+        (dissoc :attack-mode :selected))))
+
+(defn handle-action [game-state]
+  (println "Handle action")
+  (cond (:menu game-state)        (action-menu game-state)
+        (:attack-mode game-state) (action-attack game-state)
+        (:selected game-state)    (action-move game-state)
+        :else                     (action-select game-state)))
 
 (defn handle-cursor [game-state dir]
-  (cond (:menu game-state) (handle-menu-cursor game-state dir)
-        (:attack-mode game-state) (handle-attack-cursor game-state dir)
-        :else (handle-cursor-for-move game-state (dir grid-moves))))
+  (cond (:menu game-state) (cursor-menu game-state dir)
+        (:attack-mode game-state) (cursor-attack game-state dir)
+        :else (cursor-move game-state (dir grid-moves))))
 
 (defn key-handler [game-state event]
+  (println "keyhandler " event)
   (case (:key event)
     :up (handle-cursor game-state :up)
     :w (handle-cursor game-state :up)
@@ -161,7 +180,7 @@
     :a (handle-cursor game-state :left)
     :right (handle-cursor game-state :right)
     :d (handle-cursor game-state :right)
-    :space (handle-selection game-state)
+    :space (handle-action game-state)
     :g (update game-state :debug not)
     :e (assoc game-state :order [:end-turn (:turn game-state)])
     :q (dissoc game-state :route-selection :route :selected :highlight)
@@ -184,8 +203,6 @@
      :route (:route game-state)
      :route-cost (when (:route game-state) (route-cost game-state su (reverse (:route game-state))))
      :attack-option (:attack-option game-state)}))
-
-(debug-data @general-slim.ui/debug)
 
 ;; Top lvl tick
 
