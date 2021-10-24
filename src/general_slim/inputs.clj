@@ -1,5 +1,6 @@
 (ns general-slim.inputs
-  (:require [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
+  (:require [clojure.set :refer [intersection]]
+            [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.utils :refer [dissoc-in map-vals]]
             [general-slim.field :as field]
             [general-slim.route-calc :as routing :refer [accessible-squares]]))
@@ -52,6 +53,12 @@
 
 ;; Movement stuff
 
+(defn add-attack-option [game-state side unit-id unit-loc]
+  (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
+    (if (empty? targets)
+      game-state
+      (assoc game-state :attack-option [side unit-id targets]))))
+
 (defn update-move-order
   "A move order has a route, so if there are remaining steps
    in the route the order needs to be updated after a move.
@@ -62,7 +69,7 @@
     (if (= 1 (count route))
       (-> game-state
           (dissoc :order)
-          (assoc :attack-option [side unit-id (disj (manhattan (first route) 1) (first route))]))
+          (add-attack-option side unit-id (first route)))
       (assoc game-state :order [order-type side unit-id (rest route)]))))
 
 (defn move-order [game-state side unit-id route]
