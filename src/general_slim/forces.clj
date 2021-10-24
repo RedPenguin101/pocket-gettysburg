@@ -53,7 +53,7 @@
   (first (filter #(= square (:position %)) (units game-state))))
 
 (defn can-move? [unit]
-  (and (:can-attack unit) (> (:move-points unit) 0)))
+  (> (:move-points unit) 0))
 
 (defn refresh-units [unit-map]
   (->> unit-map

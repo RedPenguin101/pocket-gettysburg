@@ -87,6 +87,8 @@ input    |     |
 * DONE forked roads and crossroads
 * DONE (but broke attacking) Fix units moving though other units
 * Fix attack / Attack after move
+** AW style wait menu after move
+** add attack option if enemy unit in adjacent
 * Rivers
 
 * Message display system (-> message, seconds to display)

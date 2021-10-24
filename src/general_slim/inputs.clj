@@ -58,10 +58,12 @@
    If there are no steps remaining the order needs to be
    removed completely."
   [game-state]
-  (let [[order-type side unit route] (:order game-state)]
+  (let [[order-type side unit-id route] (:order game-state)]
     (if (= 1 (count route))
-      (dissoc game-state :order)
-      (assoc game-state :order [order-type side unit (rest route)]))))
+      (-> game-state
+          (dissoc :order)
+          (assoc :attack-option [side unit-id (disj (manhattan (first route) 1) (first route))]))
+      (assoc game-state :order [order-type side unit-id (rest route)]))))
 
 (defn move-order [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])

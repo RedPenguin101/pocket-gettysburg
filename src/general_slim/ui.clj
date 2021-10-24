@@ -63,13 +63,13 @@
              :selected cursor
              :highlight (can-move-to game-state unit-under-cursor?))
 
-      ;; If there's a selected unit and the target is an enemy unit, attack it
+      ;; ATTACK If there's a selected unit and the target is an enemy unit
       (and selected-unit? unit-under-cursor? (not= my-side (:side unit-under-cursor?)))
       (dissoc
        (assoc game-state :order [:attack my-side (:id selected-unit?) (:id unit-under-cursor?)])
        :selected :highlight :route-selection :route)
 
-      ;; if there's a selected unit and the target ISN'T an enemy, move
+      ;; MOVE if there's a selected unit and the target ISN'T an enemy
       (and selected-unit? (not unit-under-cursor?))
       (dissoc
        (assoc game-state :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
@@ -218,20 +218,22 @@
     (draw-tile (coord->px x) (coord->px y)
                (colors :routing))))
 
+;; menus
+
 (defn draw-turn-indicator [side]
   (q/fill (get-in colors [side :default]))
   (q/rect 0 0 30 30))
 
 (defn draw-debug-box [game-state]
-  (let [[x y :as cursor] (:cursor game-state)
+  (let [cursor (:cursor game-state)
         unit (unit-in-square game-state cursor)
         selected-unit (unit-in-square game-state (:selected game-state))
-        x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
+        x-offset 3 y-offset 3
         line-offset 30]
     (q/stroke 1)
     (q/fill (colors :white))
     (q/stroke-weight 6)
-    (q/rect x-offset y-offset 500 300)
+    (q/rect x-offset y-offset 1000 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
     (q/text (str (:cursor game-state))
@@ -239,7 +241,7 @@
     (when unit
       (q/text (str (:hp unit) "hp")
               (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
-      (q/text (str "Can attack: " (:can-attack unit))
+      (q/text (str "Attack option: " (:attack-option game-state))
               (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
       (q/text (str "Move points: " (:move-points unit))
               (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
@@ -248,7 +250,7 @@
     (when selected-unit
       (q/text (str (:hp selected-unit) "hp")
               (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
-      (q/text (str "Can attack: " (:can-attack selected-unit))
+      (q/text (str "Attack option: " (:attack-option game-state))
               (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
       (q/text (str "Move points: " (:move-points selected-unit))
               (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
