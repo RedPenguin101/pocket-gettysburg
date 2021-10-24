@@ -111,13 +111,17 @@
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-tile [x y color]
   (q/stroke 0)
   (q/stroke-weight 0)
   (q/fill color)
   (q/rect x y tile-size tile-size))
+
+;; terrain
 
 (defn draw-tree [x y]
   (q/stroke 0)
@@ -144,6 +148,8 @@
         :mountains (draw-mountain (coord->px x) (coord->px y))
         nil))))
 
+;; units
+
 (defn draw-unit [{:keys [position id hp]} color]
   (let [x (coord->px (first position))
         y (coord->px (second position))]
@@ -165,6 +171,8 @@
                   :else (get-in colors [side :default]))]
       (draw-unit unit color))))
 
+;; other
+
 (defn draw-cursor [[x y]]
   (draw-tile (coord->px x) (coord->px y) (colors :cursor)))
 
@@ -185,6 +193,7 @@
 (defn draw-debug-box [game-state]
   (let [[x y :as cursor] (:cursor game-state)
         unit (unit-in-square game-state cursor)
+        selected-unit (unit-in-square game-state (:selected game-state))
         x-offset (if (and (>= x 5) (<= y 2)) 3 497) y-offset 3
         line-offset 30]
     (q/stroke 1)
@@ -193,23 +202,32 @@
     (q/rect x-offset y-offset 500 300)
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" 30))
+    (q/text (str (:cursor game-state))
+            (+ 25 x-offset) (- 50 y-offset))
     (when unit
+      (q/text (str (:hp unit) "hp")
+              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
       (q/text (str "Can attack: " (:can-attack unit))
               (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
       (q/text (str "Move points: " (:move-points unit))
               (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
-      (q/text (str (name (:id unit)))
-              (+ 25 x-offset) (- 50 y-offset))
-      (q/text (str (:hp unit) "hp")
-              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
       (q/text (str "Att/Def: " (:attack unit) "/" (forces/defence-value unit (get-in game-state [:field (:position unit) :terrain])))
+              (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
+    (when selected-unit
+      (q/text (str (:hp selected-unit) "hp")
+              (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
+      (q/text (str "Can attack: " (:can-attack selected-unit))
+              (+ 25 x-offset) (- (+ (* 2 line-offset) 50) y-offset))
+      (q/text (str "Move points: " (:move-points selected-unit))
+              (+ 25 x-offset) (- (+ (* 3 line-offset) 50) y-offset))
+      (q/text (str "Att/Def: " (:attack selected-unit) "/" (forces/defence-value selected-unit (get-in game-state [:field (:position selected-unit) :terrain])))
               (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
     (when (:route-selection game-state)
       (q/text (str "Coords: " cursor)
               (+ 25 x-offset) (- (+ (* 5 line-offset) 50) y-offset))
-      (q/text (str "Route sel: " (:route-selection game-state))
-              (+ 25 x-offset) (- (+ (* 6 line-offset) 50) y-offset))
       (q/text (str "Route: " (:route game-state))
+              (+ 25 x-offset) (- (+ (* 6 line-offset) 50) y-offset))
+      (q/text (str "Route cost: " (route-cost game-state selected-unit (reverse (:route game-state))))
               (+ 25 x-offset) (- (+ (* 7 line-offset) 50) y-offset)))))
 
 (defn draw-state [game-state]
