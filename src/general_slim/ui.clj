@@ -77,6 +77,13 @@
 
           :else game-state)))
 
+(defn handle-attack-selection [game-state]
+  (let [[side attacker-id] (:attack-mode game-state)
+        defender-id (:id (unit-in-square game-state (:cursor game-state)))]
+    (-> game-state
+        (assoc :order [:attack side attacker-id defender-id])
+        (dissoc :attack-mode :selected))))
+
 (defn handle-selection-for-move [game-state]
   (let [cursor (:cursor game-state)
         unit-under-cursor? (unit-in-square game-state cursor)
@@ -134,7 +141,7 @@
 
 (defn handle-selection [game-state]
   (cond (:menu game-state) (handle-menu-selection game-state)
-        (:attack-mode game-state) game-state
+        (:attack-mode game-state) (handle-attack-selection game-state)
         :else (handle-selection-for-move game-state)))
 
 (defn handle-cursor [game-state dir]
