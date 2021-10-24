@@ -95,8 +95,8 @@
 (defn update-hp [unit hit-for]
   (update unit :hp - hit-for))
 
-(defn resolve-combat [atkr defdr]
-  [(assoc (update-hp atkr (:defence defdr)) :can-attack false)
+(defn resolve-combat [atkr defdr terrain]
+  [(assoc (update-hp atkr (forces/defence-value defdr terrain)) :can-attack false)
    (update-hp defdr (int (* (/ (:hp atkr) 10) (:attack atkr))))])
 
 (defn update-unit [game-state unit]
@@ -104,10 +104,12 @@
     (assoc-in game-state [(:side unit) :units (:id unit)] unit)
     (dissoc-in game-state [(:side unit) :units] (:id unit))))
 
-(defn attack-order [game-state my-side my-unit-id enemy-unit-id]
+(defn attack-order
+  [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
         enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
-        [u1 u2] (resolve-combat my-unit enemy-unit)]
+        battle-terrain (get-in game-state [:field (:position enemy-unit) :terrain])
+        [u1 u2] (resolve-combat my-unit enemy-unit battle-terrain)]
     (-> game-state
         (update-unit u1)
         (update-unit u2)
