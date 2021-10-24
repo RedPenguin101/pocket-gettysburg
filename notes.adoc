@@ -80,7 +80,7 @@ input    |     |
 * DONE Debug box
 * DONE Have moving into forests decrease movement rate accordingly
 * DONE Top left turn indicator
-* increased defence 
+* DONE increased defence 
 * Map has mountains, impassible by cavalry
 * Map has roads, and units have increased range on roads
 * Rivers
@@ -96,3 +96,4 @@ input    |     |
 * Center unit text
 * Commander skill
 * Supplies / Wagons
+* Sprites

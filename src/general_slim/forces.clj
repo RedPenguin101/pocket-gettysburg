@@ -6,12 +6,18 @@
               :move-points 2 :max-move-points 2
               :movement-table {:field 1 :trees 2}
               :can-attack true
-              :attack 5 :defence 3}
+              :attack 5
+              :defence {:base 3
+                        :modifiers {:field 0
+                                    :trees 3}}}
    :cavalry {:unit-type :cavalry :hp 5
              :move-points 3 :max-move-points 3
              :movement-table {:field 1 :trees 3}
              :can-attack true
-             :attack 3 :defence 1}})
+             :attack 3
+             :defence {:base 4
+                       :modifiers {:field 0
+                                   :trees 3}}}})
 
 (defn make-unit [type side id pos]
   (assoc (type unit-templates)
@@ -40,6 +46,10 @@
 (defn refresh-units [unit-map]
   (->> unit-map
        (map-vals #(assoc % :move-points (:max-move-points %) :can-attack true))))
+
+(defn defence-value [unit terrain]
+  (+ (get-in unit [:defence :base])
+     (get-in unit [:defence :modifiers terrain])))
 
 (comment
   (refresh-units (:units red)))

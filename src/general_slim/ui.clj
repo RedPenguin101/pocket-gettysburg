@@ -146,7 +146,7 @@
               (+ 25 x-offset) (- 50 y-offset))
       (q/text (str (:hp unit) "hp")
               (+ 25 x-offset) (- (+ (* 1 line-offset) 50) y-offset))
-      (q/text (str "Att/Def: " (:attack unit) "/" (:defence unit))
+      (q/text (str "Att/Def: " (:attack unit) "/" (forces/defence-value unit (get-in game-state [:field (:position unit) :terrain])))
               (+ 25 x-offset) (- (+ (* 4 line-offset) 50) y-offset)))
     (when (:route-selection game-state)
       (q/text (str "Coords: " cursor)
