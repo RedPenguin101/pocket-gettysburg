@@ -83,8 +83,8 @@ input    |     |
 * DONE increased defence 
 * DONE Map has mountains, impassible by cavalry
 * DONE Map has roads, and units have increased range on roads
-* Roads draw based on direction properly
-* forked roads and crossroads
+* DONE Roads draw based on direction properly
+* DONE forked roads and crossroads
 * Fix units moving though other units
 * Rivers
 
