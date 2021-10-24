@@ -1,5 +1,5 @@
 (ns general-slim.inputs
-  (:require [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units]]
+  (:require [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.utils :refer [dissoc-in map-vals]]
             [general-slim.field :as field]
             [general-slim.route-calc :as routing :refer [accessible-squares]]))
@@ -24,6 +24,8 @@
    position
    move-points
    (->> (manhattan position (+ 3 move-points)) ;; might have to expand this, maybe do some cacheing
+        (remove (occupied-grids game-state))
+        (cons position) ;; yuk
         (field/terrain-map (:field game-state))
         (map-vals movement-table)
         (remove #(nil? (val %))))))

@@ -9,7 +9,7 @@
 ;; state and constants
 
 (def debug (atom {}))
-(def game-state gs/road)
+(def game-state gs/ready-to-attack)
 (def fps 30)
 (def tiles 10)
 (def tile-size 100)
@@ -85,6 +85,11 @@
 
           (not (:route-selection game-state))
           (assoc game-state :cursor new-cursor)
+
+          ;; can't move through units
+          (and (unit-in-square game-state new-cursor)
+               (not= new-cursor (:position selected-unit)))
+          game-state
 
           ;; can always back out a selection
           (= new-cursor (second (:route game-state)))

@@ -44,6 +44,9 @@
   (concat (map #(assoc % :side :red) (vals (get-in game-state [:red :units])))
           (map #(assoc % :side :blue) (vals (get-in game-state [:blue :units])))))
 
+(defn occupied-grids [game-state]
+  (set (map :position (units game-state))))
+
 (defn unit-in-square
   "Returns the unit occupying the square, or nil if none"
   [game-state square]

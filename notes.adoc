@@ -85,12 +85,12 @@ input    |     |
 * DONE Map has roads, and units have increased range on roads
 * DONE Roads draw based on direction properly
 * DONE forked roads and crossroads
-* Fix units moving though other units
+* DONE (but broke attacking) Fix units moving though other units
+* Fix attack / Attack after move
 * Rivers
 
 * Message display system (-> message, seconds to display)
 * Battle predictor, AW style 
-* Attack after move
 * Only move once ('has moved')
 * Units block move for cav
 * Facing and flanking

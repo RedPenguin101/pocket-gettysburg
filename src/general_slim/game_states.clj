@@ -51,8 +51,8 @@
                       (assoc [7 7] {:grid [7 7] :terrain :road :dirs [:hor]})
                       (assoc [8 7] {:grid [8 7] :terrain :road :dirs [:hor]})
                       (assoc [9 7] {:grid [9 7] :terrain :road :dirs [:hor]}))
-           :red {:units {:x (forces/make-unit :infantry :red :x [1 7])
-                         :y (forces/make-unit :infantry :red :y [8 6])}}
+           :red {:units {:x (forces/make-unit :cavalry :red :x [1 7])
+                         :y (forces/make-unit :cavalry :red :y [8 6])}}
            :blue {:units {}}
            :turn :red
            :turn-number 0})
