@@ -55,18 +55,22 @@
       (assoc game-state :order [order-type side unit (rest route)]))))
 
 (defn move-order [game-state side unit-id route]
-  (let [unit (get-in game-state [side :units unit-id])]
-    (cond
-      (unit-in-square game-state (first route))
-      (do (println "Cannot move to an occupied square")
-          game-state)
-      (not (can-move? unit))
-      (do (println "Unit doesn't have enough move points")
-          game-state)
-      :else (-> game-state
-                (assoc-in [side :units unit-id :position] (first route))
-                (update-in [side :units unit-id :move-points] dec)
-                (update-move-order)))))
+  (let [unit (get-in game-state [side :units unit-id])
+        move-cost ((:movement-table unit) (get-in game-state [:field (first route) :terrain]))]
+    (cond (unit-in-square game-state (first route))
+          (do (println "Cannot move to an occupied square")
+              game-state)
+
+          (or (not (can-move? unit))
+              (< (:move-points unit) move-cost))
+          (do (println "Not enough movement points")
+              game-state)
+
+          :else
+          (-> game-state
+              (assoc-in [side :units unit-id :position] (first route))
+              (update-in [side :units unit-id :move-points] - move-cost)
+              (update-move-order)))))
 
 ;; Combat stuff
 
