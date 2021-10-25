@@ -211,4 +211,6 @@
 
 (comment
   (dissoc @debug :field)
-  (game/debug-data @debug))
+  (game/debug-data @debug)
+
+  (select-keys @debug [:dispatch :order-queue]))

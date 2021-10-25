@@ -1,6 +1,7 @@
 (ns general-slim.game
   (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
+            [general-slim.dispatches :as d]
             [general-slim.game-states :as gs]))
 
 ;; state and constants
@@ -32,11 +33,11 @@
 (defn attack-menu [attack-option]
   (if (= :no-targets attack-option)
     {:name :attack-menu
-     :options {:wait "> Wait"}
+     :options {:wait "> Send Order"}
      :selection 0}
     {:name :attack-menu
      :options {:attack "> Attack"
-               :wait "> Wait"}
+               :wait "> Send Order"}
      :selection 0}))
 
 ;; utils
@@ -119,6 +120,7 @@
              :route-selection true
              :route (list cursor)
              :selected cursor
+             :dispatch (d/start-dispatch my-side (:id unit-under-cursor?))
              :highlight (can-move-to game-state unit-under-cursor?))
 
       ;; selecting the other sides unit, show the movement range
@@ -138,14 +140,16 @@
       ;; MOVE if there's a selected unit (invalid moves are not selectable)
       (and selected-unit? (not= unit-under-cursor? selected-unit?))
       (-> game-state
-          (assoc :order [:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))])
+          (assoc :order-queue [[:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))]])
+          (update :dispatch d/add-move-order (reverse (butlast (:route game-state))))
           (assoc :selected (first (:route game-state)))
           (dissoc :highlight :route-selection :route))
 
       ;; special case, no move
       selected-unit?
       (-> game-state
-          (assoc :order [:move my-side (:id selected-unit?) (:route game-state)])
+          (assoc :order-queue [[:move my-side (:id selected-unit?) (:route game-state)]])
+          (update :dispatch d/add-move-order (:route game-state))
           (dissoc :highlight :route-selection :route))
 
       :else (do (println "Move fall through") game-state))))
@@ -156,7 +160,9 @@
     (case (get-in game-state [:menu :name])
       :attack-menu
       (if (= :wait selected-option)
-        (dissoc game-state :selected :highlight :attack-option :menu)
+        (-> game-state
+            #_(d/send-order)
+            (dissoc :selected :highlight :attack-option :menu))
         (-> game-state
             (assoc :cursor (first (last (:attack-option game-state)))
                    :attack-mode (:attack-option game-state))
@@ -168,7 +174,8 @@
   (let [[side attacker-id] (:attack-mode game-state)
         defender-id (:id (unit-in-square game-state (:cursor game-state)))]
     (-> game-state
-        (assoc :order [:attack side attacker-id defender-id])
+        (assoc :order-queue [[:attack side attacker-id defender-id]])
+        (update :dispatch d/add-attack-order defender-id)
         (dissoc :attack-mode :selected))))
 
 (defn handle-action [game-state]
@@ -178,7 +185,6 @@
         :else                     (action-select game-state)))
 
 (defn key-handler [game-state event]
-  (println "keyhandler " event)
   (case (:key event)
     :up (handle-cursor game-state :up)
     :w (handle-cursor game-state :up)
@@ -190,7 +196,7 @@
     :d (handle-cursor game-state :right)
     :space (handle-action game-state)
     :g (update game-state :debug not)
-    :e (assoc game-state :order [:end-turn (:turn game-state)])
+    :e (assoc game-state :order-queue [[:end-turn (:turn game-state)]])
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
 
@@ -215,8 +221,8 @@
 ;; Top lvl tick
 
 (defn tick [game-state]
-  (cond (:order game-state)
-        (inputs/handle-input game-state (:order game-state))
+  (cond (or (:current-order game-state) (not-empty (:order-queue game-state)))
+        (inputs/handle-input game-state)
 
         (and (not (:menu game-state)) (:attack-option game-state))
         (assoc game-state :menu (attack-menu (:attack-option game-state)))

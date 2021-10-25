@@ -65,12 +65,12 @@
    If there are no steps remaining the order needs to be
    removed completely."
   [game-state]
-  (let [[order-type side unit-id route] (:order game-state)]
+  (let [[order-type side unit-id route] (:current-order game-state)]
     (if (= 1 (count route))
       (-> game-state
-          (dissoc :order)
+          (dissoc :current-order)
           (add-attack-option side unit-id (first route)))
-      (assoc game-state :order [order-type side unit-id (rest route)]))))
+      (assoc game-state :current-order [order-type side unit-id (rest route)]))))
 
 (defn move-order [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
@@ -149,19 +149,31 @@
     (-> game-state
         (update-unit u1)
         (update-unit u2)
-        (dissoc :order))))
+        (dissoc :current-order))))
 
 (defn end-turn [game-state side]
+  (println "Ending turn")
   (if (= side (:turn game-state))
     (-> game-state
         (assoc :turn (if (= :red side) :blue :red))
         (update-in [side :units] refresh-units)
-        (dissoc :order))
+        (dissoc :current-order))
     (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
 
-(defn handle-input [game-state order]
-  (let [[order-type side unit target] order]
-    (case order-type
-      :move (move-order game-state side unit target)
-      :end-turn (end-turn game-state side)
-      :attack (do (println "Attacking") (attack-order game-state side unit target)))))
+(defn handle-input [game-state]
+  (println "==Input handle:")
+  (println "Current-order: " (:current-order game-state))
+  (println "Order queue: " (:order-queue game-state))
+  (cond (:current-order game-state)
+        (let [[order-type side unit target] (:current-order game-state)]
+          (case order-type
+            :move (move-order game-state side unit target)
+            :end-turn (end-turn game-state side)
+            :attack (do (println "Attacking") (attack-order game-state side unit target))))
+        (not-empty (:order-queue game-state))
+        (-> game-state
+            (assoc :current-order (first (:order-queue game-state)))
+            (update :order-queue rest))
+
+        :else (do (println "Erroneous input handle")
+                  game-state)))
