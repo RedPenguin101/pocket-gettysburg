@@ -8,28 +8,50 @@
               :movement-table {:field 1
                                :road 0.5
                                :trees 1
-                               :mountains 3}
+                               :mountains 2}
               :can-attack true
-              :offensive-power 6
-              :defensive-power 3
-              :terrain-defense {:road 0
-                                :field 1
-                                :trees 3
-                                :mountains 5}}
+              :offensive-power 55
+              :terrain-bonus {:on-attack {:defense {:road 0
+                                                    :field 0.5
+                                                    :trees 1
+                                                    :mountains 2}
+                                          :damage {:road 0
+                                                   :field 0
+                                                   :trees 1
+                                                   :mountains 3}}
+                              :on-defence {:defense {:road 0
+                                                     :field 1
+                                                     :trees 2
+                                                     :mountains 4}
+                                           :damage {:road 0
+                                                    :field 0
+                                                    :trees 2
+                                                    :mountains 2}}}}
    :cavalry {:unit-type :cavalry
-             :hp 5 :max-hp 5
+             :hp 10 :max-hp 10
              :move-points 3 :max-move-points 3
              :movement-table {:road 0.5
                               :field 1
                               :trees 3
                               :mountains 4}
              :can-attack true
-             :offensive-power 8
-             :defensive-power 2
-             :terrain-defense {:road 0
-                               :field 1
-                               :trees 3
-                               :mountains 5}}})
+             :offensive-power 75
+             :terrain-bonus {:on-attack {:defense {:road 0
+                                                   :field 0.5
+                                                   :trees 1
+                                                   :mountains 2}
+                                         :damage {:road 0
+                                                  :field 0
+                                                  :trees 1
+                                                  :mountains 3}}
+                             :on-defence {:defense {:road 0
+                                                    :field 1
+                                                    :trees 2
+                                                    :mountains 4}
+                                          :damage {:road 0
+                                                   :field 0
+                                                   :trees 2
+                                                   :mountains 2}}}}})
 
 (defn make-unit [type side id pos]
   (assoc (type unit-templates)

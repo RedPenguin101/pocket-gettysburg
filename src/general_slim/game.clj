@@ -5,7 +5,7 @@
 
 ;; state and constants
 
-(def game-state gs/ready-to-attack)
+(def game-state gs/aw-ft1)
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -230,9 +230,8 @@
                tick))))
 
 (comment
-  ;; basic move
-  (dissoc (main-loop game-state) :field)
-  ;; end turn
-  (dissoc (main-loop (assoc game-state :order [:end-turn :red])) :field)
-  ;; can't end turn if it's not your turn
-  (dissoc (main-loop (assoc game-state :order [:end-turn :blue])) :field))
+  "Debug area"
+  (def other-side {:red :blue :blue :red})
+
+  (def game-state @general-slim.ui/debug)
+  game-state)

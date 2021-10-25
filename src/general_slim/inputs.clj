@@ -93,15 +93,46 @@
 
 ;; Combat stuff
 
-(defn update-hp [unit hit-for terrain]
-  (update unit :hp - (max 0 (- hit-for (get-in unit [:terrain-defense terrain])))))
+(defn update-hp [unit hit-for]
+  (update unit :hp - (max 0 hit-for)))
 
-(defn damage [unit offense?]
-  (int (/ (* ((if offense? :offensive-power :defensive-power) unit) (:hp unit)) (:max-hp unit))))
+(defn offensive-damage
+  "When a unit is attacking another, the damage done to the defending unit"
+  [atkr a-terrain defdr d-terrain]
+  (let [dmg (int (* 10 (Math/pow (/ (:hp atkr) (:max-hp atkr)) 2)
+                    (/ (:offensive-power atkr) 100)
+                    (+ 1 (/ (get-in atkr [:terrain-bonus :on-attack :damage a-terrain]) 10))
+                    (- 1 (/ (get-in defdr [:terrain-bonus :on-defence :defense d-terrain]) 10))))]
+    (println "Combat report offensive damage" dmg
+             {:attacker-hp (:hp atkr)
+              :attacker-hp-mod (Math/pow (/ (:hp atkr) (:max-hp atkr)) 2)
+              :attacker-offense-power (:offensive-power atkr)
+              :attack-terrain a-terrain
+              :attacker-terrain-mod-on-att-dmg (+ 1 (/ (get-in atkr [:terrain-bonus :on-attack :damage a-terrain]) 10))
+              :defender-terrain d-terrain
+              :defender-terrain-mod-on-def-def (- 1 (/ (get-in defdr [:terrain-bonus :on-defence :defense d-terrain]) 10))})
+    dmg))
+
+(defn defensive-damage
+  "When a unit is attacking another, the damage done to the attacking unit"
+  [atkr a-terrain defdr d-terrain]
+  (let [dmg (int (* 10 (Math/pow (/ (:hp defdr) (:max-hp defdr)) 2)
+                    (/ (:offensive-power defdr) 100)
+                    (+ 1 (/ (get-in defdr [:terrain-bonus :on-defence :damage d-terrain]) 10))
+                    (- 1 (/ (get-in atkr [:terrain-bonus :on-attack :defense a-terrain]) 10))))]
+    (println "Combat report defensive damage" dmg
+             {:defender-hp (:hp defdr)
+              :defender-hp-mod (Math/pow (/ (:hp defdr) (:max-hp defdr)) 2)
+              :defender-offense-power (:offensive-power defdr)
+              :defender-terrain d-terrain
+              :defender-terrain-mod-on-def-dmg (+ 1 (/ (get-in defdr [:terrain-bonus :on-defence :damage d-terrain]) 10))
+              :attacker-terrain d-terrain
+              :attacker-terrain-mod-on-att-def (- 1 (/ (get-in atkr [:terrain-bonus :on-attack :defense a-terrain]) 10))})
+    dmg))
 
 (defn resolve-combat [atkr defdr a-terrain d-terrain]
-  [(assoc (update-hp atkr (damage defdr false) a-terrain) :can-attack false)
-   (update-hp defdr (damage atkr true) d-terrain)])
+  [(assoc (update-hp atkr (defensive-damage  atkr a-terrain defdr d-terrain)) :can-attack false)
+   (update-hp defdr (offensive-damage atkr a-terrain defdr d-terrain))])
 
 (defn update-unit [game-state unit]
   (if (> (:hp unit) 0)

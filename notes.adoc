@@ -103,16 +103,21 @@ input    |     |
 * DONE Bug: unit is still selected when finished move and no attack option
 * DONE BUG selecting no unit throws
 * DONE Better combat system
+* DONE In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW).
+* DONE Bug: in battle, attackers losses are not impacted by defenders hp
+* DONE REPLICATE FIRST AW LEVEL
 
-* In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW).
-* Bug: in battle, attackers losses are not impacted by defenders hp
+* BUG: end highlight / select on end turn
+* Change order system to a sort of queue
+** Issue move order, target square has a 'shadow' of unit on it but unit doesn't move
+** Can issue attack order (or wait) from shadow. Attack order gets queued behind the move order
+** Once attack/wait commmand is issued _then_ the unit moves and attacks
+** Change attack menu to order menu: 'Order builder text': "Move to map reference X Y and attack Z"
 
-* REPLICATE FIRST AW LEVEL
-
-* Map builder stuff, level persistence
+* Map builder stuff
+* level persistence
 * Rivers
 * Message display system (-> message, seconds to display)
-* Only move once ('has moved')
 * FOW
 * AI
 * Sprites
@@ -127,4 +132,6 @@ input    |     |
 * Facing and flanking
 * Supplies / Wagons
 * Hills
-* Retreat and rout
+* Morale Retreat and rout
+* Friendly FOW
+* Status: Moving, Organizing, Deployed, Dug in
