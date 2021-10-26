@@ -184,12 +184,11 @@
       (do (println "Menu Fallthrough") game-state))))
 
 (defn action-attack [game-state]
-  (let [[side attacker-id] (:attack-mode game-state)
-        defender-id (:id (unit-in-square game-state (:cursor game-state)))]
+  (let [defender-id (:id (unit-in-square game-state (:cursor game-state)))]
     (-> game-state
-        (assoc :order-queue [[:attack side attacker-id defender-id]])
         (update :dispatch d/add-attack-order defender-id)
-        (dissoc :attack-mode :selected))))
+        (d/send-order)
+        (dissoc :attack-mode :selected :shadow-unit))))
 
 (defn handle-action [game-state]
   (cond (:menu game-state)        (action-menu game-state)

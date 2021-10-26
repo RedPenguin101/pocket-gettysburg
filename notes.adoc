@@ -107,7 +107,7 @@ input    |     |
 * DONE Bug: in battle, attackers losses are not impacted by defenders hp
 * DONE REPLICATE FIRST AW LEVEL
 
-* BUG: not moving costs a movement point
+* BUG: not moving costs a movement point (Maybe just don't send an empty move order?)
 * BUG: end highlight / select on end turn
 * Change order system to a sort of queue
 ** DONE Issue move order, target square has a 'shadow' of unit on it but unit doesn't move
