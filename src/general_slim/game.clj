@@ -195,6 +195,11 @@
         (:selected game-state)    (action-move-plan game-state)
         :else                     (action-select game-state)))
 
+(defn handle-end-turn [game-state]
+  (-> game-state
+      (assoc :order-queue [[:end-turn (:turn game-state)]])
+      (dissoc :selected :highlight :shadow-unit)))
+
 (defn key-handler [game-state event]
   (case (:key event)
     :up (handle-cursor game-state :up)
@@ -207,7 +212,7 @@
     :d (handle-cursor game-state :right)
     :space (handle-action game-state)
     :g (update game-state :debug not)
-    :e (assoc game-state :order-queue [[:end-turn (:turn game-state)]])
+    :e (handle-end-turn game-state)
     :q (dissoc game-state :route-selection :route :selected :highlight)
     game-state))
 
