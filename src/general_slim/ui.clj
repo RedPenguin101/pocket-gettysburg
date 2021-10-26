@@ -14,6 +14,7 @@
 (def horiz-tiles game/horiz-tiles)
 (def vert-tiles game/vert-tiles)
 (def tile-size game/tile-size)
+(def unit-size (int (* 2/3 tile-size)))
 (def colors game/colors)
 (def scale-factor (/ tile-size 100))
 
@@ -23,10 +24,23 @@
 ;; sprites
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn load-images [images]
+  (if (every? q/loaded? images)
+    nil
+    (recur images)))
+
+(defn resize-images [images w h]
+  (doseq [i images]
+    (q/resize i w h)))
+
 (defn load-sprites []
   (let [infantry (q/load-image "resources/infantry.png")
         cavalry (q/load-image "resources/cavalry.png")
         field (q/load-image "resources/field.png")]
+    (load-images [infantry cavalry])
+    (resize-images [infantry cavalry] unit-size unit-size)
+    (load-images [field])
+    (resize-images [field] tile-size tile-size)
     {:infantry infantry
      :cavalry cavalry
      :field field}))
@@ -131,7 +145,6 @@
     (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))
     (when sprite
       (q/image-mode :center)
-      (q/resize sprite (int (* tile-size 2/3)) (int (* tile-size 2/3)))
       (q/image sprite (+ x (/ tile-size 2)) (+ y (/ tile-size 2))))))
 
 (defn draw-shadow-unit [unit]
