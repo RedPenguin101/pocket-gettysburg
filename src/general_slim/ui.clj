@@ -1,6 +1,7 @@
 (ns general-slim.ui
   (:require [quil.core :as q]
             [quil.middleware :as m]
+            [general-slim.utils :refer [update-vals]]
             [general-slim.game :as game :refer [tick key-handler coord->px]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -22,6 +23,18 @@
 ;; sprites
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn load-sprites []
+  {:infantry (q/load-image "resources/infantry.png")})
+
+(defn add-sprite [unit images]
+  (if (= :infantry (:unit-type unit))
+    (assoc unit :sprite (:infantry images))
+    unit))
+
+(defn add-sprites-to-units [game-state]
+  (-> game-state
+      (update-in [:red :units] update-vals add-sprite (:images game-state))
+      (update-in [:blue :units] update-vals add-sprite (:images game-state))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
@@ -94,7 +107,7 @@
 ;; units
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-unit [{:keys [position id hp]} color]
+(defn draw-unit [{:keys [position id hp sprite]} color]
   (let [x (coord->px (first position))
         y (coord->px (second position))]
     (draw-tile x y color)
@@ -104,7 +117,11 @@
     (q/text-font (q/create-font "Courier New" (scale 30)))
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
     (q/text-font (q/create-font "Courier New" (scale 20)))
-    (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))))
+    (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))
+    (when sprite
+      (q/image-mode :center)
+      (q/resize sprite (int (* tile-size 2/3)) (int (* tile-size 2/3)))
+      (q/image sprite (+ x (/ tile-size 2)) (+ y (/ tile-size 2))))))
 
 (defn draw-shadow-unit [unit]
   (draw-unit unit (get-in colors [(:side unit) :shadow])))
@@ -217,8 +234,11 @@
 
 (defn setup []
   (q/frame-rate fps)
-  (assoc game-state :cursor [(int (/ horiz-tiles 2))
-                             (int (/ vert-tiles 2))]))
+  (add-sprites-to-units
+   (assoc game-state
+          :cursor [(int (/ horiz-tiles 2))
+                   (int (/ vert-tiles 2))]
+          :images (load-sprites))))
 
 (q/defsketch game
   :host "map"
