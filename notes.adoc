@@ -115,10 +115,9 @@ input    |     |
 * DONE BUG: Units can move after attacking
 * DONE BUG: Can end turn in menu mode
 * DONE BUG: Roads not scaling
+* DONE Sprites: Units, Field, Mountain, Trees 
+* DONE: cancel out of order mid move
 
-* cancel out of order mid move
-* Draw terrain on static layer
-* Sprites
 * Artillery
 * Map builder stuff
 * level persistence
@@ -128,6 +127,7 @@ input    |     |
 * enemy unit info - attack range on button hold
 * Combat still sucks
 * Message display system (-> message, seconds to display)
+* Draw terrain on static layer (Don't know how to do this!)
 
 == Post MVP
 

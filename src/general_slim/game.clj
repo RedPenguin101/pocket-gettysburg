@@ -202,6 +202,12 @@
         (assoc :order-queue [[:end-turn (:turn game-state)]])
         (dissoc :selected :highlight :shadow-unit))))
 
+(defn handle-cancel [game-state]
+  (dissoc game-state
+          :route-selection :route :selected :highlight
+          :menu :shadow-unit :dispatch
+          :attack-mode :attack-option))
+
 (defn key-handler [game-state event]
   (case (:key event)
     :up (handle-cursor game-state :up)
@@ -215,7 +221,7 @@
     :space (handle-action game-state)
     :g (update game-state :debug not)
     :e (handle-end-turn game-state)
-    :q (dissoc game-state :route-selection :route :selected :highlight)
+    :q (handle-cancel game-state)
     game-state))
 
 ;; debug
