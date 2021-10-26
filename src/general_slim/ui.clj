@@ -3,7 +3,9 @@
             [quil.middleware :as m]
             [general-slim.game :as game :refer [tick key-handler coord->px]]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; state and constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def debug (atom {}))
 (def game-state game/game-state)
@@ -17,6 +19,11 @@
 (defn scale [x] (int (* scale-factor x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; sprites
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Drawing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -27,6 +34,7 @@
   (q/rect x y tile-size tile-size))
 
 ;; terrain
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-tree [x y]
   (q/stroke 0)
@@ -84,6 +92,7 @@
         nil))))
 
 ;; units
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-unit [{:keys [position id hp]} color]
   (let [x (coord->px (first position))
@@ -108,6 +117,7 @@
       (draw-unit unit color))))
 
 ;; other on-map
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-cursor [[x y]]
   (draw-tile (coord->px x) (coord->px y) (colors :cursor)))
@@ -131,6 +141,7 @@
              (scale 70) (scale 70)))
 
 ;; menus
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-turn-indicator [side]
   (q/stroke nil)
@@ -200,7 +211,9 @@
   (when (:debug game-state) (draw-debug-box game-state))
   (draw-turn-indicator (:turn game-state)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup and run
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn setup []
   (q/frame-rate fps)
@@ -216,6 +229,10 @@
   :update #(do (reset! debug %) (tick %))
   :key-pressed key-handler
   :middleware [m/fun-mode])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; debug
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
   (dissoc @debug :field)
