@@ -19,14 +19,14 @@
              :terrain {:trees [36 119 23]
                        :mountains [124 117 104]
                        :road [140 101 33]}
-             :red {:default [211 61 61]
+             :red {:default [211 61 61 150]
                    :shadow [211 61 61 75]
-                   :spent [150 42 42]
-                   :selected [252 126 126]}
-             :blue {:default [61 106 211]
+                   :spent [150 42 42 150]
+                   :selected [252 126 126 150]}
+             :blue {:default [61 106 211 150]
                     :shadow [61 106 211 75]
-                    :spent [37 68 142]
-                    :selected [106 149 252]}
+                    :spent [37 68 142 150]
+                    :selected [106 149 252 150]}
              :white [252 252 252]
              :menu-select [183 183 183 75]})
 
