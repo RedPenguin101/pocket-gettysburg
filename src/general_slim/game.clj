@@ -131,30 +131,6 @@
 
       :else (do (println "Selection fall through") game-state))))
 
-(defn action-move [game-state]
-  (let [cursor (:cursor game-state)
-        unit-under-cursor? (unit-in-square game-state cursor)
-        my-side (:turn game-state)
-        selected? (:selected game-state)
-        selected-unit? (unit-in-square game-state selected?)]
-    (cond
-      ;; MOVE if there's a selected unit (invalid moves are not selectable)
-      (and selected-unit? (not= unit-under-cursor? selected-unit?))
-      (-> game-state
-          (assoc :order-queue [[:move my-side (:id selected-unit?) (reverse (butlast (:route game-state)))]])
-          (update :dispatch d/add-move-order (reverse (butlast (:route game-state))))
-          (assoc :selected (first (:route game-state)))
-          (dissoc :highlight :route-selection :route))
-
-      ;; special case, no move
-      selected-unit?
-      (-> game-state
-          (assoc :order-queue [[:move my-side (:id selected-unit?) (:route game-state)]])
-          (update :dispatch d/add-move-order (:route game-state))
-          (dissoc :highlight :route-selection :route))
-
-      :else (do (println "Move fall through") game-state))))
-
 (defn request-input [game-state]
   (assoc game-state :menu (dispatch-menu (:dispatch game-state) (:attack-option game-state))))
 
