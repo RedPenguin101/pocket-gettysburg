@@ -155,21 +155,56 @@
 
       :else (do (println "Move fall through") game-state))))
 
+(defn request-input [game-state]
+  (assoc game-state :menu (dispatch-menu (:dispatch game-state) (:attack-option game-state))))
+
+(defn action-move-plan [game-state]
+  (let [cursor (:cursor game-state)
+        unit-under-cursor? (unit-in-square game-state cursor)
+        my-side (:turn game-state)
+        selected? (:selected game-state)
+        selected-unit? (unit-in-square game-state selected?)]
+
+    (when (and selected-unit? (not= unit-under-cursor? selected-unit?))
+      (println "Main move plan branch"))
+
+    (cond
+      ;; If there's a selected unit, update the dispatch, draw the shadown
+      ;; unit at the selected location, and add attack options if there are
+      ;; any. Pop the dispatch menu
+      (and selected-unit? (not= unit-under-cursor? selected-unit?))
+      (-> game-state
+          (update :dispatch d/add-move-order (reverse (butlast (:route game-state))))
+          (assoc :shadow-unit (assoc selected-unit? :position cursor))
+          (inputs/add-attack-option my-side (:id selected-unit?) cursor)
+          (request-input)
+          (dissoc :highlight :route-selection :route))
+
+      ;; special case, no move
+      selected-unit?
+      (-> game-state
+          (assoc :order-queue [[:move my-side (:id selected-unit?) (:route game-state)]])
+          (update :dispatch d/add-move-order (:route game-state))
+          (dissoc :highlight :route-selection :route))
+
+      :else (do (println "Move fall through") game-state))))
+
 (defn action-menu [game-state]
   (let [selected-option (nth (keys (get-in game-state [:menu :options]))
                              (get-in game-state [:menu :selection]))]
-    (case (get-in game-state [:menu :name])
-      :attack-menu
-      (if (= :wait selected-option)
-        (-> game-state
-            #_(d/send-order)
-            (dissoc :selected :highlight :attack-option :menu))
-        (-> game-state
-            (assoc :cursor (first (last (:attack-option game-state)))
-                   :attack-mode (:attack-option game-state))
-            (dissoc :menu :attack-option)))
+    (case selected-option
+      :send-order
+      (do (println "got here")
+          (-> game-state
+              (d/send-order)
+              (dissoc :shadow-unit :selected :highlight :attack-option :menu)))
+      :attack
+      (-> game-state
+          (assoc :cursor (first (last (:attack-option game-state)))
+                 :attack-mode (:attack-option game-state))
+          (dissoc :menu :attack-option))
 
-      game-state)))
+      (do (println "Menu Fallthrough") game-state))))
 
 (defn action-attack [game-state]
   (let [[side attacker-id] (:attack-mode game-state)
@@ -182,7 +217,7 @@
 (defn handle-action [game-state]
   (cond (:menu game-state)        (action-menu game-state)
         (:attack-mode game-state) (action-attack game-state)
-        (:selected game-state)    (action-move game-state)
+        (:selected game-state)    (action-move-plan game-state)
         :else                     (action-select game-state)))
 
 (defn key-handler [game-state event]
@@ -222,13 +257,9 @@
 ;; Top lvl tick
 
 (defn tick [game-state]
-  (cond (or (:current-order game-state) (not-empty (:order-queue game-state)))
-        (inputs/handle-input game-state)
-
-        (and (not (:menu game-state)) (:attack-option game-state))
-        (assoc game-state :menu (attack-menu (:attack-option game-state)))
-
-        :else game-state))
+  (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
+    (inputs/handle-input game-state)
+    game-state))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
@@ -241,4 +272,5 @@
   (def other-side {:red :blue :blue :red})
 
   (def game-state @general-slim.ui/debug)
-  game-state)
+  (dissoc game-state :field :red :blue)
+  (select-keys game-state [:dispatch :menu :attack-option]))
