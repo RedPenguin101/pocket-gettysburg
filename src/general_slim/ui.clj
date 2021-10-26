@@ -36,14 +36,18 @@
 (defn load-sprites []
   (let [infantry (q/load-image "resources/infantry.png")
         cavalry (q/load-image "resources/cavalry.png")
-        field (q/load-image "resources/field.png")]
+        field (q/load-image "resources/field.png")
+        trees (q/load-image "resources/trees.png")
+        mountains (q/load-image "resources/mountains.png")]
     (load-images [infantry cavalry])
     (resize-images [infantry cavalry] unit-size unit-size)
-    (load-images [field])
-    (resize-images [field] tile-size tile-size)
+    (load-images [field trees])
+    (resize-images [field trees mountains] tile-size tile-size)
     {:infantry infantry
      :cavalry cavalry
-     :field field}))
+     :field field
+     :mountains mountains
+     :trees trees}))
 
 (defn add-sprite [unit images]
   (if (images (:unit-type unit))
@@ -67,23 +71,6 @@
 
 ;; terrain
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn draw-tree [x y]
-  (q/stroke 0)
-  (q/stroke-weight 0)
-  (q/fill (get-in colors [:terrain :trees]))
-  (q/rect (+ x (scale 40)) (+ y (scale 50)) (scale 20) (scale 40))
-  (q/triangle (+ x (scale 50)) (+ y (scale 10))
-              (+ x (scale 20)) (+ y (scale 70))
-              (+ x (scale 80)) (+ y (scale 70))))
-
-(defn draw-mountain [x y]
-  (q/stroke 0)
-  (q/stroke-weight 0)
-  (q/fill (get-in colors [:terrain :mountains]))
-  (q/triangle (+ x (scale 50)) (+ y (scale 20))
-              (+ x (scale 10)) (+ y (scale 90))
-              (+ x (scale 90)) (+ y (scale 90))))
 
 (defn draw-road [x y dirs]
   (let [s20 (scale 20)
@@ -114,7 +101,7 @@
                     x (+ y s40)
                     x (+ y s60))))))
 
-(defn draw-field [x y sprite]
+(defn draw-sprite [x y sprite]
   (q/image-mode :corner)
   (q/resize sprite tile-size tile-size)
   (q/image sprite x y))
@@ -123,9 +110,9 @@
   (doseq [tile tiles]
     (let [[x y] (map coord->px (:grid tile))]
       (case (:terrain tile)
-        :field (draw-field x y (:field images))
-        :trees (draw-tree x y)
-        :mountains (draw-mountain x y)
+        :field (draw-sprite x y (:field images))
+        :trees (draw-sprite x y (:trees images))
+        :mountains (draw-sprite x y (:mountains images))
         :road (draw-road x y (:dirs tile))
         nil))))
 
