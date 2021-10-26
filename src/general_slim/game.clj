@@ -2,11 +2,11 @@
   (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.dispatches :as d]
-            [general-slim.game-states :as gs]))
+            [general-slim.scenarios :refer [load-scenario]]))
 
 ;; state and constants
 
-(def game-state gs/road)
+(def game-state (load-scenario "aw_ft1"))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)

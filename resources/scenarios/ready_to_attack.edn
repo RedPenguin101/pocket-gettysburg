@@ -1,0 +1,7 @@
+{:map "ready_to_attack"
+ :red [[:infantry :inf1 [6 6]] [:infantry :inf2 [6 7]]
+       [:infantry :inf3 [6 8]] [:cavalry :cav1 [7 3]]]
+ :blue [[:infantry :inf1 [7 6]] [:infantry :inf2 [7 7]]
+        [:infantry :inf3 [7 8]]]
+ :turn :red
+ :turn-number 0}
