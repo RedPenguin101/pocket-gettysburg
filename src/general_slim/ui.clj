@@ -24,11 +24,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn load-sprites []
-  {:infantry (q/load-image "resources/infantry.png")})
+  {:infantry (q/load-image "resources/infantry.png")
+   :cavalry (q/load-image "resources/cavalry.png")
+   #_#_:artillery (q/load-image "resources/artillery.png")})
 
 (defn add-sprite [unit images]
-  (if (= :infantry (:unit-type unit))
-    (assoc unit :sprite (:infantry images))
+  (if (images (:unit-type unit))
+    (assoc unit :sprite ((:unit-type unit) images))
     unit))
 
 (defn add-sprites-to-units [game-state]
