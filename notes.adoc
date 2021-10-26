@@ -114,9 +114,9 @@ input    |     |
 * DONE BUG: end highlight / select on end turn
 * DONE BUG: Units can move after attacking
 * DONE BUG: Can end turn in menu mode
+* DONE BUG: Roads not scaling
 
 * cancel out of order mid move
-
 * Draw terrain on static layer
 * Sprites
 * Artillery

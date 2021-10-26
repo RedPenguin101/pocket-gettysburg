@@ -46,29 +46,33 @@
               (+ x (scale 90)) (+ y (scale 90))))
 
 (defn draw-road [x y dirs]
-  (doseq [d dirs]
-    (q/stroke 0)
-    (q/stroke-weight 0)
-    (q/fill (get-in colors [:terrain :road]))
-    (case d
-      :hor (q/rect x (+ y 40) 100 20)
-      :vert (q/rect (+ x 40) y 20 100)
-      :ne (q/quad (+ x 40) y
-                  (+ x 60) y
-                  (+ x 100) (+ y 40)
-                  (+ x 100) (+ y 60))
-      :nw (q/quad (+ x 40) y
-                  (+ x 60) y
-                  x (+ y 60)
-                  x (+ y 40))
-      :se (q/quad (+ x 40) (+ y 100)
-                  (+ x 60) (+ y 100)
-                  (+ x 100) (+ y 60)
-                  (+ x 100) (+ y 40))
-      :sw (q/quad (+ x 40) (+ y 100)
-                  (+ x 60) (+ y 100)
-                  x (+ y 40)
-                  x (+ y 60)))))
+  (let [s20 (scale 20)
+        s40 (scale 40)
+        s60 (scale 60)
+        s100 (scale 100)]
+    (doseq [d dirs]
+      (q/stroke 0)
+      (q/stroke-weight 0)
+      (q/fill (get-in colors [:terrain :road]))
+      (case d
+        :hor (q/rect x (+ y s40) s100 s20)
+        :vert (q/rect (+ x s40) y s20 s100)
+        :ne (q/quad (+ x s40) y
+                    (+ x s60) y
+                    (+ x s100) (+ y s40)
+                    (+ x s100) (+ y s60))
+        :nw (q/quad (+ x s40) y
+                    (+ x s60) y
+                    x (+ y s60)
+                    x (+ y s40))
+        :se (q/quad (+ x s40) (+ y s100)
+                    (+ x s60) (+ y s100)
+                    (+ x s100) (+ y s60)
+                    (+ x s100) (+ y s40))
+        :sw (q/quad (+ x s40) (+ y s100)
+                    (+ x s60) (+ y s100)
+                    x (+ y s40)
+                    x (+ y s60))))))
 
 (defn draw-terrain [tiles]
   (doseq [tile tiles]
