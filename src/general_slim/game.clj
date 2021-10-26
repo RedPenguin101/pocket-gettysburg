@@ -196,9 +196,11 @@
         :else                     (action-select game-state)))
 
 (defn handle-end-turn [game-state]
-  (-> game-state
-      (assoc :order-queue [[:end-turn (:turn game-state)]])
-      (dissoc :selected :highlight :shadow-unit)))
+  (if (:menu game-state)
+    game-state
+    (-> game-state
+        (assoc :order-queue [[:end-turn (:turn game-state)]])
+        (dissoc :selected :highlight :shadow-unit))))
 
 (defn key-handler [game-state event]
   (case (:key event)

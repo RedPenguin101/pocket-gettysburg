@@ -113,8 +113,7 @@ input    |     |
 * DONE BUG: not moving costs a movement point (Maybe just don't send an empty move order?)
 * DONE BUG: end highlight / select on end turn
 * DONE BUG: Units can move after attacking
-
-* BUG: Can end turn in menu mode
+* DONE BUG: Can end turn in menu mode
 
 * Map builder stuff
 * level persistence
