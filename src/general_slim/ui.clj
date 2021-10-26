@@ -239,7 +239,7 @@
 
 (defn draw-state [game-state]
   (q/background 240)
-  (draw-terrain (vals (:field game-state)) (:images game-state))
+  #_(draw-terrain (vals (:field game-state)) (:images game-state))
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
@@ -257,11 +257,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn setup []
-  (q/frame-rate fps)
-  (add-sprites-to-units
-   (assoc game-state
-          :cursor [(int (/ horiz-tiles 2)) (int (/ vert-tiles 2))]
-          :images (load-sprites))))
+  (q/frame-rate 1)
+  (let [ss (-> game-state
+               (assoc :cursor [(int (/ horiz-tiles 2)) (int (/ vert-tiles 2))]
+                      :images (load-sprites))
+               add-sprites-to-units)]
+    (draw-terrain (vals (:field ss)) (:images ss))
+    ss))
 
 (q/defsketch game
   :host "map"
