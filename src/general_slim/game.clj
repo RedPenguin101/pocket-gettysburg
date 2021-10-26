@@ -6,7 +6,7 @@
 
 ;; state and constants
 
-(def game-state gs/aw-ft1)
+(def game-state gs/road)
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
