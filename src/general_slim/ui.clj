@@ -34,12 +34,12 @@
     (q/resize i w h)))
 
 (defn load-sprites []
-  (let [infantry (q/load-image "resources/infantry.png")
-        cavalry (q/load-image "resources/cavalry.png")
-        artillery (q/load-image "resources/artillery.png")
-        field (q/load-image "resources/field.png")
-        trees (q/load-image "resources/trees.png")
-        mountains (q/load-image "resources/mountains.png")]
+  (let [infantry (q/load-image "resources/sprites/infantry.png")
+        cavalry (q/load-image "resources/sprites/cavalry.png")
+        artillery (q/load-image "resources/sprites/artillery.png")
+        field (q/load-image "resources/sprites/field.png")
+        trees (q/load-image "resources/sprites/trees.png")
+        mountains (q/load-image "resources/sprites/mountains.png")]
     (load-images [infantry cavalry artillery])
     (resize-images [infantry cavalry artillery] unit-size unit-size)
     (load-images [field trees])
@@ -268,7 +268,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (dissoc @debug :field)
+  (@debug :field)
   (:shadow-unit @debug)
   (game/debug-data @debug)
 
