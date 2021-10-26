@@ -268,7 +268,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (@debug :field)
+  @debug
   (:shadow-unit @debug)
   (game/debug-data @debug)
 
