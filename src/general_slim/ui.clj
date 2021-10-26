@@ -24,9 +24,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn load-sprites []
-  {:infantry (q/load-image "resources/infantry.png")
-   :cavalry (q/load-image "resources/cavalry.png")
-   #_#_:artillery (q/load-image "resources/artillery.png")})
+  (let [infantry (q/load-image "resources/infantry.png")
+        cavalry (q/load-image "resources/cavalry.png")
+        field (q/load-image "resources/field.png")]
+    {:infantry infantry
+     :cavalry cavalry
+     :field field}))
 
 (defn add-sprite [unit images]
   (if (images (:unit-type unit))
@@ -97,10 +100,16 @@
                     x (+ y s40)
                     x (+ y s60))))))
 
-(defn draw-terrain [tiles]
+(defn draw-field [x y sprite]
+  (q/image-mode :corner)
+  (q/resize sprite tile-size tile-size)
+  (q/image sprite x y))
+
+(defn draw-terrain [tiles images]
   (doseq [tile tiles]
     (let [[x y] (map coord->px (:grid tile))]
       (case (:terrain tile)
+        :field (draw-field x y (:field images))
         :trees (draw-tree x y)
         :mountains (draw-mountain x y)
         :road (draw-road x y (:dirs tile))
@@ -217,7 +226,7 @@
 
 (defn draw-state [game-state]
   (q/background 240)
-  (draw-terrain (vals (:field game-state)))
+  (draw-terrain (vals (:field game-state)) (:images game-state))
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
@@ -238,8 +247,7 @@
   (q/frame-rate fps)
   (add-sprites-to-units
    (assoc game-state
-          :cursor [(int (/ horiz-tiles 2))
-                   (int (/ vert-tiles 2))]
+          :cursor [(int (/ horiz-tiles 2)) (int (/ vert-tiles 2))]
           :images (load-sprites))))
 
 (q/defsketch game
