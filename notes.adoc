@@ -117,8 +117,9 @@ input    |     |
 * DONE BUG: Roads not scaling
 * DONE Sprites: Units, Field, Mountain, Trees 
 * DONE: cancel out of order mid move
+* DONE: Artillery
 
-* Artillery
+* Little circles on units with HP
 * Map builder stuff
 * level persistence
 * Rivers
@@ -128,6 +129,7 @@ input    |     |
 * Combat still sucks
 * Message display system (-> message, seconds to display)
 * Draw terrain on static layer (Don't know how to do this!)
+* Artillery, make terrain tables better
 
 == Post MVP
 

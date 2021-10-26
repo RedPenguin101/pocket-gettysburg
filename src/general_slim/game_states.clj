@@ -22,9 +22,11 @@
                       (field/add-terrain :mountains [[1 2]])
                       (field/add-road [[4 0] [4 1] [4 2] [4 3] [4 4] [4 5] [4 6] [4 7] [4 8]]))
                   {:units {:x (forces/make-unit :infantry :red :x [2 1])
-                           :y (forces/make-unit :cavalry :red :y [2 2])}}
+                           :y (forces/make-unit :cavalry :red :y [2 2])
+                           :z (forces/make-unit :artillery :red :z [2 3])}}
                   {:units {:v (forces/make-unit :infantry :blue :v [3 1])
-                           :w (forces/make-unit :cavalry :blue :w [3 2])}}))
+                           :w (forces/make-unit :cavalry :blue :w [3 2])
+                           :u (forces/make-unit :artillery :blue :u [3 3])}}))
 
 (def aw-ft1 (state-builder
              (-> (field/flat-field 15 10)
