@@ -20,9 +20,11 @@
                        :mountains [124 117 104]
                        :road [140 101 33]}
              :red {:default [211 61 61]
+                   :shadow [211 61 61 75]
                    :spent [150 42 42]
                    :selected [252 126 126]}
              :blue {:default [61 106 211]
+                    :shadow [61 106 211 75]
                     :spent [37 68 142]
                     :selected [106 149 252]}
              :white [252 252 252]
@@ -30,15 +32,14 @@
 
 ;; Menus
 
-(defn attack-menu [attack-option]
-  (if (= :no-targets attack-option)
-    {:name :attack-menu
-     :options {:wait "> Send Order"}
-     :selection 0}
-    {:name :attack-menu
-     :options {:attack "> Attack"
-               :wait "> Send Order"}
-     :selection 0}))
+(defn dispatch-menu [dispatch attack-option]
+  {:name :dispatch-menu
+   :message (d/print-dispatch dispatch)
+   :options (if (= :no-targets attack-option)
+              {:send-order "> Send Order"}
+              {:attack "> Attack"
+               :send-order "> Send Order"})
+   :selection 0})
 
 ;; utils
 
