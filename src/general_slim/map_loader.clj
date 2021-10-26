@@ -19,7 +19,7 @@
   [k (assoc v :grid k)])
 
 (defn load-map [map-name]
-  (->> (str "maps/" map-name ".txt")
+  (->> (str "resources/maps/" map-name ".txt")
        (slurp)
        (str/split-lines)
        (mapv row->terrain)
