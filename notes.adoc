@@ -112,8 +112,9 @@ input    |     |
 ** DONE Once attack/wait commmand is issued _then_ the unit moves and attacks
 * DONE BUG: not moving costs a movement point (Maybe just don't send an empty move order?)
 * DONE BUG: end highlight / select on end turn
+* DONE BUG: Units can move after attacking
 
-* BUG: Units can move after attacking
+* BUG: Can end turn in menu mode
 
 * Map builder stuff
 * level persistence

@@ -131,7 +131,8 @@
     dmg))
 
 (defn resolve-combat [atkr defdr a-terrain d-terrain]
-  [(assoc (update-hp atkr (defensive-damage  atkr a-terrain defdr d-terrain)) :can-attack false)
+  [(assoc (update-hp atkr (defensive-damage  atkr a-terrain defdr d-terrain))
+          :move-points 0)
    (update-hp defdr (offensive-damage atkr a-terrain defdr d-terrain))])
 
 (defn update-unit [game-state unit]
