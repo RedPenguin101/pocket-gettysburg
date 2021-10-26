@@ -1,5 +1,6 @@
 (ns general-slim.game-states
   (:require [general-slim.field :as field]
+            [general-slim.map-loader :refer [load-map]]
             [general-slim.forces :as forces]))
 
 (defn state-builder [field reds blues]
@@ -29,21 +30,7 @@
                            :u (forces/make-unit :artillery :blue :u [3 3])}}))
 
 (def aw-ft1 (state-builder
-             (-> (field/flat-field 15 10)
-                 (field/add-terrain
-                  :trees
-                  [[3 0] [4 0] [2 1] [3 1] [12 1] [13 2] [14 3]
-                   [0 6] [1 7]])
-                 (field/add-terrain
-                  :mountains
-                  [[0 0] [1 0] [2 0] [9 0] [10 0] [11 0] [12 0] [13 0] [14 0]
-                   [0 1] [1 1] [14 1] [13 1] [11 1] [10 1]
-                   [0 2] [14 2]
-                   [0 4] [14 5]
-                   [14 6] [13 6]
-                   [0 7] [14 7] [13 7] [12 7]
-                   [0 8] [1 8] [2 8] [6 8] [14 8] [13 8] [12 8] [11 8]
-                   [0 9] [1 9] [2 9] [3 9] [5 9] [6 9] [7 9] [9 9] [10 9] [11 9] [12 9] [13 9] [14 9]]))
+             (load-map "aw_ft1")
              {:units {:x (forces/make-unit :infantry :red :x [5 3])
                       :y (forces/make-unit :infantry :red :y [3 5])}}
              {:units {:v (forces/make-unit :infantry :blue :v [13 5])
