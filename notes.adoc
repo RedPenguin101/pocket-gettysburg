@@ -107,9 +107,10 @@ input    |     |
 * DONE Bug: in battle, attackers losses are not impacted by defenders hp
 * DONE REPLICATE FIRST AW LEVEL
 
+* BUG: not moving costs a movement point
 * BUG: end highlight / select on end turn
 * Change order system to a sort of queue
-** Issue move order, target square has a 'shadow' of unit on it but unit doesn't move
+** DONE Issue move order, target square has a 'shadow' of unit on it but unit doesn't move
 ** Can issue attack order (or wait) from shadow. Attack order gets queued behind the move order
 ** Once attack/wait commmand is issued _then_ the unit moves and attacks
 ** Change attack menu to order menu: 'Order builder text': "Move to map reference X Y and attack Z"
@@ -135,3 +136,10 @@ input    |     |
 * Morale Retreat and rout
 * Friendly FOW
 * Status: Moving, Organizing, Deployed, Dug in
+
+== scratch
+
+Select move:
+* Add move to dispatch
+* Is there an attack option after the move?
+* Pop menu with 'send order' and 'attack' if there is an attack option

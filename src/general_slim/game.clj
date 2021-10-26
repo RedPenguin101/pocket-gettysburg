@@ -159,8 +159,9 @@
       ;; special case, no move
       selected-unit?
       (-> game-state
-          (assoc :order-queue [[:move my-side (:id selected-unit?) (:route game-state)]])
           (update :dispatch d/add-move-order (:route game-state))
+          (inputs/add-attack-option my-side (:id selected-unit?) cursor)
+          (request-input)
           (dissoc :highlight :route-selection :route))
 
       :else (do (println "Move fall through") game-state))))
