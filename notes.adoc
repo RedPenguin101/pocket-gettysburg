@@ -115,16 +115,19 @@ input    |     |
 * DONE BUG: Units can move after attacking
 * DONE BUG: Can end turn in menu mode
 
+* cancel out of order mid move
+
+* Draw terrain on static layer
+* Sprites
+* Artillery
 * Map builder stuff
 * level persistence
 * Rivers
-* Message display system (-> message, seconds to display)
 * FOW
 * AI
-* Sprites
-* Draw terrain on static layer
-* Artillery
 * enemy unit info - attack range on button hold
+* Combat still sucks
+* Message display system (-> message, seconds to display)
 
 == Post MVP
 

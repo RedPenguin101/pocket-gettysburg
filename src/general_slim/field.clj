@@ -21,6 +21,12 @@
           field
           locs))
 
+(defn add-road [field path]
+  (reduce (fn [fld loc]
+            (assoc fld loc {:grid loc :terrain :road :dirs [:hor :vert]}))
+          field
+          path))
+
 (defn build-map [x-size y-size trees]
   (merge (flat-field x-size y-size)
          (random-trees x-size y-size trees)))
