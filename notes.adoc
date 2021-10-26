@@ -121,11 +121,12 @@ input    |     |
 * DONE: Map builder stuff
 * DONE: level persistence
 
-* Scenario namespace
-* Persist unit tables
-* Persist scenarios
+* DONE Scenario namespace
+* DONE Persist unit tables
+* DONE Persist scenarios
 
 * Make units a bit transparent so you can see terrain underneath
+* Move units a bit so they're not blocking text
 * Little circles on units with HP
 * Rivers
 * FOW
