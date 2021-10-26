@@ -118,10 +118,15 @@ input    |     |
 * DONE Sprites: Units, Field, Mountain, Trees 
 * DONE: cancel out of order mid move
 * DONE: Artillery
+* DONE: Map builder stuff
+* DONE: level persistence
 
+* Scenario namespace
+* Persist unit tables
+* Persist scenarios
+
+* Make units a bit transparent so you can see terrain underneath
 * Little circles on units with HP
-* Map builder stuff
-* level persistence
 * Rivers
 * FOW
 * AI
