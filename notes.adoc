@@ -106,14 +106,14 @@ input    |     |
 * DONE In battles, attackers losses are modified by the terrain they're on (think this is why my losses aren't same as AW).
 * DONE Bug: in battle, attackers losses are not impacted by defenders hp
 * DONE REPLICATE FIRST AW LEVEL
-
-* BUG: not moving costs a movement point (Maybe just don't send an empty move order?)
-* BUG: end highlight / select on end turn
-* Change order system to a sort of queue
+* DONE Change order system to a sort of queue
 ** DONE Issue move order, target square has a 'shadow' of unit on it but unit doesn't move
-** Can issue attack order (or wait) from shadow. Attack order gets queued behind the move order
-** Once attack/wait commmand is issued _then_ the unit moves and attacks
-** Change attack menu to order menu: 'Order builder text': "Move to map reference X Y and attack Z"
+** DONE Can issue attack order (or wait) from shadow. Attack order gets queued behind the move order
+** DONE Once attack/wait commmand is issued _then_ the unit moves and attacks
+* DONE BUG: not moving costs a movement point (Maybe just don't send an empty move order?)
+
+* BUG: end highlight / select on end turn
+* BUG: Units can move after attacking
 
 * Map builder stuff
 * level persistence

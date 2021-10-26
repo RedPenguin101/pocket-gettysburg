@@ -159,7 +159,6 @@
       ;; special case, no move
       selected-unit?
       (-> game-state
-          (update :dispatch d/add-move-order (:route game-state))
           (inputs/add-attack-option my-side (:id selected-unit?) cursor)
           (request-input)
           (dissoc :highlight :route-selection :route))
