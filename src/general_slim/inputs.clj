@@ -94,16 +94,18 @@
 
 ;; Combat stuff
 
-(defn combat-stub [game-state u1 _u2]
-  (-> game-state
-      (assoc-in [(:side u1) :units (:id u1) :can-attack] false)))
+(defn update-unit [game-state unit]
+  (assoc-in game-state [(:side unit) :units (:id unit)] unit))
 
 (defn attack-order
   [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
-        enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])]
+        enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
+        [u1 u2] (combat/resolve-combat my-unit enemy-unit)]
     (-> game-state
-        (combat-stub my-unit enemy-unit)
+        (update-unit u1)
+        (update-unit u2)
+        (assoc-in [my-side :units my-unit-id :can-attack] false)
         (dissoc :current-order))))
 
 (defn end-turn [game-state side]
