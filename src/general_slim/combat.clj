@@ -1,7 +1,7 @@
 (ns general-slim.combat
   (:require [general-slim.utils :refer [average rng-int zero-floored-minus]]))
 
-(def noisy-print true)
+(def noisy-print false)
 
 (def hit-rates
   {:field 0.2
@@ -86,7 +86,7 @@
      (print-retreat-chance d-unit a-unit))
    (let [retreater? (retreater a-unit d-unit)]
      (cond (some zero? [rounds (:soldiers a-unit) (:soldiers d-unit)])
-           [:round-finished (clean-unit a-unit) (clean-unit d-unit)]
+           [:turn-finished (clean-unit a-unit) (clean-unit d-unit)]
 
            retreater?
            (do (when noisy-print (println (name retreater?)))
