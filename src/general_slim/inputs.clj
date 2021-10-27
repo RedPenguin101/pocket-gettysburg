@@ -3,6 +3,7 @@
             [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.utils :refer [dissoc-in map-vals]]
             [general-slim.field :as field]
+            [general-slim.combat :as combat]
             [general-slim.route-calc :as routing :refer [accessible-squares]]))
 
 (def other-side {:red :blue :blue :red})
@@ -93,63 +94,16 @@
 
 ;; Combat stuff
 
-(defn update-hp [unit hit-for]
-  (update unit :hp - (max 0 hit-for)))
-
-(defn offensive-damage
-  "When a unit is attacking another, the damage done to the defending unit"
-  [atkr a-terrain defdr d-terrain]
-  (let [dmg (int (* 10 (Math/pow (/ (:hp atkr) (:max-hp atkr)) 2)
-                    (/ (:offensive-power atkr) 100)
-                    (+ 1 (/ (get-in atkr [:terrain-bonus :on-attack :damage a-terrain]) 10))
-                    (- 1 (/ (get-in defdr [:terrain-bonus :on-defence :defense d-terrain]) 10))))]
-    (println "Combat report offensive damage" dmg
-             {:attacker-hp (:hp atkr)
-              :attacker-hp-mod (Math/pow (/ (:hp atkr) (:max-hp atkr)) 2)
-              :attacker-offense-power (:offensive-power atkr)
-              :attack-terrain a-terrain
-              :attacker-terrain-mod-on-att-dmg (+ 1 (/ (get-in atkr [:terrain-bonus :on-attack :damage a-terrain]) 10))
-              :defender-terrain d-terrain
-              :defender-terrain-mod-on-def-def (- 1 (/ (get-in defdr [:terrain-bonus :on-defence :defense d-terrain]) 10))})
-    dmg))
-
-(defn defensive-damage
-  "When a unit is attacking another, the damage done to the attacking unit"
-  [atkr a-terrain defdr d-terrain]
-  (let [dmg (int (* 10 (Math/pow (/ (:hp defdr) (:max-hp defdr)) 2)
-                    (/ (:offensive-power defdr) 100)
-                    (+ 1 (/ (get-in defdr [:terrain-bonus :on-defence :damage d-terrain]) 10))
-                    (- 1 (/ (get-in atkr [:terrain-bonus :on-attack :defense a-terrain]) 10))))]
-    (println "Combat report defensive damage" dmg
-             {:defender-hp (:hp defdr)
-              :defender-hp-mod (Math/pow (/ (:hp defdr) (:max-hp defdr)) 2)
-              :defender-offense-power (:offensive-power defdr)
-              :defender-terrain d-terrain
-              :defender-terrain-mod-on-def-dmg (+ 1 (/ (get-in defdr [:terrain-bonus :on-defence :damage d-terrain]) 10))
-              :attacker-terrain d-terrain
-              :attacker-terrain-mod-on-att-def (- 1 (/ (get-in atkr [:terrain-bonus :on-attack :defense a-terrain]) 10))})
-    dmg))
-
-(defn resolve-combat [atkr defdr a-terrain d-terrain]
-  [(assoc (update-hp atkr (defensive-damage  atkr a-terrain defdr d-terrain))
-          :move-points 0)
-   (update-hp defdr (offensive-damage atkr a-terrain defdr d-terrain))])
-
-(defn update-unit [game-state unit]
-  (if (> (:hp unit) 0)
-    (assoc-in game-state [(:side unit) :units (:id unit)] unit)
-    (dissoc-in game-state [(:side unit) :units] (:id unit))))
+(defn combat-stub [game-state u1 _u2]
+  (-> game-state
+      (assoc-in [(:side u1) :units (:id u1) :can-attack] false)))
 
 (defn attack-order
   [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
-        my-terrain (get-in game-state [:field (:position my-unit) :terrain])
-        enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
-        enemy-terrain (get-in game-state [:field (:position enemy-unit) :terrain])
-        [u1 u2] (resolve-combat my-unit enemy-unit my-terrain enemy-terrain)]
+        enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])]
     (-> game-state
-        (update-unit u1)
-        (update-unit u2)
+        (combat-stub my-unit enemy-unit)
         (dissoc :current-order))))
 
 (defn end-turn [game-state side]

@@ -6,7 +6,7 @@
 
 ;; state and constants
 
-(def game-state (load-scenario "all_visuals"))
+(def game-state (load-scenario "ready_to_attack"))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
