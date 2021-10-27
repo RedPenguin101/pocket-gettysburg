@@ -62,7 +62,6 @@
    units are in adjacent locations (and so are attackable)"
   [game-state side unit-id unit-loc]
   (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
-    (println "add attack option targets" targets)
     (if (empty? targets)
       (assoc game-state :attack-option :no-targets)
       (assoc game-state :attack-option [side unit-id unit-loc targets]))))
@@ -121,7 +120,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn handle-combat-outcome [game-state resolution attacker defender]
-  #_(println "Combat resolution:" resolution)
   (case resolution
     :turn-finished      game-state
     :attacker-retreats (add-retreat-order game-state (:side attacker) (:id attacker) (find-retreat-square (:position attacker) (:position defender) (occupied-grids game-state)))
@@ -155,9 +153,6 @@
     (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
 
 (defn handle-input [game-state]
-  #_(println "==Input handle:")
-  (println "Current-order: " (:current-order game-state))
-  #_(println "Order queue: " (:order-queue game-state))
   (cond (:current-order game-state)
         (let [[order-type side unit target] (:current-order game-state)]
           (case order-type

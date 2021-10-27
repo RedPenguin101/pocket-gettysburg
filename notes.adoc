@@ -129,17 +129,20 @@ input    |     |
 * DONE BUG Dead units try to withdraw
 * DONE BUG Retreating costs movement points
 * DONEBUG Can't multidirection attack
-
-* Replace shadow with something better?
-* Make unit HP fit on tiles
-
-* Improve Infantry combat system
+* DONE Improve Infantry combat system
 ** DONE Infantry on infantry Volley
 ** DONE Terrain modifers
 ** DONE Retreat mechanics
 ** DONE Disengagement (non-retreaters get a free shot)
 ** DONE Actual retreat, move on retreat
-** Charging
+
+* Replace shadow with something better?
+* Make unit HP fit on tiles
+* Scenario text
+* Win condition: no enemy units
+* Lose condition: no remaining units
+
+* Infantry Charging
 * Cavalry combat system
 * Artillery
 

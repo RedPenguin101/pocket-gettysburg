@@ -6,7 +6,7 @@
 
 ;; state and constants
 
-(def game-state (load-scenario "multi_dir_attack"))
+(def game-state (load-scenario "aw_ft1"))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -171,10 +171,9 @@
                              (get-in game-state [:menu :selection]))]
     (case selected-option
       :send-order
-      (do (println "got here")
-          (-> game-state
-              (d/send-order)
-              (dissoc :shadow-unit :selected :highlight :attack-option :menu)))
+      (-> game-state
+          (d/send-order)
+          (dissoc :shadow-unit :selected :highlight :attack-option :menu))
       :attack
       (-> game-state
           (assoc :cursor (first (last (:attack-option game-state)))
