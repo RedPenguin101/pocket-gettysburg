@@ -126,6 +126,8 @@ input    |     |
 * DONE Persist scenarios
 * DONE Make units a bit transparent so you can see terrain underneath
 * DONE Move units a bit so they're not blocking text
+* DONE BUG Dead units try to withdraw
+* DONE BUG Retreating costs movement points
 
 * BUG Can't multidirection attack
 * Replace shadow with something better?

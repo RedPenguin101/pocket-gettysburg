@@ -80,10 +80,10 @@
       (assoc game-state :current-order [order-type side unit-id (rest route)]))))
 
 (defn execute-move-order
-  [game-state side unit-id route]
+  [game-state move-type side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
         target-occupied? (unit-in-square game-state (first route))
-        move-cost ((:movement-table unit) (get-in game-state [:field (first route) :terrain]))]
+        move-cost (if (= :retreat move-type) 0 ((:movement-table unit) (get-in game-state [:field (first route) :terrain])))]
     (cond (and target-occupied? (not= target-occupied? unit))
           (do (println "Cannot move to an occupied square")
               game-state)
@@ -111,9 +111,10 @@
           (retreatable-squares preferred-retreat) preferred-retreat
           :else (rand-nth (vec retreatable-squares)))))
 
-(defn add-retreat-order [game-state retreating-unit retreat-square]
-  #_(println "retreating side:" (:side retreating-unit))
-  (update game-state :order-queue conj [:move (:side retreating-unit) (:id retreating-unit) [retreat-square]]))
+(defn add-retreat-order [game-state side unit-id retreat-square]
+  (if (get-in game-state [side :units unit-id :soldiers])
+    (update game-state :order-queue conj [:retreat side unit-id [retreat-square]])
+    game-state))
 
 ;; Combat order execution
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,8 +123,8 @@
   #_(println "Combat resolution:" resolution)
   (case resolution
     :turn-finished      game-state
-    :attacker-retreats (add-retreat-order game-state attacker (find-retreat-square (:position attacker) (:position defender) (occupied-grids game-state)))
-    :defender-retreats (add-retreat-order game-state defender (find-retreat-square (:position defender) (:position attacker) (occupied-grids game-state)))))
+    :attacker-retreats (add-retreat-order game-state (:side attacker) (:id attacker) (find-retreat-square (:position attacker) (:position defender) (occupied-grids game-state)))
+    :defender-retreats (add-retreat-order game-state (:side defender) (:id defender) (find-retreat-square (:position defender) (:position attacker) (occupied-grids game-state)))))
 
 (defn execute-attack-order
   [game-state my-side my-unit-id enemy-unit-id]
@@ -159,9 +160,10 @@
   (cond (:current-order game-state)
         (let [[order-type side unit target] (:current-order game-state)]
           (case order-type
-            :move (execute-move-order game-state side unit target)
+            :move (execute-move-order game-state order-type side unit target)
+            :retreat (execute-move-order game-state order-type side unit target)
             :end-turn (end-turn game-state side)
-            :attack (do (println "Attacking") (execute-attack-order game-state side unit target))))
+            :attack (execute-attack-order game-state side unit target)))
         (not-empty (:order-queue game-state))
         (-> game-state
             (assoc :current-order (first (:order-queue game-state)))
