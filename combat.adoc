@@ -10,7 +10,7 @@ Each of the 1000 men is assumed to have a rifle and ammunition (infinite for now
 
 When two regiments engage they stand opposed (the assulting side and the defending side) and fire their rifles, and potentially one side charges the other.
 
-A turn length in this game is one hour. In most cases this will be sufficient time for two regiments to fully engage, with one side driving off the other.
+A turn length in this game is 10 minutes. In most cases this will be sufficient time for two regiments to fully engage, with one side driving off the other.
 
 === Volley
 
@@ -55,9 +55,21 @@ After each volley, the commander of the regiment will make a call on whether to 
 
 One Volley takes 2 minutes of game time. so there are potentially 5 volleys in a turn, though likely one unit will retreat or charge before that.
 
+== Retreating
+
+After each volley the unit commander will decide whether to retreat or not. The factors that go into this include:
+
+* The number of casualties taken as a proportion of the starting force
+* The proportional strength of their unit to the opposing unit: If they are outnumbered they are much more likely to retreat, if they outnumber the opponent they are less likely.
+* If they are attacking into unfavorable terrain (i.e. into woods)
+* NOT IMPLEMENTED The courage/stubbornous of the commander
+* NOT IMPLEMENTED Whether they are being supported by other units
+
+When retreating, units try to move away from the enemy they are facing. If that square is occupied they will randomly pick another unoccupied square
+
 TODO
 Charging
-Retreat determination
+Retreating multiple squares, maximising MDist from enemy
 Facings and frontage
 Morale failing
 Formation (road etc.)

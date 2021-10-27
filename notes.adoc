@@ -135,6 +135,7 @@ input    |     |
 * Cavalry combat system
 * Artillery
 
+* Put in actual time, display in top right
 * Improve road drawings: tiles depend on surrounding
 * Rivers
 * FOW
