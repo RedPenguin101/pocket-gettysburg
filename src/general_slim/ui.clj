@@ -230,7 +230,6 @@
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
-  (when (:shadow-unit game-state) (draw-shadow-unit (:shadow-unit game-state)))
   (when (:highlight game-state) (draw-highlights (:highlight game-state)))
   (if (:attack-mode game-state)
     (draw-attack-cursor (:cursor game-state))
