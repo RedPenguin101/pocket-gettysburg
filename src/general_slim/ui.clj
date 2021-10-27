@@ -121,7 +121,7 @@
 ;; units
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-unit [{:keys [position id hp sprite]} color]
+(defn draw-unit [{:keys [position id soldiers sprite]} color]
   (let [x (coord->px (first position))
         y (coord->px (second position))]
     (draw-tile x y color)
@@ -131,7 +131,7 @@
     (q/text-font (q/create-font "Courier New" (scale 30)))
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
     (q/text-font (q/create-font "Courier New" (scale 20)))
-    (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))
+    (q/text (str soldiers) (+ x (scale 70)) (+ y (scale 90)))
     (when sprite
       (q/image-mode :corner)
       (q/image sprite x (+ y (scale 35))))))
@@ -213,15 +213,13 @@
     (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected))
 
     (when unit-under-cursor
-      (debug-text-item 1 (str "CURSOR: " (:hp unit-under-cursor) "hp"))
+      (debug-text-item 1 (str "CURSOR: " (:soldiers unit-under-cursor) " soldiers"))
       (debug-text-item 2 (str "Attack option: " attack-option))
-      (debug-text-item 3 (str "Move points: " (:move-points unit-under-cursor)))
-      (debug-text-item 4 (str "Att/Def: " (:attack unit-under-cursor) "/" uuc-defence)))
+      (debug-text-item 3 (str "Move points: " (:move-points unit-under-cursor))))
     (when (and selected (not unit-under-cursor))
-      (debug-text-item 1 (str "SELECTED: " (:hp unit-selected) "hp"))
+      (debug-text-item 1 (str "SELECTED: " (:solders unit-selected) " soldiers"))
       (debug-text-item 2 (str "Attack option: " attack-option))
-      (debug-text-item 3 (str "Move points: " (:move-points unit-selected)))
-      (debug-text-item 4 (str "Att/Def: " (:attack unit-selected) "/" selected-defence)))
+      (debug-text-item 3 (str "Move points: " (:move-points unit-selected))))
     (when route-selection
       (debug-text-item 5 (str "Route: " route))
       (debug-text-item 6 (str "Route cost: " route-cost)))))
