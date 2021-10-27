@@ -200,8 +200,8 @@
 
 (defn draw-debug-box [game-state]
   (let [{:keys [cursor selected
-                unit-under-cursor uuc-defence
-                unit-selected selected-defence
+                unit-under-cursor
+                unit-selected
                 route-selection route route-cost
                 attack-option]} (game/debug-data game-state)]
     (q/stroke 1)
