@@ -127,20 +127,24 @@ input    |     |
 * DONE Make units a bit transparent so you can see terrain underneath
 * DONE Move units a bit so they're not blocking text
 
+* Improve Infantry combat system
+** Infantry on infantry Volley
+** Terrain modifers
+** Retreat mechanics
+** Charging
+* Cavalry combat system
+* Artillery
+
 * Improve road drawings: tiles depend on surrounding
 * Rivers
 * FOW
 * AI
 * enemy unit info - attack range on button hold
-* Combat still sucks
 * Message display system (-> message, seconds to display)
 * Draw terrain on static layer (Don't know how to do this!)
 * Artillery, make terrain tables better
 * Little circles on units with HP
 * round edges of rect?
-
-== Post MVP
-
 * Bug?: units can completely eliminate eachother in combat
 * Commander skill
 * Facing and flanking
@@ -149,10 +153,5 @@ input    |     |
 * Morale Retreat and rout
 * Friendly FOW
 * Status: Moving, Organizing, Deployed, Dug in
-
-== scratch
-
-Select move:
-* Add move to dispatch
-* Is there an attack option after the move?
-* Pop menu with 'send order' and 'attack' if there is an attack option
+* Casualties, recovery
+* Better sprites
