@@ -130,7 +130,9 @@ input    |     |
 * Improve Infantry combat system
 ** DONE Infantry on infantry Volley
 ** DONE Terrain modifers
-** Retreat mechanics
+** DONE Retreat mechanics
+** DONE Disengagement (non-retreaters get a free shot)
+** Actual retreat, move on retreat
 ** Charging
 * Cavalry combat system
 * Artillery

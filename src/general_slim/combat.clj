@@ -90,7 +90,9 @@
 
            retreater?
            (do (when noisy-print (println (name retreater?)))
-               [retreater? (clean-unit a-unit) (clean-unit d-unit)])
+               (case retreater?
+                 :attacker-retreats [retreater? (clean-unit (incur-casualties a-unit d-unit)) (clean-unit d-unit)]
+                 :defender-retreats [retreater? (clean-unit a-unit) (clean-unit (incur-casualties d-unit a-unit))]))
 
            :else (recur (incur-casualties a-unit d-unit)
                         (incur-casualties d-unit a-unit)
