@@ -125,9 +125,10 @@ input    |     |
 * DONE Persist unit tables
 * DONE Persist scenarios
 
-* Make units a bit transparent so you can see terrain underneath
-* Move units a bit so they're not blocking text
+* DONE Make units a bit transparent so you can see terrain underneath
+* DONE Move units a bit so they're not blocking text
 * Little circles on units with HP
+* round edges of rect?
 * Rivers
 * FOW
 * AI

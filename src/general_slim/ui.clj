@@ -125,16 +125,16 @@
   (let [x (coord->px (first position))
         y (coord->px (second position))]
     (draw-tile x y color)
-    (q/stroke 1)
-    (q/stroke-weight 1)
+    (q/stroke 0)
+    (q/stroke-weight 0)
     (q/fill (colors :white))
     (q/text-font (q/create-font "Courier New" (scale 30)))
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
     (q/text-font (q/create-font "Courier New" (scale 20)))
     (q/text (str hp) (+ x (scale 70)) (+ y (scale 90)))
     (when sprite
-      (q/image-mode :center)
-      (q/image sprite (+ x (/ tile-size 2)) (+ y (/ tile-size 2))))))
+      (q/image-mode :corner)
+      (q/image sprite x (+ y (scale 35))))))
 
 (defn draw-shadow-unit [unit]
   (draw-unit unit (get-in colors [(:side unit) :shadow])))
@@ -175,7 +175,7 @@
 
 (defn draw-turn-indicator [side]
   (q/stroke nil)
-  (q/fill (get-in colors [side :default]))
+  (q/fill (vec (take 3 (get-in colors [side :default]))))
   (q/rect 0 0 (scale 30) (scale 30)))
 
 (defn draw-menu [game-state]
