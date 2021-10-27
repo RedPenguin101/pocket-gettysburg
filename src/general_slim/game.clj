@@ -246,8 +246,8 @@
 
 (defn tick [game-state]
   (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
-    (inputs/handle-input game-state)
-    game-state))
+    (update (inputs/handle-input game-state) :ticks (fnil inc 0))
+    (update game-state :ticks (fnil inc 0))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
@@ -259,6 +259,9 @@
   "Debug area"
   (def other-side {:red :blue :blue :red})
 
-  (def game-state @general-slim.ui/debug)
-  (dissoc game-state :field :red :blue)
+  ;;(def game-state @general-slim.ui/debug)
+  @general-slim.ui/debug
+  (dissoc game-state :field)
+  (:red game-state)
+  (tick game-state)
   (select-keys game-state [:dispatch :menu :attack-option]))
