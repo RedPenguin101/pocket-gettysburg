@@ -136,9 +136,6 @@
       (q/image-mode :corner)
       (q/image sprite x (+ y (scale 35))))))
 
-(defn draw-shadow-unit [unit]
-  (draw-unit unit (get-in colors [(:side unit) :shadow])))
-
 (defn draw-units [game-state side]
   (doseq [unit (vals (get-in game-state [side :units]))]
     (let [color (cond
@@ -269,4 +266,5 @@
   (:shadow-unit @debug)
   (game/debug-data @debug)
 
-  (select-keys @debug [:dispatch :order-queue]))
+  (select-keys @debug [:attack-mode])
+  (dissoc @debug :field))
