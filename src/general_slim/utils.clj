@@ -9,8 +9,9 @@
 (defn dissoc-in [m ks k]
   (update-in m ks dissoc k))
 
-(dissoc-in {:hello {:world {:foo "bar" :baz 3}}}
-           [:hello :world] :baz)
+(comment
+  (dissoc-in {:hello {:world {:foo "bar" :baz 3}}}
+             [:hello :world] :baz))
 
 (defn coordinate
   "Turns a 2d grid (coll of coll of x) into a map of coord->x"
@@ -26,3 +27,6 @@
 (defn average [xs]
   (float (/ (apply + xs)
             (count xs))))
+
+(defn zero-floored-minus [x y]
+  (max 0 (- x y)))

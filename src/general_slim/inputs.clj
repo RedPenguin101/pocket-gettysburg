@@ -95,7 +95,9 @@
 ;; Combat stuff
 
 (defn update-unit [game-state unit]
-  (assoc-in game-state [(:side unit) :units (:id unit)] unit))
+  (if (zero? (:soldiers unit))
+    (dissoc-in game-state [(:side unit) :units] (:id unit))
+    (assoc-in game-state [(:side unit) :units (:id unit)] unit)))
 
 (defn attack-order
   [game-state my-side my-unit-id enemy-unit-id]
