@@ -127,12 +127,15 @@ input    |     |
 * DONE Make units a bit transparent so you can see terrain underneath
 * DONE Move units a bit so they're not blocking text
 
+* BUG Can't multidirection attack
+* Replace shadow with something better?
+
 * Improve Infantry combat system
 ** DONE Infantry on infantry Volley
 ** DONE Terrain modifers
 ** DONE Retreat mechanics
 ** DONE Disengagement (non-retreaters get a free shot)
-** Actual retreat, move on retreat
+** DONE Actual retreat, move on retreat
 ** Charging
 * Cavalry combat system
 * Artillery
