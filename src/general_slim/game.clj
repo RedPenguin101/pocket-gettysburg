@@ -6,7 +6,7 @@
 
 ;; state and constants
 
-(def game-state (load-scenario "ready_to_attack"))
+(def game-state (load-scenario "multi_dir_attack"))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -87,8 +87,9 @@
           :else game-state)))
 
 (defn cursor-attack [game-state dir]
-  (let [attempted-selection ((grid-moves dir) (:selected game-state))]
-    (if ((last (:attack-mode game-state)) attempted-selection)
+  (let [[_side _unit-id unit-loc target-locs] (:attack-mode game-state)
+        attempted-selection ((grid-moves dir) unit-loc)]
+    (if (target-locs attempted-selection)
       (assoc game-state :cursor attempted-selection)
       game-state)))
 
@@ -259,7 +260,7 @@
   "Debug area"
   (def other-side {:red :blue :blue :red})
 
-  ;(def game-state @general-slim.ui/debug)
+  (def game-state @general-slim.ui/debug)
   @general-slim.ui/debug
   (dissoc game-state :field)
   (:red game-state)

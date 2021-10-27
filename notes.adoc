@@ -128,9 +128,10 @@ input    |     |
 * DONE Move units a bit so they're not blocking text
 * DONE BUG Dead units try to withdraw
 * DONE BUG Retreating costs movement points
+* DONEBUG Can't multidirection attack
 
-* BUG Can't multidirection attack
 * Replace shadow with something better?
+* Make unit HP fit on tiles
 
 * Improve Infantry combat system
 ** DONE Infantry on infantry Volley

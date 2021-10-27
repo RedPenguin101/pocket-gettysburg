@@ -62,9 +62,10 @@
    units are in adjacent locations (and so are attackable)"
   [game-state side unit-id unit-loc]
   (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
+    (println "add attack option targets" targets)
     (if (empty? targets)
       (assoc game-state :attack-option :no-targets)
-      (assoc game-state :attack-option [side unit-id targets]))))
+      (assoc game-state :attack-option [side unit-id unit-loc targets]))))
 
 (defn update-move-order
   "A move order has a route, so if there are remaining steps

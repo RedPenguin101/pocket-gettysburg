@@ -1,0 +1,5 @@
+{:map "flat_field"
+ :red [[:infantry :inf1 [2 2]]]
+ :blue [[:infantry :inf1 [3 3]] [:infantry :inf2 [2 4]]]
+ :turn :red
+ :turn-number 0}
