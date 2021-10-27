@@ -27,22 +27,27 @@
            "in" (name (:terrain other-unit))
            "causing" casualties "casualties"))
 
+(defn clean-unit
+  "Combat adds some gumf to a unit. This function cleans that
+   out before returning the unit to the main game loop"
+  [unit]
+  (dissoc unit :terrain :starting-strength :last-round-casualties))
+
+(defn incur-casualties [receiving shooting]
+  (let [cas (calculate-hits (:soldiers shooting)
+                            (:soldiers receiving)
+                            (hit-rates (:terrain receiving)))]
+    (print-combat-report shooting receiving cas)
+    (-> receiving
+        (update :soldiers zero-floored-minus cas)
+        (assoc :last-round-casualties cas))))
+
 (defn resolve-combat
   ([assaulting-unit defending-unit] (resolve-combat assaulting-unit defending-unit 5))
   ([a-unit d-unit rounds]
-   (if (or (zero? rounds)
-           (<= (:soldiers a-unit) 0)
-           (<= (:soldiers d-unit) 0))
-     [(dissoc a-unit :terrain) (dissoc d-unit :terrain)]
-     (let [d-cas (calculate-hits (:soldiers a-unit)
-                                 (:soldiers d-unit)
-                                 (hit-rates (:terrain d-unit)))
-           a-cas (calculate-hits (:soldiers d-unit)
-                                 (:soldiers a-unit)
-                                 (hit-rates (:terrain a-unit)))]
-       (println "Volley" (- 6 rounds) ":")
-       (print-combat-report a-unit d-unit d-cas)
-       (print-combat-report d-unit a-unit a-cas)
-       (recur (update a-unit :soldiers zero-floored-minus a-cas)
-              (update d-unit :soldiers zero-floored-minus d-cas)
-              (dec rounds))))))
+   (println "Volley" (- 6 rounds) ":")
+   (if (some zero? [rounds (:soldiers a-unit) (:soldiers d-unit)])
+     [(clean-unit a-unit) (clean-unit d-unit)]
+     (recur (incur-casualties a-unit d-unit)
+            (incur-casualties d-unit a-unit)
+            (dec rounds)))))
