@@ -4,7 +4,7 @@
 (defn calculate-hits
   [shots enemy-men]
   (count (reduce (fn [s t]
-                   (if (< (rand) 0.20)
+                   (if (< (rand) 0.2)
                      (conj s t)
                      s))
                  #{}
@@ -22,7 +22,7 @@
    (if (or (zero? rounds)
            (<= (:soldiers assaulting-unit) 0)
            (<= (:soldiers defending-unit) 0))
-     [assaulting-unit defending-unit]
+     [(dissoc assaulting-unit :terrain) (dissoc defending-unit :terrain)]
      (let [d-cas (calculate-hits (:soldiers assaulting-unit)
                                  (:soldiers defending-unit))
            a-cas (calculate-hits (:soldiers defending-unit)

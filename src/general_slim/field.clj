@@ -10,6 +10,9 @@
        (apply map vector)
        (map #(inc (apply max %)))))
 
+(defn terrain-at [field coord]
+  (get-in field [coord :terrain]))
+
 (defn terrain-map
   "returns the terrain at each coordinate provided"
   [field coords]
