@@ -1,14 +1,23 @@
 (ns general-slim.inputs
   (:require [clojure.set :refer [intersection difference]]
-            [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.utils :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position]]
+            [general-slim.route-calc :as routing :refer [accessible-squares]]
+            [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.field :as field]
-            [general-slim.combat :as combat]
-            [general-slim.route-calc :as routing :refer [accessible-squares]]))
+            [general-slim.combat :as combat]))
+
+;; General
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def other-side {:red :blue :blue :red})
 
+(defn update-unit [game-state unit]
+  (if (zero? (:soldiers unit))
+    (dissoc-in game-state [(:side unit) :units] (:id unit))
+    (assoc-in game-state [(:side unit) :units (:id unit)] unit)))
+
 ;; Routing and accessibility
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn manhattan [[x y] dist]
   (set (for [d (range 0 (inc dist))
@@ -32,13 +41,6 @@
         (map-vals movement-table)
         (remove #(nil? (val %))))))
 
-(comment
-  ;; get last run gamestate and fiddle with it
-  (def gs @general-slim.ui/debug)
-  gs
-  (sort (let [unit (unit-in-square gs [1 7])]
-          (can-move-to gs unit))))
-
 (defn route-cost
   "Given a game state, a unit and a route starting at
    that units location, will return the cost of walking
@@ -52,9 +54,13 @@
          (vals)
          (apply +))))
 
-;; Movement stuff
+;; Movement order execution
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn add-attack-option [game-state side unit-id unit-loc]
+(defn add-attack-option
+  "After a move has been done, calculate whether any enemy
+   units are in adjacent locations (and so are attackable)"
+  [game-state side unit-id unit-loc]
   (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
     (if (empty? targets)
       (assoc game-state :attack-option :no-targets)
@@ -73,7 +79,8 @@
           (add-attack-option side unit-id (first route)))
       (assoc game-state :current-order [order-type side unit-id (rest route)]))))
 
-(defn move-order [game-state side unit-id route]
+(defn execute-move-order
+  [game-state side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
         target-occupied? (unit-in-square game-state (first route))
         move-cost ((:movement-table unit) (get-in game-state [:field (first route) :terrain]))]
@@ -92,38 +99,33 @@
               (update-in [side :units unit-id :move-points] - move-cost)
               (update-move-order)))))
 
-;; Combat stuff
+;; Retreating
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn find-retreat-square [retreater-pos enemy-pos occupied-squares]
+(defn find-retreat-square
+  [retreater-pos enemy-pos occupied-squares]
   (let [retreatable-squares (difference (manhattan retreater-pos 1) occupied-squares)
         rel-pos-of-enemy (relative-position retreater-pos enemy-pos)
         preferred-retreat (relative-coord retreater-pos (opposing-dirs rel-pos-of-enemy))]
-    #_(do (println "retreater square" retreater-pos)
-          (println "Enemy pos" enemy-pos)
-          (println "Rel Pos of enemy" rel-pos-of-enemy)
-          (println "retreatable squares" retreatable-squares)
-          (println "preferred-retreat" preferred-retreat))
     (cond (empty? retreatable-squares) nil
           (retreatable-squares preferred-retreat) preferred-retreat
           :else (rand-nth (vec retreatable-squares)))))
 
 (defn add-retreat-order [game-state retreating-unit retreat-square]
-  (println "retreating side:" (:side retreating-unit))
+  #_(println "retreating side:" (:side retreating-unit))
   (update game-state :order-queue conj [:move (:side retreating-unit) (:id retreating-unit) [retreat-square]]))
 
-(defn handle-retreat [game-state resolution attacker defender]
-  (println "Combat resolution:" resolution)
+;; Combat order execution
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn handle-combat-outcome [game-state resolution attacker defender]
+  #_(println "Combat resolution:" resolution)
   (case resolution
-    :turn-finished game-state
+    :turn-finished      game-state
     :attacker-retreats (add-retreat-order game-state attacker (find-retreat-square (:position attacker) (:position defender) (occupied-grids game-state)))
     :defender-retreats (add-retreat-order game-state defender (find-retreat-square (:position defender) (:position attacker) (occupied-grids game-state)))))
 
-(defn update-unit [game-state unit]
-  (if (zero? (:soldiers unit))
-    (dissoc-in game-state [(:side unit) :units] (:id unit))
-    (assoc-in game-state [(:side unit) :units (:id unit)] unit)))
-
-(defn attack-order
+(defn execute-attack-order
   [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
         enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
@@ -131,11 +133,15 @@
                             (assoc my-unit :terrain (field/terrain-at (:field game-state) (:position my-unit)))
                             (assoc enemy-unit :terrain (field/terrain-at (:field game-state) (:position enemy-unit))))]
     (-> game-state
+        (dissoc :current-order)
         (update-unit u1)
         (update-unit u2)
         (assoc-in [my-side :units my-unit-id :can-attack] false)
-        (dissoc :current-order)
-        (handle-retreat resolution u1 u2))))
+        (handle-combat-outcome resolution u1 u2))))
+
+
+;; Other exeuction (End turn really shouldn't be an order!)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn end-turn [game-state side]
   (println "Ending turn")
@@ -153,9 +159,9 @@
   (cond (:current-order game-state)
         (let [[order-type side unit target] (:current-order game-state)]
           (case order-type
-            :move (move-order game-state side unit target)
+            :move (execute-move-order game-state side unit target)
             :end-turn (end-turn game-state side)
-            :attack (do (println "Attacking") (attack-order game-state side unit target))))
+            :attack (do (println "Attacking") (execute-attack-order game-state side unit target))))
         (not-empty (:order-queue game-state))
         (-> game-state
             (assoc :current-order (first (:order-queue game-state)))
