@@ -128,8 +128,8 @@ input    |     |
 * DONE Move units a bit so they're not blocking text
 
 * Improve Infantry combat system
-** Infantry on infantry Volley
-** Terrain modifers
+** DONE Infantry on infantry Volley
+** DONE Terrain modifers
 ** Retreat mechanics
 ** Charging
 * Cavalry combat system
