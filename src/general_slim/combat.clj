@@ -27,6 +27,13 @@
            "in" (name (:terrain other-unit))
            "causing" casualties "casualties"))
 
+(defn prep-unit
+  "A few things get added to a unit structure before they 
+   start combat to help with calculation"
+  [unit]
+  (-> unit
+      (assoc :starting-strength (:soldiers unit))))
+
 (defn clean-unit
   "Combat adds some gumf to a unit. This function cleans that
    out before returning the unit to the main game loop"
@@ -43,7 +50,7 @@
         (assoc :last-round-casualties cas))))
 
 (defn resolve-combat
-  ([assaulting-unit defending-unit] (resolve-combat assaulting-unit defending-unit 5))
+  ([assaulting-unit defending-unit] (resolve-combat (prep-unit assaulting-unit) (prep-unit defending-unit) 5))
   ([a-unit d-unit rounds]
    (println "Volley" (- 6 rounds) ":")
    (if (some zero? [rounds (:soldiers a-unit) (:soldiers d-unit)])
