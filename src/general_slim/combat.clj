@@ -19,7 +19,7 @@
 (comment
   (for [x [100 200 300 400 500 600 700 800 900 1000]]
     [:force-proportion (float (/ x 1000))
-     :casualty-rate (int (* 100 (/ (average (repeatedly 1000 #(calculate-hits 1000 x))) x)))]))
+     :casualty-rate (int (* 100 (/ (average (repeatedly 1000 #(calculate-hits 1000 x 0.2))) x)))]))
 
 (defn print-combat-report [volleying-unit other-unit casualties]
   (println (:soldiers volleying-unit) (name (:side volleying-unit))
