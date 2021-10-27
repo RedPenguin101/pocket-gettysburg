@@ -65,6 +65,13 @@ After each volley the unit commander will decide whether to retreat or not. The 
 * NOT IMPLEMENTED The courage/stubbornous of the commander
 * NOT IMPLEMENTED Whether they are being supported by other units
 
+The algorithm is this:
+
+* Take the proportional casualties squared
+* Add 1 - proportional strength (a positive proportional strength with therefore reduce retreat chance)
+* Modify this by * 1.2 if the enemy terrain is trees
+* Modify this by * 0.8 if your terrain is trees
+
 When retreating, units try to move away from the enemy they are facing. If that square is occupied they will randomly pick another unoccupied square
 
 TODO

@@ -259,7 +259,7 @@
   "Debug area"
   (def other-side {:red :blue :blue :red})
 
-  ;;(def game-state @general-slim.ui/debug)
+  ;(def game-state @general-slim.ui/debug)
   @general-slim.ui/debug
   (dissoc game-state :field)
   (:red game-state)
