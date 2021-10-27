@@ -124,11 +124,10 @@ input    |     |
 * DONE Scenario namespace
 * DONE Persist unit tables
 * DONE Persist scenarios
-
 * DONE Make units a bit transparent so you can see terrain underneath
 * DONE Move units a bit so they're not blocking text
-* Little circles on units with HP
-* round edges of rect?
+
+* Improve road drawings: tiles depend on surrounding
 * Rivers
 * FOW
 * AI
@@ -137,6 +136,8 @@ input    |     |
 * Message display system (-> message, seconds to display)
 * Draw terrain on static layer (Don't know how to do this!)
 * Artillery, make terrain tables better
+* Little circles on units with HP
+* round edges of rect?
 
 == Post MVP
 
