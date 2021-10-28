@@ -1,0 +1,5 @@
+{:map "visibility_test"
+ :red [[:infantry :inf1 [4 4]] [:infantry :inf2 [2 2]]]
+ :blue []
+ :turn :red
+ :turn-number 0}

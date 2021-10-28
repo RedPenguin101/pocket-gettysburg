@@ -1,12 +1,14 @@
 (ns general-slim.game
-  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
+  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value occupied-grids]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.dispatches :as d]
+            [general-slim.viewsheds :as v]
+            [general-slim.field :as field]
             [general-slim.scenarios :refer [load-scenario]]))
 
 ;; state and constants
 
-(def game-state (load-scenario "aw_ft1"))
+(def game-state (load-scenario "visibility"))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -28,7 +30,8 @@
                     :spent [37 68 142 150]
                     :selected [106 149 252 150]}
              :white [252 252 252]
-             :menu-select [183 183 183 75]})
+             :menu-select [183 183 183 75]
+             :visible [220 220 220 100]})
 
 ;; Menus
 
@@ -55,6 +58,18 @@
    (min (max 0 y) (dec vert-tiles))])
 
 (defn coord->px [x] (int (* tile-size x)))
+
+;; Viewsheds - not the right place for this but whatever
+
+(defn calculate-viewsheds [unit-loc]
+  (v/viewshed unit-loc (field/terrain-map (:field game-state))))
+
+(defn add-viewsheds [game-state]
+  (->> (:turn game-state)
+       (occupied-grids game-state)
+       (mapcat calculate-viewsheds)
+       (set)
+       (assoc game-state :viewsheds)))
 
 ;; Cursor Handlers
 
@@ -247,7 +262,9 @@
 (defn tick [game-state]
   (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
     (update (inputs/handle-input game-state) :ticks (fnil inc 0))
-    (update game-state :ticks (fnil inc 0))))
+    (-> game-state
+        (update :ticks (fnil inc 0))
+        (add-viewsheds))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
@@ -261,7 +278,12 @@
 
   (def game-state @general-slim.ui/debug)
   @general-slim.ui/debug
-  (dissoc game-state :field)
+
+  (require '[general-slim.field :as field])
+  (require '[general-slim.utils :as utils])
+  (field/terrain-map (:field game-state) (utils/manhattan [4 4] 4))
+  (field/terrain-map (:field game-state))
+
   (:red game-state)
   (tick game-state)
   (select-keys game-state [:dispatch :menu :attack-option]))

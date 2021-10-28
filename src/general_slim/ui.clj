@@ -141,7 +141,9 @@
     (let [color (cond
                   (zero? (:move-points unit)) (get-in colors [side :spent])
                   :else (get-in colors [side :default]))]
-      (draw-unit unit color))))
+      (draw-unit unit color)))
+  (doseq [[x y] (:viewsheds game-state)]
+    (draw-tile (coord->px x) (coord->px y) (:visible colors))))
 
 ;; other on-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
