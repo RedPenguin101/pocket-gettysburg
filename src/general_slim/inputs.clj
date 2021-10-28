@@ -54,7 +54,7 @@
   "After a move has been done, calculate whether any enemy
    units are in adjacent locations (and so are attackable)"
   [game-state side unit-id unit-loc]
-  (let [targets (intersection (occupied-grids game-state (other-side side)) (manhattan unit-loc 1))]
+  (let [targets (intersection (occupied-grids game-state (other-side side)) (:viewsheds game-state) (manhattan unit-loc 1))]
     (if (empty? targets)
       (assoc game-state :attack-option :no-targets)
       (assoc game-state :attack-option [side unit-id unit-loc targets]))))

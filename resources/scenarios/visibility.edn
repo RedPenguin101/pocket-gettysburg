@@ -6,6 +6,7 @@
  [[:infantry :inf1 [1 1]] [:infantry :inf2 [3 2]]
   [:infantry :inf3 [3 3]] [:infantry :inf4 [3 4]]
   [:infantry :inf5 [4 1]] [:infantry :inf8 [4 7]]
-  [:infantry :inf6 [6 4]] [:infantry :inf7 [7 4]]]
+  [:infantry :inf6 [6 4]] [:infantry :inf7 [7 4]]
+  [:infantry :inf9 [4 2]] [:infantry :inf10 [5 3]]]
  :turn :red
  :turn-number 0}
