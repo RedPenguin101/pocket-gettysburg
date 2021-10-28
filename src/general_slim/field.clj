@@ -15,5 +15,6 @@
 
 (defn terrain-map
   "returns the terrain at each coordinate provided"
-  [field coords]
-  (into {} (map (juxt identity #(get-in field [% :terrain])) coords)))
+  ([field] (into {} (map (fn [[k v]] [k (:terrain v)]) field)))
+  ([field coords]
+   (into {} (map (juxt identity #(get-in field [% :terrain])) coords))))
