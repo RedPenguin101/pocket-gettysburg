@@ -31,7 +31,7 @@
           path))
 
 (defn viewshed [loc tmap]
-  (set (mapcat #(walk-path % loc tmap) (paths loc))))
+  (conj (set (mapcat #(walk-path % loc tmap) (paths loc))) loc))
 
 (defn calculate-viewsheds [game-state unit-loc]
   (viewshed unit-loc (field/terrain-map (:field game-state))))
