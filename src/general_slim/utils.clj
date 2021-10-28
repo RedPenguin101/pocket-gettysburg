@@ -52,3 +52,16 @@
       [0 1] :up
       [0 -1] :down
       (throw (ex-info "Two points are not adjacent" {:p1 [x1 y1] :p2 [x2 y2]})))))
+
+(defn manhattan [[x y] dist]
+  (set (for [d (range 0 (inc dist))
+             x' (range (- d) (inc d))
+             y' (range (- d) (inc d))
+             :when (= d (+ (Math/abs x') (Math/abs y')))]
+         [(+ x x') (+ y y')])))
+
+(defn adjacent? [p1 p2]
+  ((manhattan p1 1) p2))
+
+(defn coord+ [[x1 y1] [x2 y2]]
+  [(+ x1 x2) (+ y1 y2)])

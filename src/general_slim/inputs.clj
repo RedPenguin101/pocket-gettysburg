@@ -1,6 +1,6 @@
 (ns general-slim.inputs
   (:require [clojure.set :refer [intersection difference]]
-            [general-slim.utils :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position]]
+            [general-slim.utils :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position manhattan]]
             [general-slim.route-calc :as routing :refer [accessible-squares]]
             [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.field :as field]
@@ -18,13 +18,6 @@
 
 ;; Routing and accessibility
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn manhattan [[x y] dist]
-  (set (for [d (range 0 (inc dist))
-             x' (range (- d) (inc d))
-             y' (range (- d) (inc d))
-             :when (= d (+ (Math/abs x') (Math/abs y')))]
-         [(+ x x') (+ y y')])))
 
 (defn can-move-to
   "Given a game state and a unit, will return a set of every
