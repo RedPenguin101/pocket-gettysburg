@@ -65,3 +65,8 @@
 
 (defn coord+ [[x1 y1] [x2 y2]]
   [(+ x1 x2) (+ y1 y2)])
+
+(defn remove-oob-coords [x-max y-max coords]
+  (remove (fn [[x y]] (or (< x 0) (< y 0)
+                          (>= x x-max) (>= y y-max)))
+          coords))

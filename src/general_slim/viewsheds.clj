@@ -1,5 +1,7 @@
 (ns general-slim.viewsheds
-  (:require [general-slim.utils :refer [adjacent? coord+]]))
+  (:require [general-slim.utils :refer [adjacent? coord+ remove-oob-coords]]
+            [general-slim.forces :as forces]
+            [general-slim.field :as field]))
 
 (defn paths [loc]
   [(mapv #(coord+ loc %) [[0 -1] [0 -2] [0 -3] [0 -4]])
@@ -30,3 +32,14 @@
 
 (defn viewshed [loc tmap]
   (set (mapcat #(walk-path % loc tmap) (paths loc))))
+
+(defn calculate-viewsheds [game-state unit-loc]
+  (viewshed unit-loc (field/terrain-map (:field game-state))))
+
+(defn add-viewsheds [game-state]
+  (->> (:turn game-state)
+       (forces/occupied-grids game-state)
+       (mapcat #(calculate-viewsheds game-state %))
+       (remove-oob-coords (first (:field-size game-state)) (second (:field-size game-state)))
+       (set)
+       (assoc game-state :viewsheds)))

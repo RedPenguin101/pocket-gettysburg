@@ -1,5 +1,6 @@
 (ns general-slim.ui
-  (:require [quil.core :as q]
+  (:require [clojure.set :as set]
+            [quil.core :as q]
             [quil.middleware :as m]
             [general-slim.utils :refer [update-vals]]
             [general-slim.game :as game :refer [tick key-handler coord->px]]))
@@ -66,8 +67,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-tile [x y color]
-  (q/stroke 0)
-  (q/stroke-weight 0)
+  (q/stroke nil)
   (q/fill color)
   (q/rect x y tile-size tile-size))
 
@@ -136,14 +136,21 @@
       (q/image-mode :corner)
       (q/image sprite x (+ y (scale 35))))))
 
+(defn filter-units-by-position-set [units pos-set]
+  (filter (fn [u] (pos-set (:position u))) units))
+
 (defn draw-units [game-state side]
-  (doseq [unit (vals (get-in game-state [side :units]))]
-    (let [color (cond
-                  (zero? (:move-points unit)) (get-in colors [side :spent])
-                  :else (get-in colors [side :default]))]
-      (draw-unit unit color)))
-  (doseq [[x y] (:viewsheds game-state)]
-    (draw-tile (coord->px x) (coord->px y) (:visible colors))))
+  (let [units (vals (get-in game-state [side :units]))
+        units (if (and (:viewsheds game-state) (not= (:turn game-state) side)) (filter-units-by-position-set units (:viewsheds game-state)) units)]
+    (doseq [unit units]
+      (let [color (cond
+                    (zero? (:move-points unit)) (get-in colors [side :spent])
+                    :else (get-in colors [side :default]))]
+        (draw-unit unit color))))
+  (doseq [[x y] (set/difference (set (keys (:field game-state))) (:viewsheds game-state))]
+    (q/stroke 0)
+    (q/stroke-weight 0)
+    (draw-tile (coord->px x) (coord->px y) (:fow colors))))
 
 ;; other on-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

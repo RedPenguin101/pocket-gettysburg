@@ -8,7 +8,7 @@
 
 ;; state and constants
 
-(def game-state (load-scenario "visibility"))
+(def game-state (v/add-viewsheds (load-scenario "visibility")))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -31,7 +31,7 @@
                     :selected [106 149 252 150]}
              :white [252 252 252]
              :menu-select [183 183 183 75]
-             :visible [220 220 220 100]})
+             :fow [0 0 0 50]})
 
 ;; Menus
 
@@ -58,18 +58,6 @@
    (min (max 0 y) (dec vert-tiles))])
 
 (defn coord->px [x] (int (* tile-size x)))
-
-;; Viewsheds - not the right place for this but whatever
-
-(defn calculate-viewsheds [unit-loc]
-  (v/viewshed unit-loc (field/terrain-map (:field game-state))))
-
-(defn add-viewsheds [game-state]
-  (->> (:turn game-state)
-       (occupied-grids game-state)
-       (mapcat calculate-viewsheds)
-       (set)
-       (assoc game-state :viewsheds)))
 
 ;; Cursor Handlers
 
