@@ -85,7 +85,6 @@
 
 (defn draw-sprite [[x y] sprite]
   (q/image-mode :corner)
-  (q/resize sprite tile-size tile-size)
   (q/image sprite x y))
 
 (defn draw-road [[x y] dirs images]

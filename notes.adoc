@@ -40,7 +40,6 @@ input    |     |
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * Routing
 * Messages: Battle outcomes
-* Get rid of resizes in draws
 
 * Enemy Intel
 ** Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
