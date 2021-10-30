@@ -38,25 +38,28 @@
 
 (defn load-sprites []
   (let [infantry (q/load-image "resources/sprites/infantry.png")
+        red-inf (q/load-image "resources/sprites/red_inf.png")
+        blue-inf (q/load-image "resources/sprites/blue_inf.png")
         cavalry (q/load-image "resources/sprites/cavalry.png")
         artillery (q/load-image "resources/sprites/artillery.png")
-        field (q/load-image "resources/sprites/field.png")
-        trees (q/load-image "resources/sprites/trees.png")
-        mountains (q/load-image "resources/sprites/mountains.png")]
-    (load-images [infantry cavalry artillery])
-    (resize-images [infantry cavalry artillery] unit-size unit-size)
-    (load-images [field trees])
-    (resize-images [field trees mountains] tile-size tile-size)
-    {:infantry infantry
-     :cavalry cavalry
-     :artillery artillery
+        field (q/load-image "resources/sprites/field2.png")
+        trees (q/load-image "resources/sprites/trees2.png")
+        mountains (q/load-image "resources/sprites/mountains2.png")
+        road (q/load-image "resources/sprites/road_hor.png")]
+    (load-images [red-inf blue-inf infantry cavalry artillery])
+    (resize-images [red-inf blue-inf infantry cavalry artillery] unit-size unit-size)
+    (load-images [field trees mountains road])
+    (resize-images [field trees mountains road] tile-size tile-size)
+    {:infantry {:red red-inf
+                :blue blue-inf}
      :field field
      :mountains mountains
-     :trees trees}))
+     :trees trees
+     :road road}))
 
 (defn add-sprite [unit images]
   (if (images (:unit-type unit))
-    (assoc unit :sprite ((:unit-type unit) images))
+    (assoc unit :sprite (get-in images [(:unit-type unit) (:side unit)]))
     unit))
 
 (defn add-sprites-to-units [game-state]
@@ -117,7 +120,7 @@
         :field (draw-sprite x y (:field images))
         :trees (draw-sprite x y (:trees images))
         :mountains (draw-sprite x y (:mountains images))
-        :road (draw-road x y (:dirs tile))
+        :road (draw-sprite x y (:road images))
         nil))))
 
 ;; units
@@ -152,7 +155,7 @@
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
     (when sprite
       (q/image-mode :corner)
-      (q/image sprite (+ x (scale 10)) (+ y (scale 35))))))
+      (q/image sprite (+ x (scale 15)) (+ y (scale 35))))))
 
 (defn filter-units-by-position-set [units pos-set]
   (filter (fn [u] (pos-set (:position u))) units))
@@ -250,7 +253,6 @@
       (debug-text-item 6 (str "Route cost: " route-cost)))))
 
 (defn draw-state [game-state]
-  (q/background 240)
   (draw-terrain (vals (field/terrain-in-view (:field game-state) (:camera game-state)))
                 (:images game-state))
   (when (:route-selection game-state) (draw-routing (:route game-state)))

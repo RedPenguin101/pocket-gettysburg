@@ -143,11 +143,13 @@ input    |     |
 ** DONE Combat
 * DONE Get rid of unit strength indicators
 * DONE Hover menu for units
-
-* BUG: Unit can attack twice in one turn
-* when in attack mode, menu should show the attributes of the two sides are
+* DONE Better sprites
 
 * Scrolling camera: display only 15x15 map and scroll around to see more
+
+* Proper unit names
+* BUG: Unit can attack twice in one turn
+* when in attack mode, menu should show the attributes of the two sides are
 
 * Replace routing path with arrow, extend to attack with BANG! 
 * Make unit HP fit on tiles
@@ -178,4 +180,4 @@ input    |     |
 * Friendly FOW
 * Status: Moving, Organizing, Deployed, Dug in
 * Casualties, recovery
-* Better sprites
+* Sprites for general, cal, art
