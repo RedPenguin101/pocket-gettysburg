@@ -2,6 +2,8 @@
   (:require [clojure.set :as set]
             [quil.core :as q]
             [quil.middleware :as m]
+            [general-slim.field :as field]
+            [general-slim.forces :as forces]
             [general-slim.utils :refer [update-vals]]
             [general-slim.game :as game :refer [tick key-handler coord->px]]))
 
@@ -157,7 +159,8 @@
 
 (defn draw-units [game-state side]
   (let [units (vals (get-in game-state [side :units]))
-        units (if (and (:viewsheds game-state) (not= (:turn game-state) side)) (filter-units-by-position-set units (:viewsheds game-state)) units)]
+        units (if (and (:viewsheds game-state) (not= (:turn game-state) side)) (filter-units-by-position-set units (:viewsheds game-state)) units)
+        units (filter #(forces/unit-in-view? % (:camera game-state)) units)]
     (doseq [unit units]
       (let [color (cond
                     (zero? (:move-points unit)) (get-in colors [side :spent])
@@ -225,14 +228,14 @@
                 unit-under-cursor
                 unit-selected
                 route-selection route route-cost
-                attack-option]} (game/debug-data game-state)]
+                attack-option camera]} (game/debug-data game-state)]
     (q/stroke 1)
     (q/fill (colors :white))
     (q/stroke-weight (scale 6))
     (q/rect (scale 3) (scale 3) (scale 1000) (scale 300))
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" (scale 30)))
-    (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected))
+    (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected " Camera: " camera))
 
     (when unit-under-cursor
       (debug-text-item 1 (str "CURSOR: " (:soldiers unit-under-cursor) " soldiers"))
@@ -248,7 +251,8 @@
 
 (defn draw-state [game-state]
   (q/background 240)
-  (draw-terrain (vals (:field game-state)) (:images game-state))
+  (draw-terrain (vals (field/terrain-in-view (:field game-state) (:camera game-state)))
+                (:images game-state))
   (when (:route-selection game-state) (draw-routing (:route game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)

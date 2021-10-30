@@ -1,5 +1,5 @@
 (ns general-slim.forces
-  (:require [general-slim.utils :refer [map-vals]]))
+  (:require [general-slim.utils :refer [map-vals in-view?]]))
 
 (defn make-unit [type side id pos unit-templates]
   (assoc (type unit-templates)
@@ -33,3 +33,6 @@
 
 (defn defence-value [unit terrain]
   (get-in unit [:terrain-defense terrain]))
+
+(defn unit-in-view? [unit camera]
+  (in-view? camera (:position unit)))

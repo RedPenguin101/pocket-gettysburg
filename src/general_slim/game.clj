@@ -10,12 +10,12 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (load-scenario "big_test")))
+(def game-state (v/add-viewsheds (assoc (load-scenario "big_test") :camera [0 0])))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
-(def tile-size 50)
+(def tile-size 100)
 (def colors {:cursor [183 183 183 75]
              :attack-cursor [215 221 33 90]
              :map-highlight [220 220 220 75]
@@ -34,7 +34,6 @@
              :white [252 252 252]
              :menu-select [183 183 183 75]
              :fow [0 0 0 50]})
-
 
 ;; Menu definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -57,16 +56,29 @@
 
 (defn coord->px [x] (int (* tile-size x)))
 
+(defn new-camera [[c-x c-y] [x y]]
+  [(cond (< x c-x) (dec c-x)
+         (> x (+ c-x 14)) (inc c-x)
+         :else c-x)
+   (cond (< y c-y) (dec c-y)
+         (> y (+ c-y 14)) (inc c-y)
+         :else c-y)])
 
 ;; Input handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Cursors
 
+(defn add-unit-under-cursor [game-state new-cursor]
+  (if-let [uuc (unit-in-square game-state new-cursor)]
+    (assoc game-state :unit-under-cursor uuc)
+    (dissoc game-state :unit-under-cursor)))
+
 (defn cursor-map [game-state new-cursor]
-  (if-let [unit (unit-in-square game-state new-cursor)]
-    (assoc game-state :cursor new-cursor :unit-under-cursor unit)
-    (dissoc (assoc game-state :cursor new-cursor) :unit-under-cursor)))
+  (-> game-state
+      (assoc :cursor new-cursor)
+      (add-unit-under-cursor new-cursor)
+      (update :camera new-camera new-cursor)))
 
 (defn cursor-with-selection [game-state new-cursor]
   (let [selected-unit (unit-in-square game-state (:selected game-state))]
@@ -243,7 +255,8 @@
         selected (:selected game-state)
         uuc (unit-in-square game-state cursor)
         su (unit-in-square game-state selected)]
-    {:cursor cursor
+    {:camera (:camera game-state)
+     :cursor cursor
      :selected selected
      :unit-under-cursor uuc
      :uuc-defence (when uuc (defence-value uuc (get-in game-state [:field (:position uuc) :terrain])))

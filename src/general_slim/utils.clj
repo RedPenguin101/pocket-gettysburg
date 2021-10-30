@@ -64,3 +64,7 @@
   (remove (fn [[x y]] (or (< x 0) (< y 0)
                           (>= x x-max) (>= y y-max)))
           coords))
+
+(defn in-view? [[c-x c-y] [x y]]
+  (and (<= c-x x (+ c-x 14))
+       (<= c-y y (+ c-y 14))))

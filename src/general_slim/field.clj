@@ -1,4 +1,5 @@
-(ns general-slim.field)
+(ns general-slim.field
+  (:require [general-slim.utils :refer [in-view?]]))
 
 (defn field-size [field]
   (->> field keys
@@ -23,3 +24,6 @@
   (and (not-empty field)
        (not-any? neg? (apply concat (keys field)))
        (complete? field)))
+
+(defn terrain-in-view [field camera]
+  (into {} (filter #(in-view? camera (first %)) field)))
