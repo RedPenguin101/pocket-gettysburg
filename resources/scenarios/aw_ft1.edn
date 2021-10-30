@@ -1,6 +1,8 @@
 {:map "aw_ft1"
- :red [[:infantry :inf1 [5 3]] [:infantry :inf2 [3 5]]
-       [:general :gen1 [3 3]]]
- :blue [[:infantry :inf1 [13 5]] [:infantry :inf2 [13 8]]]
+ :red [[:infantry "73rd New York Regiment" "73rd" [5 3]]
+       [:infantry "86rd Illinois Regiment" "86th" [3 5]]
+       [:general "Brigadier General Ironside" "X" [3 3]]]
+ :blue [[:infantry "15th Virginia Regiment" "15th" [13 5]]
+        [:infantry "23rd Virginia Regiment" "23rd" [13 8]]]
  :turn :red
  :turn-number 0}

@@ -104,28 +104,28 @@
   (let [[x _y] (:position unit)
         x-offset (+ (if (>= x (/ horiz-tiles 2))
                       (scale 50)
-                      (- screen-size-x (scale 350))))
+                      (- screen-size-x (scale 550))))
         y-offset (scale 50)
         line-offset (scale 35)]
     (q/stroke 1)
     (q/fill (colors :white))
     (q/stroke-weight (scale 6))
-    (q/rect x-offset y-offset (scale 300) (scale 300))
+    (q/rect x-offset y-offset (scale 500) (scale 300))
     (q/fill 0)
     (q/text-font (q/create-font "Courier New" (scale 30)))
-    (q/text (str (name (:side unit)) " " (name (:id unit))) (+ (scale 20) x-offset) (+ (* 0 line-offset) (scale 40) y-offset))
+    (q/text (:unit-name unit) (+ (scale 20) x-offset) (+ (* 0 line-offset) (scale 40) y-offset))
     (q/text (str "Soldiers: " (:soldiers unit)) (+ (scale 20) x-offset) (+ (* 1 line-offset) (scale 40) y-offset))
     (q/stroke-weight 1)
     (q/fill (colors :menu-select))))
 
-(defn draw-unit [{:keys [position id sprite]} camera color]
+(defn draw-unit [{:keys [position short-name sprite]} camera color]
   (let [[x y] (camera-offset position camera)]
     (draw-tile [x y] color)
     (q/stroke 0)
     (q/stroke-weight 0)
     (q/fill (colors :white))
     (q/text-font (q/create-font "Courier New" (scale 30)))
-    (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
+    (q/text short-name (+ x (scale 15)) (+ y (scale 30)))
     (when sprite
       (q/image-mode :corner)
       (q/image sprite x (+ y (scale 15))))))
@@ -216,13 +216,15 @@
     (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected " Camera: " camera))
 
     (when unit-under-cursor
-      (debug-text-item 1 (str "CURSOR: " (:soldiers unit-under-cursor) " soldiers"))
-      (debug-text-item 2 (str "Attack option: " attack-option))
-      (debug-text-item 3 (str "Move points: " (:move-points unit-under-cursor))))
+      (debug-text-item 1 (str "CURSOR: " (:id unit-under-cursor)))
+      (debug-text-item 2 (str (:soldiers unit-under-cursor) " soldiers"))
+      (debug-text-item 3 (str "Attack option: " attack-option))
+      (debug-text-item 4 (str "Move points: " (:move-points unit-under-cursor))))
     (when (and selected (not unit-under-cursor))
-      (debug-text-item 1 (str "SELECTED: " (:solders unit-selected) " soldiers"))
-      (debug-text-item 2 (str "Attack option: " attack-option))
-      (debug-text-item 3 (str "Move points: " (:move-points unit-selected))))
+      (debug-text-item 1 (str "SELECTED: " (:id unit-selected)))
+      (debug-text-item 2 (str (:soldiers unit-selected) " soldiers"))
+      (debug-text-item 3 (str "Attack option: " attack-option))
+      (debug-text-item 4 (str "Move points: " (:move-points unit-selected))))
     (when route-selection
       (debug-text-item 5 (str "Route: " route))
       (debug-text-item 6 (str "Route cost: " route-cost)))))

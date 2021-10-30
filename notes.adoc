@@ -30,11 +30,12 @@ input    |     |
 
 * DONE Onscreen General
 * DONE LOS increased on hills
+* DONE Generate IDs, display names 
+* DONE Short names to display on unit counters
 
 == TODO
 
 * Bend roads properly
-* Generate IDs, display names 
 * Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options) 
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * Routing
@@ -56,7 +57,7 @@ input    |     |
  
 * Infantry Charging
 * Cavalry combat system
-* Artillery
+* Artillery combat and indirect fire
 
 * Put in actual time, display in top right
 * Improve road drawings: tiles depend on surrounding
