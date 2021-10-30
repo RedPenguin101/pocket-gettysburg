@@ -28,14 +28,17 @@ input    |     |
 
 == DONE
 
-* Onscreen General
-
+* DONE Onscreen General
+* DONE LOS increased on hills
 
 == TODO
 
-* LOS increased on hills
 * Bend roads properly
-* Generate IDs, display names
+* Generate IDs, display names 
+* Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options) 
+* retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
+* Routing
+* Messages: Battle outcomes
 
 * Enemy Intel
 ** Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
@@ -43,8 +46,8 @@ input    |     |
 ** The sighting tracks how many turns ago since the sighting was made
 ** When that location comes into visibility again, 
 
-* Scenario selection
-* Proper unit names
+* Pre-battle stuff
+** Select scenario on first loading
 * when in attack mode, menu should show the attributes of the two sides are
 
 * Replace routing path with arrow, extend to attack with BANG! 
