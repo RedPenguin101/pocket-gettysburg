@@ -54,8 +54,6 @@
   [(min (max 0 x) (dec horiz-tiles))
    (min (max 0 y) (dec vert-tiles))])
 
-(defn coord->px [x] (int (* tile-size x)))
-
 (defn new-camera [[c-x c-y] [x y]]
   [(cond (< x c-x) (dec c-x)
          (> x (+ c-x 14)) (inc c-x)

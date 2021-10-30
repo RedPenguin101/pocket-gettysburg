@@ -18,10 +18,6 @@
   [grid]
   (into {} (apply concat (map-indexed (fn [y x-row] (map-indexed (fn [x v] [[x y] v]) x-row)) grid))))
 
-(defn average [xs]
-  (float (/ (apply + xs)
-            (count xs))))
-
 (defn zero-floored-minus [x y]
   (max 0 (- x y)))
 
@@ -59,9 +55,6 @@
 
 (defn coord+ [[x1 y1] [x2 y2]]
   [(+ x1 x2) (+ y1 y2)])
-
-(defn coord- [[x1 y1] [x2 y2]]
-  [(- x1 x2) (- y1 y2)])
 
 (defn remove-oob-coords [x-max y-max coords]
   (remove (fn [[x y]] (or (< x 0) (< y 0)

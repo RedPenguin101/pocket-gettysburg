@@ -4,8 +4,8 @@
             [quil.middleware :as m]
             [general-slim.field :as field]
             [general-slim.forces :as forces]
-            [general-slim.utils :refer [update-vals coord-]]
-            [general-slim.game :as game :refer [tick key-handler coord->px]]))
+            [general-slim.utils :refer [update-vals coord+]]
+            [general-slim.game :as game :refer [tick key-handler]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; state and constants
@@ -24,6 +24,10 @@
 (def screen-size-y (* 15 tile-size))
 
 (defn scale [x] (int (* scale-factor x)))
+
+(defn camera-offset [[x y] [c-x c-y]]
+  [(int (* tile-size (- x c-x)))
+   (int (* tile-size (- y c-y)))])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; sprites
@@ -73,7 +77,7 @@
 ;; Drawing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-tile [x y color]
+(defn draw-tile [[x y] color]
   (q/stroke nil)
   (q/fill color)
   (q/rect x y tile-size tile-size))
@@ -81,19 +85,19 @@
 ;; terrain
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-sprite [x y sprite]
+(defn draw-sprite [[x y] sprite]
   (q/image-mode :corner)
   (q/resize sprite tile-size tile-size)
   (q/image sprite x y))
 
 (defn draw-terrain [tiles images camera]
   (doseq [tile tiles]
-    (let [[x y] (map coord->px (coord- (:grid tile) camera))]
+    (let [coord (camera-offset (:grid tile) camera)]
       (case (:terrain tile)
-        :field (draw-sprite x y (:field images))
-        :trees (draw-sprite x y (:trees images))
-        :mountains (draw-sprite x y (:mountains images))
-        :road (draw-sprite x y (:road images))
+        :field (draw-sprite coord (:field images))
+        :trees (draw-sprite coord (:trees images))
+        :mountains (draw-sprite coord (:mountains images))
+        :road (draw-sprite coord (:road images))
         nil))))
 
 ;; units
@@ -117,10 +121,9 @@
     (q/stroke-weight 1)
     (q/fill (colors :menu-select))))
 
-(defn draw-unit [{:keys [position id sprite]} [c-x c-y] color]
-  (let [x (coord->px (- (first position) c-x))
-        y (coord->px (- (second position) c-y))]
-    (draw-tile x y color)
+(defn draw-unit [{:keys [position id sprite]} camera color]
+  (let [[x y] (camera-offset position camera)]
+    (draw-tile [x y] color)
     (q/stroke 0)
     (q/stroke-weight 0)
     (q/fill (colors :white))
@@ -145,31 +148,32 @@
   (doseq [[x y] (set/difference (set (keys (:field game-state))) (:viewsheds game-state))]
     (q/stroke 0)
     (q/stroke-weight 0)
-    (draw-tile (coord->px (- x (first (:camera game-state)))) (coord->px (- y (second (:camera game-state)))) (:fow colors))))
+    (draw-tile (camera-offset [x y] (:camera game-state))
+               (:fow colors))))
 
 ;; other on-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-cursor [[x y] [c-x c-y]]
-  (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y)) (colors :cursor)))
+(defn draw-cursor [cursor camera]
+  (draw-tile (camera-offset cursor camera) (colors :cursor)))
 
-(defn draw-highlights [coords [c-x c-y]]
-  (doseq [[x y] coords]
-    (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y))
+(defn draw-highlights [coords camera]
+  (doseq [coord coords]
+    (draw-tile (camera-offset coord camera)
                (colors :map-highlight))))
 
-(defn draw-routing [coords [c-x c-y]]
-  (doseq [[x y] coords]
-    (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y))
+(defn draw-routing [coords camera]
+  (doseq [coord coords]
+    (draw-tile (camera-offset coord camera)
                (colors :routing))))
 
-(defn draw-attack-cursor [[x y] [c-x c-y]]
-  (q/fill nil)
-  (q/stroke (colors :attack-cursor))
-  (q/stroke-weight (scale 12))
-  (q/ellipse (+ (coord->px (- x c-x)) (scale 50))
-             (+ (coord->px (- y c-y)) (scale 50))
-             (scale 70) (scale 70)))
+(defn draw-attack-cursor [coord camera]
+  (let [[x y] (coord+ (camera-offset coord camera) [(scale 50) (scale 50)])]
+    (q/fill nil)
+    (q/stroke (colors :attack-cursor))
+    (q/stroke-weight (scale 12))
+    (q/ellipse x y
+               (scale 70) (scale 70))))
 
 ;; menus
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
