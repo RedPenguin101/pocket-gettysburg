@@ -26,7 +26,59 @@ input    |     |
        forces field
 ----
 
-== Iteration goals
+== DONE
+
+* Onscreen General
+
+
+== TODO
+
+* Bend roads properly
+
+* Enemy Intel
+** Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
+** When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
+** The sighting tracks how many turns ago since the sighting was made
+** When that location comes into visibility again, 
+
+* Scenario selection
+* Proper unit names
+* when in attack mode, menu should show the attributes of the two sides are
+
+* Replace routing path with arrow, extend to attack with BANG! 
+* Win condition: no enemy units
+* Lose condition: no remaining units
+ 
+* Infantry Charging
+* Cavalry combat system
+* Artillery
+
+* Put in actual time, display in top right
+* Improve road drawings: tiles depend on surrounding
+* Rivers
+* AI
+* enemy unit info - attack range on button hold
+* Message display system (-> message, seconds to display)
+* Little circles on units with HP
+* round edges of rect?
+* Commander skill
+* Facing and flanking
+* Supplies / Wagons
+* Offscreen supply location
+* Hills
+* Rout: units try to get back to offscreen supply location
+* Rout: units have a chance to regroup each turn while routing 
+* Friendly FOW
+* Status: Moving, Organizing, Deployed, Dug in
+* Casualties, recovery
+* Sprites for general, cal, art
+* Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
+* Variable FOV: units that come into LOS within 3 distance are directly in sight. Units that come into LOS within 4 distance generate a sighting, but are not directly visible
+* Chance of a false sighting
+
+== Old Done
+
+=== Iteration goals
 
 * Moveable units
 * Combat
@@ -53,7 +105,7 @@ input    |     |
 * DONE Iteration 1b: box display of cursor coord, whose turn  
 * DONE Status box moves if cursor is over it  
 
-== Iteration 2: Combat
+=== Iteration 2: Combat
 
 * DONE units have HP  
 * DONE Units name and HP displayed in status box  
@@ -72,7 +124,7 @@ input    |     |
 * DONE Cavalry have different attack characteristics  
 * DONE Attack/Def chars in menu  
 
-== Iteration 3: Terrain and features
+=== Iteration 3: Terrain and features
 
 * DONE Map has forests
 * DONE and lower movement rate
@@ -147,41 +199,3 @@ input    |     |
 * DONE Scrolling camera: display only 15x15 map and scroll around to see more
 * DONE BUG: Unit can attack twice in one turn
 * DONE Unit's can't move twice in a given turn
-
-== TODO
-
-* Onscreen General
-* Enemy Intel: last known position
-
-* Scenario selection
-* Proper unit names
-* when in attack mode, menu should show the attributes of the two sides are
-
-* Replace routing path with arrow, extend to attack with BANG! 
-* Win condition: no enemy units
-* Lose condition: no remaining units
- 
-* Infantry Charging
-* Cavalry combat system
-* Artillery
-
-* Put in actual time, display in top right
-* Improve road drawings: tiles depend on surrounding
-* Rivers
-* AI
-* enemy unit info - attack range on button hold
-* Message display system (-> message, seconds to display)
-* Little circles on units with HP
-* round edges of rect?
-* Commander skill
-* Facing and flanking
-* Supplies / Wagons
-* Offscreen supply location
-* Hills
-* Rout: units try to get back to offscreen supply location
-* Rout: units have a chance to regroup each turn while routing 
-* Friendly FOW
-* Status: Moving, Organizing, Deployed, Dug in
-* Casualties, recovery
-* Sprites for general, cal, art
-* Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
