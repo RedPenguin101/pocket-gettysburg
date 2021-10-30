@@ -1,0 +1,9 @@
+{:map "los_test"
+ :red [[:infantry :inf1 [5 5]] [:infantry :inf2 [16 5]]]
+ :blue [[:infantry :inf1 [9 6]] [:infantry :inf2 [8 7]]
+        [:infantry :inf3 [7 8]] [:infantry :inf4 [6 9]]
+        [:infantry :inf5 [20 6]] [:infantry :inf6 [19 7]]
+        [:infantry :inf7 [18 8]] [:infantry :inf8 [19 9]]
+        [:infantry :inf9 [16 10]]]
+ :turn :red
+ :turn-number 0}

@@ -10,7 +10,7 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (assoc (load-scenario "aw_ft1") :camera [0 0])))
+(def game-state (v/add-viewsheds (assoc (load-scenario "los_test") :camera [0 0])))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)

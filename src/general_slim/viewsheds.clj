@@ -21,6 +21,30 @@
    (mapv #(coord+ loc %) [[-1 -1] [-2 -2]])
    (mapv #(coord+ loc %) [[-1 -1] [-1 -2] [-1 -3]])])
 
+(defn paths5 [loc]
+  [(mapv #(coord+ loc %) [[0 -1] [0 -2] [0 -3] [0 -4] [0 -5]])
+
+
+   (mapv #(coord+ loc %) [[1 -1] [2 -2] [3 -3]])
+
+
+   (mapv #(coord+ loc %) [[1 0] [2 0] [3 0] [4 0] [5 0]])
+
+
+   (mapv #(coord+ loc %) [[1 1] [2 2] [3 3]])
+
+
+   (mapv #(coord+ loc %) [[0 1] [0 2] [0 3] [0 4] [0 5]])
+
+
+   (mapv #(coord+ loc %) [[-1 1] [-2 2] [-3 3]])
+
+
+   (mapv #(coord+ loc %) [[-1 0] [-2 0] [-3 0] [-4 0] [-5 0]])
+
+
+   (mapv #(coord+ loc %) [[-1 -1] [-2 -2] [-3 -3]])])
+
 (defn walk-path [path loc tile-terrain]
   (reduce (fn [out-path next-tile]
             (case (get tile-terrain next-tile)

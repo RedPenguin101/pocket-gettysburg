@@ -33,7 +33,9 @@ input    |     |
 
 == TODO
 
+* LOS increased on hills
 * Bend roads properly
+* Generate IDs, display names
 
 * Enemy Intel
 ** Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
@@ -71,7 +73,9 @@ input    |     |
 * Friendly FOW
 * Status: Moving, Organizing, Deployed, Dug in
 * Casualties, recovery
-* Sprites for general, cal, art
+* Sprite for general
+* Sprite for cav
+* Sprite for art
 * Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
 * Variable FOV: units that come into LOS within 3 distance are directly in sight. Units that come into LOS within 4 distance generate a sighting, but are not directly visible
 * Chance of a false sighting
