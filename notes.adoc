@@ -148,6 +148,12 @@ input    |     |
 * DONE BUG: Unit can attack twice in one turn
 * DONE Unit's can't move twice in a given turn
 
+== TODO
+
+* Onscreen General
+* Enemy Intel: last known position
+
+* Scenario selection
 * Proper unit names
 * when in attack mode, menu should show the attributes of the two sides are
 
@@ -171,7 +177,6 @@ input    |     |
 * Facing and flanking
 * Supplies / Wagons
 * Offscreen supply location
-* Onscreen General
 * Hills
 * Rout: units try to get back to offscreen supply location
 * Rout: units have a chance to regroup each turn while routing 
@@ -179,3 +184,4 @@ input    |     |
 * Status: Moving, Organizing, Deployed, Dug in
 * Casualties, recovery
 * Sprites for general, cal, art
+* Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
