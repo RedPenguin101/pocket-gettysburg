@@ -10,12 +10,12 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (load-scenario "visibility")))
+(def game-state (v/add-viewsheds (load-scenario "big_test")))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
-(def tile-size 100)
+(def tile-size 50)
 (def colors {:cursor [183 183 183 75]
              :attack-cursor [215 221 33 90]
              :map-highlight [220 220 220 75]
