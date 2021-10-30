@@ -21,4 +21,12 @@
                             :field 1
                             :trees 3
                             :mountains 4}
-           :can-attack true}}
+           :can-attack true}
+ :general {:unit-type :general
+           :soldiers 25
+           :move-points 3 :max-move-points 3
+           :movement-table {:road 0.5
+                            :field 1
+                            :trees 3
+                            :mountains 4}
+           :can-attack false}}
