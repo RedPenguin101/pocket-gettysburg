@@ -145,14 +145,13 @@ input    |     |
 * DONE Hover menu for units
 * DONE Better sprites
 * DONE Scrolling camera: display only 15x15 map and scroll around to see more
+* DONE BUG: Unit can attack twice in one turn
+* DONE Unit's can't move twice in a given turn
 
 * Proper unit names
-* BUG: Unit can attack twice in one turn
 * when in attack mode, menu should show the attributes of the two sides are
 
 * Replace routing path with arrow, extend to attack with BANG! 
-* Make unit HP fit on tiles
-* Scenario text
 * Win condition: no enemy units
 * Lose condition: no remaining units
  

@@ -29,7 +29,8 @@
 
 (defn refresh-units [unit-map]
   (->> unit-map
-       (map-vals #(assoc % :move-points (:max-move-points %) :can-attack true))))
+       (map-vals #(assoc % :move-points (:max-move-points %)
+                         :move-over false))))
 
 (defn defence-value [unit terrain]
   (get-in unit [:terrain-defense terrain]))

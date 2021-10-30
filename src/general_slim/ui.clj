@@ -20,8 +20,8 @@
 (def unit-size tile-size)
 (def colors game/colors)
 (def scale-factor (/ tile-size 100))
-(def screen-size-x (* 15 tile-size))
-(def screen-size-y (* 15 tile-size))
+(def screen-size-x (* (min 15 horiz-tiles) tile-size))
+(def screen-size-y (* (min 15 vert-tiles) tile-size))
 
 (defn scale [x] (int (* scale-factor x)))
 
@@ -140,6 +140,7 @@
     (doseq [unit units]
       (let [color (cond
                     (zero? (:move-points unit)) (get-in colors [side :spent])
+                    (:move-over unit) (get-in colors [side :spent])
                     :else (get-in colors [side :default]))]
         (draw-unit unit (:camera game-state) color))))
   (doseq [[x y] (set/difference (set (keys (:field game-state))) (:viewsheds game-state))]

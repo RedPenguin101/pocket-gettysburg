@@ -10,7 +10,7 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (assoc (load-scenario "scroll_test") :camera [0 0])))
+(def game-state (v/add-viewsheds (assoc (load-scenario "multi_dir_attack") :camera [0 0])))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
@@ -134,6 +134,9 @@
     (cond
       (not unit-under-cursor?)
       (do (println "No unit to select") game-state)
+
+      (:move-over unit-under-cursor?)
+      (do (println "Unit is spent") game-state)
 
       ;; trying to select your unit, select and turn on route selection
       (and (= my-side (:side unit-under-cursor?))

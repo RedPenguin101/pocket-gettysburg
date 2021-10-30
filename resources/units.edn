@@ -5,7 +5,7 @@
                              :road 0.5
                              :trees 1
                              :mountains 2}
-            :can-attack true}
+            :move-over false}
  :artillery {:unit-type :artillery
              :soldiers 1000
              :move-points 2 :max-move-points 2
@@ -13,7 +13,7 @@
                               :road 0.5
                               :trees 2
                               :mountains 3}
-             :can-attack true}
+             :move-over false}
  :cavalry {:unit-type :cavalry
            :soldiers 1000
            :move-points 3 :max-move-points 3
@@ -21,7 +21,7 @@
                             :field 1
                             :trees 3
                             :mountains 4}
-           :can-attack true}
+           :move-over false}
  :general {:unit-type :general
            :soldiers 25
            :move-points 3 :max-move-points 3
@@ -29,4 +29,4 @@
                             :field 1
                             :trees 3
                             :mountains 4}
-           :can-attack false}}
+           :move-over false}}

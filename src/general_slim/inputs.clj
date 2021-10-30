@@ -69,8 +69,10 @@
     (if (= 1 (count route))
       (-> game-state
           (dissoc :current-order)
-          (add-attack-option side unit-id (first route)))
-      (assoc game-state :current-order [order-type side unit-id (rest route)]))))
+          (add-attack-option side unit-id (first route))
+          (assoc-in [side :units unit-id :move-over] true))
+      (-> game-state
+          (assoc :current-order [order-type side unit-id (rest route)])))))
 
 (defn execute-move-order
   [game-state move-type side unit-id route]
@@ -129,7 +131,7 @@
         (dissoc :current-order)
         (update-unit u1)
         (update-unit u2)
-        (assoc-in [my-side :units my-unit-id :can-attack] false)
+        (assoc-in [my-side :units my-unit-id :move-over] true)
         (handle-combat-outcome resolution u1 u2))))
 
 
