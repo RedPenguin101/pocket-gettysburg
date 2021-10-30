@@ -1,12 +1,12 @@
 {:map "visibility_test"
- :red [[:infantry :inf1 [4 4]]
-       [:infantry :inf2 [2 2]]
-       [:infantry :inf3 [9 9]]]
+ :red [[:infantry "inf" "inf" [4 4]]
+       [:infantry "inf" "inf" [2 2]]
+       [:infantry "inf" "inf" [9 9]]]
  :blue
- [[:infantry :inf1 [1 1]] [:infantry :inf2 [3 2]]
-  [:infantry :inf3 [3 3]] [:infantry :inf4 [3 4]]
-  [:infantry :inf5 [4 1]] [:infantry :inf8 [4 7]]
-  [:infantry :inf6 [6 4]] [:infantry :inf7 [7 4]]
-  [:infantry :inf9 [4 2]] [:infantry :inf10 [5 3]]]
+ [[:infantry "inf" "inf" [1 1]] [:infantry "inf" "inf" [3 2]]
+  [:infantry "inf" "inf" [3 3]] [:infantry "inf" "inf" [3 4]]
+  [:infantry "inf" "inf" [4 1]] [:infantry "inf" "inf" [4 7]]
+  [:infantry "inf" "inf" [6 4]] [:infantry "inf" "inf" [7 4]]
+  [:infantry "inf" "inf" [4 2]] [:infantry "inf" "inf" [5 3]]]
  :turn :red
  :turn-number 0}

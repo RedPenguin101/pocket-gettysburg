@@ -1,5 +1,7 @@
 {:map "big_map"
- :red [[:infantry :inf1 [2 2]] [:infantry :inf2 [3 3]]]
- :blue [[:infantry :inf1 [7 7]] [:infantry :inf2 [8 8]]]
+ :red [[:infantry "inf1" "inf1" [2 2]]
+       [:infantry "inf2" "inf2" [3 3]]]
+ :blue [[:infantry "inf1" "inf1" [7 7]]
+        [:infantry "inf2" "inf2" [8 8]]]
  :turn :red
  :turn-number 0}
