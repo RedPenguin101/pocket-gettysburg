@@ -4,9 +4,11 @@
             [general-slim.dispatches :as d]
             [general-slim.viewsheds :as v]
             [general-slim.field :as field]
+            [general-slim.utils :refer [relative-coord]]
             [general-slim.scenarios :refer [load-scenario]]))
 
 ;; state and constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def game-state (v/add-viewsheds (load-scenario "visibility")))
 (def fps 30)
@@ -33,7 +35,9 @@
              :menu-select [183 183 183 75]
              :fow [0 0 0 50]})
 
-;; Menus
+
+;; Menu definitions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn dispatch-menu [dispatch attack-option]
   {:name :dispatch-menu
@@ -45,13 +49,7 @@
    :selection 0})
 
 ;; utils
-
-(defn up [[x y]] [x (dec y)])
-(defn down [[x y]] [x (inc y)])
-(defn left [[x y]] [(dec x) y])
-(defn right [[x y]] [(inc x) y])
-
-(def grid-moves {:up up :down down :left left :right right})
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn bound [[x y]]
   [(min (max 0 x) (dec horiz-tiles))
@@ -59,16 +57,19 @@
 
 (defn coord->px [x] (int (* tile-size x)))
 
-;; Cursor Handlers
 
-(defn cursor-move [game-state mv-fn] ;; and routing for now
-  (let [new-cursor ((comp bound mv-fn) (:cursor game-state))
-        selected-unit (unit-in-square game-state (:selected game-state))]
+;; Input handlers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Cursors
+
+(defn cursor-map [game-state new-cursor]
+  (assoc game-state :cursor new-cursor))
+
+(defn cursor-with-selection [game-state new-cursor]
+  (let [selected-unit (unit-in-square game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
           game-state
-
-          (not (:route-selection game-state))
-          (assoc game-state :cursor new-cursor)
 
           ;; can't move through units
           (and (unit-in-square game-state new-cursor)
@@ -81,6 +82,8 @@
               (assoc :cursor new-cursor)
               (update :route rest))
 
+          ;; if route cost of the new route is lte move points of the unit
+          ;; the the new route is OK
           (<= (route-cost game-state selected-unit (reverse (conj (:route game-state) new-cursor)))
               (:move-points selected-unit))
           (-> game-state
@@ -91,7 +94,7 @@
 
 (defn cursor-attack [game-state dir]
   (let [[_side _unit-id unit-loc target-locs] (:attack-mode game-state)
-        attempted-selection ((grid-moves dir) unit-loc)]
+        attempted-selection (#(relative-coord % dir) unit-loc)]
     (if (target-locs attempted-selection)
       (assoc game-state :cursor attempted-selection)
       game-state)))
@@ -104,11 +107,13 @@
       game-state)))
 
 (defn handle-cursor [game-state dir]
-  (cond (:menu game-state) (cursor-menu game-state dir)
-        (:attack-mode game-state) (cursor-attack game-state dir)
-        :else (cursor-move game-state (dir grid-moves))))
+  (let [new-cursor (bound (relative-coord (:cursor game-state) dir))]
+    (cond (:menu game-state)        (cursor-menu game-state dir)
+          (:attack-mode game-state) (cursor-attack game-state dir)
+          (:selected game-state)    (cursor-with-selection game-state new-cursor)
+          :else                     (cursor-map game-state new-cursor))))
 
-;; action handlers
+;; Action button
 
 (defn action-select [game-state]
   (let [cursor (:cursor game-state)
@@ -213,18 +218,20 @@
 
 (defn key-handler [game-state event]
   (case (:key event)
-    :up (handle-cursor game-state :up)
-    :w (handle-cursor game-state :up)
-    :down (handle-cursor game-state :down)
-    :s (handle-cursor game-state :down)
-    :left (handle-cursor game-state :left)
-    :a (handle-cursor game-state :left)
+    :up    (handle-cursor game-state :up)
+    :w     (handle-cursor game-state :up)
+    :down  (handle-cursor game-state :down)
+    :s     (handle-cursor game-state :down)
+    :left  (handle-cursor game-state :left)
+    :a     (handle-cursor game-state :left)
     :right (handle-cursor game-state :right)
-    :d (handle-cursor game-state :right)
+    :d     (handle-cursor game-state :right)
+
     :space (handle-action game-state)
-    :g (update game-state :debug not)
-    :e (handle-end-turn game-state)
-    :q (handle-cancel game-state)
+
+    :g     (update game-state :debug not)
+    :e     (handle-end-turn game-state)
+    :q     (handle-cancel game-state)
     game-state))
 
 ;; debug

@@ -139,8 +139,11 @@ input    |     |
 * DONE BUG: Units can't see themselves
 * DONE BUG: Can attack a unit you can't see
 
-* Tests!
-** Field
+* DONE Tests!
+** DONE Field
+** DONE Combat
+
+* BUG: Unit can attack twice in one turn
 
 * Hover menu for units
 
