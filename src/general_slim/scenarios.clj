@@ -5,8 +5,9 @@
             [general-slim.field :refer [field-size]]))
 
 (defn mu [side unit-templates]
-  (fn [[type name pos]]
-    [name (make-unit type side name pos unit-templates)]))
+  (fn [[type name short pos]]
+    (let [id (java.util.UUID/randomUUID)]
+      [id (make-unit type side id name short pos unit-templates)])))
 
 (defn make-units [side units unit-templates]
   {:units (into {} (map (mu side unit-templates) units))})

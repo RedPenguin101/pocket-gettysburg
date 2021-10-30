@@ -1,9 +1,9 @@
 (ns general-slim.forces
   (:require [general-slim.utils :refer [map-vals in-view?]]))
 
-(defn make-unit [type side id pos unit-templates]
+(defn make-unit [type side id name short pos unit-templates]
   (assoc (type unit-templates)
-         :id id :side side :position pos))
+         :id id :side side :position pos :unit-name name :short-name short))
 
 (defn units
   "Returns a sequence of every unit
