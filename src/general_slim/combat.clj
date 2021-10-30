@@ -8,22 +8,21 @@
    :mountains 0.2
    :road 0.2})
 
-(defn- calculate-hits
+(defn calculate-hits
   "Calculates the number of men hit the enemy will suffer, given
    the number of guns firing at them, and the hit rate of those guns.
 
    The hit-solution that needs to be passed in is a sequence of tuples
    as long as the number of guns firing, and consist of tuple of:
    [shot-accurancy enemy-fired-at]
-   1. a float between 0 and 1. 0 is spot on, 1 is wildly inaccurate
+   1. a float between 0 and 1. 0 is dead on, 1 is wildly inaccurate
    2. an integer between zero and the number of enemy men."
   [hit-rate fire-solution]
-  (count (reduce (fn [hit-enemies-set [hit enemy-aimed-at]]
-                   (if (< hit hit-rate)
-                     (conj hit-enemies-set enemy-aimed-at)
-                     hit-enemies-set))
-                 #{}
-                 fire-solution)))
+  (->> fire-solution
+       (remove #(< hit-rate (first %)))
+       (map second)
+       (set)
+       (count)))
 
 (defn- prep-unit
   "A few things get added to a unit structure before they 
@@ -89,10 +88,12 @@
                  (incur-casualties a-unit d-hit-solution)
                  (incur-casualties d-unit a-hit-solution)])))
 
+;; Below here non-deterministic functions
+
 (defn- random-fire-solution! [guns enemy]
   (map vector
-       (take guns (rng/rng-int! enemy))
-       (repeatedly rand)))
+       (repeatedly rand)
+       (take guns (rng/rng-int! enemy))))
 
 (defn resolve-combat!
   "Resolve combat takes 2 units, and returns a tuple of
