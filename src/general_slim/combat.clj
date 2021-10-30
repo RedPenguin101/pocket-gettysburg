@@ -1,5 +1,6 @@
 (ns general-slim.combat
-  (:require [general-slim.utils :refer [average rng-int zero-floored-minus]]))
+  (:require [general-slim.utils :as u]
+            [general-slim.random :as rng]))
 
 (def noisy-print false)
 
@@ -9,34 +10,34 @@
    :mountains 0.2
    :road 0.2})
 
-(defn calculate-hits
+(defn- calculate-hits
   [shots enemy-men hit-rate]
   (count (reduce (fn [s t]
                    (if (< (rand) hit-rate)
                      (conj s t)
                      s))
                  #{}
-                 (take shots (rng-int enemy-men)))))
+                 (take shots (rng/rng-int enemy-men)))))
 
 (comment
   (for [x [100 200 300 400 500 600 700 800 900 1000]]
     [:force-proportion (float (/ x 1000))
-     :casualty-rate (int (* 100 (/ (average (repeatedly 1000 #(calculate-hits 1000 x 0.2))) x)))]))
+     :casualty-rate (int (* 100 (/ (u/average (repeatedly 1000 #(calculate-hits 1000 x 0.2))) x)))]))
 
-(defn prep-unit
+(defn- prep-unit
   "A few things get added to a unit structure before they 
    start combat to help with calculation"
   [unit]
   (-> unit
       (assoc :starting-strength (:soldiers unit))))
 
-(defn clean-unit
+(defn- clean-unit
   "Combat adds some gumf to a unit. This function cleans that
    out before returning the unit to the main game loop"
   [unit]
   (dissoc unit :terrain :starting-strength :last-round-casualties))
 
-(defn retreat-threshold [unit opposing-unit]
+(defn- retreat-threshold [unit opposing-unit]
   (let [prop-strength (/ (:soldiers unit) (:soldiers opposing-unit))
         prop-casualties (- 1 (/ (:soldiers unit) (:starting-strength unit)))]
     #_(println (:side unit) "PropCas" (Math/pow prop-casualties 1.5) "PropStr" (float (- 1 prop-strength)))
@@ -45,7 +46,7 @@
        (if (= :trees (:terrain opposing-unit)) 1.2 1)
        (if (= :trees (:terrain unit)) 0.8 1))))
 
-(defn retreater
+(defn- retreater
   "Given two units, will return :attacker if the first unit
    retreats, :defender if the second, nil if neither"
   [a-unit d-unit]
@@ -58,27 +59,47 @@
           d-retreat? :defender-retreats
           :else nil)))
 
-(defn print-combat-report [volleying-unit other-unit casualties]
+(defn- print-combat-report [volleying-unit other-unit casualties]
   (println
    (:soldiers volleying-unit) (name (:side volleying-unit))
    "fired on" (:soldiers other-unit) (name (:side other-unit))
    "in" (name (:terrain other-unit))
    "causing" casualties "casualties"))
 
-(defn print-retreat-chance [unit1 unit2]
+(defn- print-retreat-chance [unit1 unit2]
   (println "Retreat threshold of" (name (:side unit1)) "is" (retreat-threshold unit1 unit2)))
 
-(defn incur-casualties [receiving shooting]
+(defn- incur-casualties [receiving shooting]
   (let [cas (calculate-hits (:soldiers shooting)
                             (:soldiers receiving)
                             (hit-rates (:terrain receiving)))]
     (when noisy-print (print-combat-report shooting receiving cas))
     (-> receiving
-        (update :soldiers zero-floored-minus cas)
+        (update :soldiers u/zero-floored-minus cas)
         (assoc :last-round-casualties cas))))
 
+(defn- valid-unit? [unit]
+  (let [required-fields #{:soldiers :terrain}]
+    (and (every? #(contains? unit %) required-fields)
+         ((set (keys hit-rates)) (:terrain unit))
+         (pos-int? (:soldiers unit)))))
+
+(defn- can-resolve? [unit1 unit2]
+  (every? valid-unit? [unit1 unit2]))
+
 (defn resolve-combat
-  ([assaulting-unit defending-unit] (resolve-combat (prep-unit assaulting-unit) (prep-unit defending-unit) 5))
+  "resolve combat takes 2 units, and returns a tuple of
+   [resolution unit unit], where the units are the state of the unit
+   after combat has been resolved.
+   resolution can be turn-finished, attacker-retreats or defender-retreats
+   It assumes that the terrain each unit is standing on has been 
+   added to the unit as a value. The terrain is stripped out before 
+   the units are returned to the caller"
+  ([assaulting-unit defending-unit]
+   (if (can-resolve? assaulting-unit defending-unit)
+     (resolve-combat (prep-unit assaulting-unit) (prep-unit defending-unit) 5)
+     (throw (ex-info "Cann't resolve with these units" {:attacker assaulting-unit
+                                                        :defender defending-unit}))))
   ([a-unit d-unit rounds]
    (when noisy-print
      (println "Volley" (- 6 rounds) ":")
