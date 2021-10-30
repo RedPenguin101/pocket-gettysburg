@@ -144,8 +144,7 @@ input    |     |
 * DONE Get rid of unit strength indicators
 * DONE Hover menu for units
 * DONE Better sprites
-
-* Scrolling camera: display only 15x15 map and scroll around to see more
+* DONE Scrolling camera: display only 15x15 map and scroll around to see more
 
 * Proper unit names
 * BUG: Unit can attack twice in one turn

@@ -43,17 +43,14 @@
     (q/resize i w h)))
 
 (defn load-sprites []
-  (let [infantry (q/load-image "resources/sprites/infantry.png")
-        red-inf (q/load-image "resources/sprites/red_inf.png")
+  (let [red-inf (q/load-image "resources/sprites/red_inf.png")
         blue-inf (q/load-image "resources/sprites/blue_inf.png")
-        cavalry (q/load-image "resources/sprites/cavalry.png")
-        artillery (q/load-image "resources/sprites/artillery.png")
         field (q/load-image "resources/sprites/field2.png")
         trees (q/load-image "resources/sprites/trees2.png")
         mountains (q/load-image "resources/sprites/mountains2.png")
         road (q/load-image "resources/sprites/road_hor.png")]
-    (load-images [red-inf blue-inf infantry cavalry artillery])
-    (resize-images [red-inf blue-inf infantry cavalry artillery] unit-size unit-size)
+    (load-images [red-inf blue-inf])
+    (resize-images [red-inf blue-inf] unit-size unit-size)
     (load-images [field trees mountains road])
     (resize-images [field trees mountains road] tile-size tile-size)
     {:infantry {:red red-inf
