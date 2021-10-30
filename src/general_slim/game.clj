@@ -252,7 +252,7 @@
     (update (inputs/handle-input game-state) :ticks (fnil inc 0))
     (-> game-state
         (update :ticks (fnil inc 0))
-        (add-viewsheds))))
+        (v/add-viewsheds))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
@@ -272,6 +272,7 @@
   (field/terrain-map (:field game-state) (utils/manhattan [4 4] 4))
   (field/terrain-map (:field game-state))
 
+  game-state
   (:red game-state)
   (tick game-state)
   (select-keys game-state [:dispatch :menu :attack-option]))
