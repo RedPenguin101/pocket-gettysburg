@@ -122,7 +122,7 @@
   [game-state my-side my-unit-id enemy-unit-id]
   (let [my-unit (get-in game-state [my-side :units my-unit-id])
         enemy-unit (get-in game-state [(other-side my-side) :units enemy-unit-id])
-        [resolution u1 u2] (combat/resolve-combat
+        [resolution u1 u2] (combat/resolve-combat!
                             (assoc my-unit :terrain (field/terrain-at (:field game-state) (:position my-unit)))
                             (assoc enemy-unit :terrain (field/terrain-at (:field game-state) (:position enemy-unit))))]
     (-> game-state
