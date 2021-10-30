@@ -138,14 +138,14 @@ input    |     |
 * DONE FOV
 * DONE BUG: Units can't see themselves
 * DONE BUG: Can attack a unit you can't see
-
 * DONE Tests!
 ** DONE Field
 ** DONE Combat
+* DONE Get rid of unit strength indicators
+* DONE Hover menu for units
 
 * BUG: Unit can attack twice in one turn
-
-* Hover menu for units
+* when in attack mode, menu should show the attributes of the two sides are
 
 * Replace routing path with arrow, extend to attack with BANG! 
 * Make unit HP fit on tiles

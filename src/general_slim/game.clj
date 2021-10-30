@@ -64,7 +64,9 @@
 ;; Cursors
 
 (defn cursor-map [game-state new-cursor]
-  (assoc game-state :cursor new-cursor))
+  (if-let [unit (unit-in-square game-state new-cursor)]
+    (assoc game-state :cursor new-cursor :unit-under-cursor unit)
+    (dissoc (assoc game-state :cursor new-cursor) :unit-under-cursor)))
 
 (defn cursor-with-selection [game-state new-cursor]
   (let [selected-unit (unit-in-square game-state (:selected game-state))]
@@ -109,8 +111,8 @@
 (defn handle-cursor [game-state dir]
   (let [new-cursor (bound (relative-coord (:cursor game-state) dir))]
     (cond (:menu game-state)        (cursor-menu game-state dir)
-          (:attack-mode game-state) (cursor-attack game-state dir)
-          (:selected game-state)    (cursor-with-selection game-state new-cursor)
+          (:attack-mode game-state) (dissoc (cursor-attack game-state dir) :unit-under-cursor)
+          (:selected game-state)    (dissoc (cursor-with-selection game-state new-cursor) :unit-under-cursor)
           :else                     (cursor-map game-state new-cursor))))
 
 ;; Action button

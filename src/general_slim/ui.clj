@@ -121,7 +121,25 @@
 ;; units
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-unit [{:keys [position id soldiers sprite]} color]
+(defn draw-unit-hover-menu [unit]
+  (let [[x _y] (:position unit)
+        x-offset (+ (if (>= x (/ horiz-tiles 2))
+                      (scale 50)
+                      (- (* tile-size horiz-tiles) (scale 350))))
+        y-offset (scale 50)
+        line-offset (scale 35)]
+    (q/stroke 1)
+    (q/fill (colors :white))
+    (q/stroke-weight (scale 6))
+    (q/rect x-offset y-offset (scale 300) (scale 300))
+    (q/fill 0)
+    (q/text-font (q/create-font "Courier New" (scale 30)))
+    (q/text (str (name (:side unit)) " " (name (:id unit))) (+ (scale 20) x-offset) (+ (* 0 line-offset) (scale 40) y-offset))
+    (q/text (str "Soldiers: " (:soldiers unit)) (+ (scale 20) x-offset) (+ (* 1 line-offset) (scale 40) y-offset))
+    (q/stroke-weight 1)
+    (q/fill (colors :menu-select))))
+
+(defn draw-unit [{:keys [position id sprite]} color]
   (let [x (coord->px (first position))
         y (coord->px (second position))]
     (draw-tile x y color)
@@ -130,11 +148,9 @@
     (q/fill (colors :white))
     (q/text-font (q/create-font "Courier New" (scale 30)))
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
-    (q/text-font (q/create-font "Courier New" (scale 20)))
-    (q/text (str soldiers) (+ x (scale 70)) (+ y (scale 90)))
     (when sprite
       (q/image-mode :corner)
-      (q/image sprite x (+ y (scale 35))))))
+      (q/image sprite (+ x (scale 10)) (+ y (scale 35))))))
 
 (defn filter-units-by-position-set [units pos-set]
   (filter (fn [u] (pos-set (:position u))) units))
@@ -240,6 +256,9 @@
   (if (:attack-mode game-state)
     (draw-attack-cursor (:cursor game-state))
     (draw-cursor (:cursor game-state)))
+  (when (and (:unit-under-cursor game-state)
+             ((:viewsheds game-state) (:cursor game-state)))
+    (draw-unit-hover-menu (:unit-under-cursor game-state)))
   (when (:menu game-state) (draw-menu game-state))
   (when (:debug game-state) (draw-debug-box game-state))
   (draw-turn-indicator (:turn game-state)))
