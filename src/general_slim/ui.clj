@@ -4,7 +4,7 @@
             [quil.middleware :as m]
             [general-slim.field :as field]
             [general-slim.forces :as forces]
-            [general-slim.utils :refer [update-vals]]
+            [general-slim.utils :refer [update-vals coord-]]
             [general-slim.game :as game :refer [tick key-handler coord->px]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -17,9 +17,11 @@
 (def horiz-tiles game/horiz-tiles)
 (def vert-tiles game/vert-tiles)
 (def tile-size game/tile-size)
-(def unit-size (int (* 2/3 tile-size)))
+(def unit-size tile-size)
 (def colors game/colors)
 (def scale-factor (/ tile-size 100))
+(def screen-size-x (* 15 tile-size))
+(def screen-size-y (* 15 tile-size))
 
 (defn scale [x] (int (* scale-factor x)))
 
@@ -79,43 +81,14 @@
 ;; terrain
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-road [x y dirs]
-  (let [s20 (scale 20)
-        s40 (scale 40)
-        s60 (scale 60)
-        s100 (scale 100)]
-    (doseq [d dirs]
-      (q/stroke 0)
-      (q/stroke-weight 0)
-      (q/fill (get-in colors [:terrain :road]))
-      (case d
-        :hor (q/rect x (+ y s40) s100 s20)
-        :vert (q/rect (+ x s40) y s20 s100)
-        :ne (q/quad (+ x s40) y
-                    (+ x s60) y
-                    (+ x s100) (+ y s40)
-                    (+ x s100) (+ y s60))
-        :nw (q/quad (+ x s40) y
-                    (+ x s60) y
-                    x (+ y s60)
-                    x (+ y s40))
-        :se (q/quad (+ x s40) (+ y s100)
-                    (+ x s60) (+ y s100)
-                    (+ x s100) (+ y s60)
-                    (+ x s100) (+ y s40))
-        :sw (q/quad (+ x s40) (+ y s100)
-                    (+ x s60) (+ y s100)
-                    x (+ y s40)
-                    x (+ y s60))))))
-
 (defn draw-sprite [x y sprite]
   (q/image-mode :corner)
   (q/resize sprite tile-size tile-size)
   (q/image sprite x y))
 
-(defn draw-terrain [tiles images]
+(defn draw-terrain [tiles images camera]
   (doseq [tile tiles]
-    (let [[x y] (map coord->px (:grid tile))]
+    (let [[x y] (map coord->px (coord- (:grid tile) camera))]
       (case (:terrain tile)
         :field (draw-sprite x y (:field images))
         :trees (draw-sprite x y (:trees images))
@@ -130,7 +103,7 @@
   (let [[x _y] (:position unit)
         x-offset (+ (if (>= x (/ horiz-tiles 2))
                       (scale 50)
-                      (- (* tile-size horiz-tiles) (scale 350))))
+                      (- screen-size-x (scale 350))))
         y-offset (scale 50)
         line-offset (scale 35)]
     (q/stroke 1)
@@ -144,9 +117,9 @@
     (q/stroke-weight 1)
     (q/fill (colors :menu-select))))
 
-(defn draw-unit [{:keys [position id sprite]} color]
-  (let [x (coord->px (first position))
-        y (coord->px (second position))]
+(defn draw-unit [{:keys [position id sprite]} [c-x c-y] color]
+  (let [x (coord->px (- (first position) c-x))
+        y (coord->px (- (second position) c-y))]
     (draw-tile x y color)
     (q/stroke 0)
     (q/stroke-weight 0)
@@ -155,7 +128,7 @@
     (q/text (name id) (+ x (scale 15)) (+ y (scale 30)))
     (when sprite
       (q/image-mode :corner)
-      (q/image sprite (+ x (scale 15)) (+ y (scale 35))))))
+      (q/image sprite x (+ y (scale 15))))))
 
 (defn filter-units-by-position-set [units pos-set]
   (filter (fn [u] (pos-set (:position u))) units))
@@ -168,34 +141,34 @@
       (let [color (cond
                     (zero? (:move-points unit)) (get-in colors [side :spent])
                     :else (get-in colors [side :default]))]
-        (draw-unit unit color))))
+        (draw-unit unit (:camera game-state) color))))
   (doseq [[x y] (set/difference (set (keys (:field game-state))) (:viewsheds game-state))]
     (q/stroke 0)
     (q/stroke-weight 0)
-    (draw-tile (coord->px x) (coord->px y) (:fow colors))))
+    (draw-tile (coord->px (- x (first (:camera game-state)))) (coord->px (- y (second (:camera game-state)))) (:fow colors))))
 
 ;; other on-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-cursor [[x y]]
-  (draw-tile (coord->px x) (coord->px y) (colors :cursor)))
+(defn draw-cursor [[x y] [c-x c-y]]
+  (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y)) (colors :cursor)))
 
-(defn draw-highlights [coords]
+(defn draw-highlights [coords [c-x c-y]]
   (doseq [[x y] coords]
-    (draw-tile (coord->px x) (coord->px y)
+    (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y))
                (colors :map-highlight))))
 
-(defn draw-routing [coords]
+(defn draw-routing [coords [c-x c-y]]
   (doseq [[x y] coords]
-    (draw-tile (coord->px x) (coord->px y)
+    (draw-tile (coord->px (- x c-x)) (coord->px (- y c-y))
                (colors :routing))))
 
-(defn draw-attack-cursor [[x y]]
+(defn draw-attack-cursor [[x y] [c-x c-y]]
   (q/fill nil)
   (q/stroke (colors :attack-cursor))
   (q/stroke-weight (scale 12))
-  (q/ellipse (+ (coord->px x) (scale 50))
-             (+ (coord->px y) (scale 50))
+  (q/ellipse (+ (coord->px (- x c-x)) (scale 50))
+             (+ (coord->px (- y c-y)) (scale 50))
              (scale 70) (scale 70)))
 
 ;; menus
@@ -254,14 +227,15 @@
 
 (defn draw-state [game-state]
   (draw-terrain (vals (field/terrain-in-view (:field game-state) (:camera game-state)))
-                (:images game-state))
-  (when (:route-selection game-state) (draw-routing (:route game-state)))
+                (:images game-state)
+                (:camera game-state))
+  (when (:route-selection game-state) (draw-routing (:route game-state) (:camera game-state)))
   (draw-units game-state :red)
   (draw-units game-state :blue)
-  (when (:highlight game-state) (draw-highlights (:highlight game-state)))
+  (when (:highlight game-state) (draw-highlights (:highlight game-state) (:camera game-state)))
   (if (:attack-mode game-state)
-    (draw-attack-cursor (:cursor game-state))
-    (draw-cursor (:cursor game-state)))
+    (draw-attack-cursor (:cursor game-state) (:camera game-state))
+    (draw-cursor (:cursor game-state) (:camera game-state)))
   (when (and (:unit-under-cursor game-state)
              ((:viewsheds game-state) (:cursor game-state)))
     (draw-unit-hover-menu (:unit-under-cursor game-state)))
@@ -283,7 +257,7 @@
 
 (q/defsketch game
   :host "map"
-  :size [(* horiz-tiles tile-size) (* vert-tiles tile-size)]
+  :size [screen-size-x screen-size-y]
   :setup setup
   :settings #(q/smooth 2)
   :draw draw-state

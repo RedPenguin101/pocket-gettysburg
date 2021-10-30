@@ -1,0 +1,5 @@
+{:map "scroll_test"
+ :red [[:infantry :inf1 [0 0]] [:infantry :inf2 [1 1]]]
+ :blue [[:infantry :inf1 [16 16]] [:infantry :inf2 [15 15]]]
+ :turn :red
+ :turn-number 0}

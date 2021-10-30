@@ -10,12 +10,12 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (assoc (load-scenario "all_visuals") :camera [0 0])))
+(def game-state (v/add-viewsheds (assoc (load-scenario "scroll_test") :camera [0 0])))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
-(def tile-size 128)
+(def tile-size (* 2 32))
 (def colors {:cursor [183 183 183 75]
              :attack-cursor [215 221 33 90]
              :map-highlight [220 220 220 75]
