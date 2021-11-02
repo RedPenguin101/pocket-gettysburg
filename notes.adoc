@@ -32,6 +32,7 @@ input    |     |
 * DONE LOS increased on hills
 * DONE Generate IDs, display names 
 * DONE Short names to display on unit counters
+* DONE proper algorithm for viewsheds
 
 == TODO
 

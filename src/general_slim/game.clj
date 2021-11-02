@@ -1,5 +1,5 @@
 (ns general-slim.game
-  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value occupied-grids]]
+  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.dispatches :as d]
             [general-slim.viewsheds :as v]
@@ -10,7 +10,7 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (assoc (load-scenario "los_test") :camera [0 0])))
+(def game-state (v/add-viewsheds (assoc (load-scenario "scroll_test") :camera [0 0])))
 (def fps 30)
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)

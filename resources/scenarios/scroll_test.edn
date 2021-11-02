@@ -1,5 +1,8 @@
 {:map "scroll_test"
- :red [[:infantry "inf" "inf" [0 0]] [:infantry "inf" "inf" [1 1]]]
- :blue [[:infantry "inf" "inf" [2 2]] [:infantry "inf" "inf" [16 16]] [:infantry :inf2 [15 15]]]
+ :red [[:infantry "inf" "inf" [0 0]]
+       [:infantry "inf" "inf" [1 1]]]
+ :blue [[:infantry "inf" "inf" [2 2]]
+        [:infantry "inf" "inf" [16 16]]
+        [:infantry "inf" "inf" [15 15]]]
  :turn :red
  :turn-number 0}
