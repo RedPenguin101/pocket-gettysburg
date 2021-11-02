@@ -8,12 +8,8 @@
    \. :field
    \_ :road})
 
-(defn make-tile [terrain]
-  (cond-> {:terrain terrain}
-    (= :road terrain) (assoc :dirs [:hor :vert])))
-
 (defn row->terrain [row]
-  (mapv (comp make-tile terrain-map) row))
+  (mapv (comp #(hash-map :terrain %) terrain-map) row))
 
 (defn add-in-grids [[k v]]
   [k (assoc v :grid k)])
