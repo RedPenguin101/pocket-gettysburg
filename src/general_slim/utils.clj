@@ -1,4 +1,5 @@
-(ns general-slim.utils)
+(ns general-slim.utils
+  (:require [clojure.set :as set]))
 
 (defn map-vals [f m]
   (into {} (map (fn [[k v]] [k (f v)]) m)))
@@ -76,3 +77,9 @@
 (defn in-view? [[c-x c-y] [x y]]
   (and (<= c-x x (+ c-x 14))
        (<= c-y y (+ c-y 14))))
+
+(defn valid-directions
+  "Given a coordinate x and a collection of coordinates ys,
+   returns a set of each direction from x is represented in the ys"
+  [x ys]
+  (set (map #(relative-position x %) (set/intersection (manhattan x 1) (disj (set ys) x)))))

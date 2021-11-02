@@ -33,10 +33,10 @@ input    |     |
 * DONE Generate IDs, display names 
 * DONE Short names to display on unit counters
 * DONE proper algorithm for viewsheds
+* DONE Bend roads properly
 
 == TODO
 
-* Bend roads properly
 * Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options) 
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * Routing
