@@ -47,18 +47,25 @@
         field (q/load-image "resources/sprites/field2.png")
         trees (q/load-image "resources/sprites/trees2.png")
         mountains (q/load-image "resources/sprites/mountains2.png")
-        road-straight (q/load-image "resources/sprites/road_straight.png")
-        road-corner (q/load-image "resources/sprites/road_corner.png")]
-    (load-images [red-inf blue-inf field trees mountains road-straight road-corner])
-    (resize-images [red-inf blue-inf] unit-size unit-size)
-    (resize-images [field trees mountains road-straight] tile-size tile-size)
+        road-hor (q/load-image "resources/sprites/road_hor.png")
+        road-vert (q/load-image "resources/sprites/road_vert.png")
+        road-ul (q/load-image "resources/sprites/road_ul.png")
+        road-ur (q/load-image "resources/sprites/road_ur.png")
+        road-dl (q/load-image "resources/sprites/road_dl.png")
+        road-dr (q/load-image "resources/sprites/road_dr.png")]
+    (load-images [red-inf blue-inf field trees mountains road-hor road-vert road-ul road-ur road-dl road-dr])
+    (resize-images [red-inf blue-inf field trees mountains road-hor road-vert road-ul road-ur road-dl road-dr] tile-size tile-size)
     {:infantry {:red red-inf
                 :blue blue-inf}
      :field field
      :mountains mountains
      :trees trees
-     :road-straight road-straight
-     :road-corner road-corner}))
+     :roads {:hor road-hor
+             :vert road-vert
+             :ul road-ul
+             :ur road-ur
+             :dl road-dl
+             :dr road-dr}}))
 
 (defn add-sprite [unit images]
   (if (images (:unit-type unit))
@@ -89,7 +96,8 @@
 (defn draw-road [[x y] dirs images]
   (q/image-mode :corner)
   (q/image (:field images) x y)
-  (when ((set dirs) :hor) (q/image (:road-straight images) x y)))
+  (doseq [dir dirs]
+    (q/image (get-in images [:roads dir]) x y)))
 
 (defn draw-terrain [tiles images camera]
   (doseq [tile tiles]
