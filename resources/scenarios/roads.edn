@@ -1,0 +1,9 @@
+{:map "road"
+ :red [[:infantry "inf1" "inf1" [2 1]]
+       [:cavalry "cal1"  "cal1" [2 2]]
+       [:artillery "art1" "art1" [2 3]]]
+ :blue [[:infantry "inf1" "inf1" [3 1]]
+        [:cavalry "cal1" "cal1" [3 2]]
+        [:artillery "art1" "art1" [3 3]]]
+ :turn :red
+ :turn-number 0}
