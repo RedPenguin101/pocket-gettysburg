@@ -37,11 +37,23 @@
   [[x1 y1] [x2 y2]]
   (let [rel-pos [(- x1 x2) (- y1 y2)]]
     (case rel-pos
-      [-1 0] :left
-      [1 0] :right
+      [-1 0] :right
+      [1 0] :left
       [0 1] :up
       [0 -1] :down
       (throw (ex-info "Two points are not adjacent" {:p1 [x1 y1] :p2 [x2 y2]})))))
+
+(comment
+  ;; 10 is to the right of 0 0
+  (relative-position [0 0] [1 0])
+  ;; => :right
+  (relative-position [0 0] [-1 0])
+  ;; => :left
+  (relative-position [0 0] [0 1])
+  ;; => :down
+  (relative-position [0 0] [0 -1])
+  ;; => :up
+  )
 
 (defn manhattan [[x y] dist]
   (set (for [d (range 0 (inc dist))
