@@ -13,11 +13,10 @@
 
 (def debug (atom {}))
 (def game-state game/game-state)
-(def fps game/fps)
+(def fps 30)
 (def horiz-tiles game/horiz-tiles)
 (def vert-tiles game/vert-tiles)
 (def tile-size game/tile-size)
-(def unit-size tile-size)
 (def colors game/colors)
 (def scale-factor (/ tile-size 100))
 (def screen-size-x (* (min 15 horiz-tiles) tile-size))
