@@ -43,6 +43,7 @@ input    |     |
 
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * QOL: When turn ends, cursor is moved to the nearest unit (Camera moves too)
+* Set up proper dev/repl space
 
 === Medium
 

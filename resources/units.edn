@@ -23,6 +23,7 @@
                             :mountains 4}
            :move-over false}
  :general {:unit-type :general
+           :can-attack false
            :soldiers 25
            :move-points 3 :max-move-points 3
            :movement-table {:road 0.5
