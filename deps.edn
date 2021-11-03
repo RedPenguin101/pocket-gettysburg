@@ -1,3 +1,5 @@
-{:paths ["src" "test"]
+{:paths ["src" "test" "dev"]
  :deps {quil/quil {:mvn/version "3.1.0"}
-        ubergraph/ubergraph {:mvn/version "0.8.2"}}}
+        ubergraph/ubergraph {:mvn/version "0.8.2"}}
+ :aliases {:dev {:extra-paths ["dev"]
+                 :extra-deps {djblue/portal {:mvn/version "0.16.3"}}}}}
