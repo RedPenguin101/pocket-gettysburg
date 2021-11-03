@@ -36,6 +36,17 @@ input    |     |
 * DONE Bend roads properly
 * DONE Improve road drawings: tiles depend on surrounding
 * DON Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options)
+* DONE Set up proper dev/repl space
+
+== DOING
+
+=== Enemy Intel
+
+* Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
+* When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
+* The sighting tracks how many turns ago since the sighting was made
+* When that location comes into visibility again, the counter is replaced by the actual unit (even if they are not in the same location)
+* Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
 
 == TODO
 
@@ -43,7 +54,6 @@ input    |     |
 
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * QOL: When turn ends, cursor is moved to the nearest unit (Camera moves too)
-* Set up proper dev/repl space
 
 === Medium
 
@@ -77,13 +87,6 @@ input    |     |
 * Other actions can be framed in that, like formup time
 * A units movement pool then gets framed in minutes remaining in a turn, and the actions they can perform are dependent on that.
 
-==== Enemy Intel
-
-* Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
-* When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
-* The sighting tracks how many turns ago since the sighting was made
-* When that location comes into visibility again, the counter is replaced by the actual unit (even if they are not in the same location)
-* Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
 
 ==== Pre-battle stuff
 ==== Cavalry combat system
