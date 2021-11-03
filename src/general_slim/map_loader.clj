@@ -30,7 +30,7 @@
 (defn road-builder [field]
   (let [tmap (field/terrain-map field)
         roads (keys (filter #(= :road (second %)) tmap))
-        road-tiles (->> (map (juxt identity #(f % roads)) roads)
+        road-tiles (->> (map (juxt identity #(valid-directions % roads)) roads)
                         (into {})
                         (map-vals road-dirs->road-tile))]
     (reduce (fn [fld [coord tiles]]
