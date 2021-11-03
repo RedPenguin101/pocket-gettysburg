@@ -188,10 +188,13 @@
 ;; menus
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-turn-indicator [side]
+(defn draw-turn-indicator [side turn-number]
   (q/stroke nil)
   (q/fill (vec (take 3 (get-in colors [side :default]))))
-  (q/rect 0 0 (scale 30) (scale 30)))
+  (q/rect 0 0 (scale 160) (scale 60))
+  (q/fill (colors :white))
+  (q/text-font (q/create-font "Courier New" (scale 30)))
+  (q/text (str "Turn: " turn-number) (scale 10) (scale 40)))
 
 (defn draw-menu [game-state]
   (let [x-offset (scale 50) y-offset (scale 50)
@@ -257,7 +260,7 @@
     (draw-unit-hover-menu (:unit-under-cursor game-state)))
   (when (:menu game-state) (draw-menu game-state))
   (when (:debug game-state) (draw-debug-box game-state))
-  (draw-turn-indicator (:turn game-state)))
+  (draw-turn-indicator (:turn game-state) (int (/ (:turn-number game-state) 2))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup and run

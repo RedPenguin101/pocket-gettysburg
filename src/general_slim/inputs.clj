@@ -146,7 +146,8 @@
         (assoc :turn (if (= :red side) :blue :red))
         (update-in [side :units] refresh-units)
         (update-in [(other-side side) :units] refresh-units)
-        (dissoc :current-order))
+        (dissoc :current-order)
+        (update :turn-number inc))
     (throw (ex-info "Cannot end turn for this side, not their turn" {:side side}))))
 
 (defn handle-input [game-state]

@@ -35,13 +35,15 @@ input    |     |
 * DONE proper algorithm for viewsheds
 * DONE Bend roads properly
 * DONE Improve road drawings: tiles depend on surrounding
-* DON Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options)
+* DONE Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options)
 * DONE Set up proper dev/repl space
 
 == DOING
 
 === Enemy Intel
 
+* DONE Add individual viewsheds to units
+* DONE Add turn number to ui
 * Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
 * When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
 * The sighting tracks how many turns ago since the sighting was made
