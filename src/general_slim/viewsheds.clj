@@ -1,5 +1,6 @@
 (ns general-slim.viewsheds
-  (:require [general-slim.utils :refer [adjacent? remove-oob-coords]]
+  (:require [clojure.set :as set]
+            [general-slim.utils :refer [adjacent? remove-oob-coords]]
             [general-slim.forces :as forces]
             [general-slim.field :as field]
             [general-slim.bresenham :as br]))
@@ -24,10 +25,20 @@
 (defn calculate-viewsheds [game-state unit-loc]
   (viewshed unit-loc (field/terrain-at (:field game-state) unit-loc) (field/terrain-map (:field game-state))))
 
+(defn add-viewshed-to-units [game-state]
+  (let [side (:turn game-state)
+        units (vals (get-in game-state [side :units]))]
+    (reduce (fn [gs unit]
+              (assoc-in gs [side :units (:id unit) :viewshed]
+                        (calculate-viewsheds game-state (:position unit))))
+            game-state
+            units)))
+
+(defn all-viewsheds [game-state]
+  (apply set/union (map :viewshed (forces/units game-state (:turn game-state)))))
+
+(defn add-combined-viewsheds [game-state]
+  (assoc game-state :viewsheds (all-viewsheds game-state)))
+
 (defn add-viewsheds [game-state]
-  (->> (:turn game-state)
-       (forces/occupied-grids game-state)
-       (mapcat #(calculate-viewsheds game-state %))
-       (remove-oob-coords (first (:field-size game-state)) (second (:field-size game-state)))
-       (set)
-       (assoc game-state :viewsheds)))
+  (add-combined-viewsheds (add-viewshed-to-units game-state)))
