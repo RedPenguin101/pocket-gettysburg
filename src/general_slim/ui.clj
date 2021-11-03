@@ -1,9 +1,7 @@
 (ns general-slim.ui
-  (:require [clojure.set :as set]
-            [quil.core :as q]
+  (:require [quil.core :as q]
             [quil.middleware :as m]
-            [general-slim.field :as field]
-            [general-slim.forces :as forces]
+            [general-slim.ui-layers :as layers]
             [general-slim.utils :refer [update-vals coord+]]
             [general-slim.game :as game :refer [tick key-handler]]))
 
@@ -55,8 +53,7 @@
         road-dr (q/load-image "resources/sprites/road_dr.png")]
     (load-images [red-inf blue-inf field trees mountains road-hor road-vert road-ul road-ur road-dl road-dr])
     (resize-images [red-inf blue-inf field trees mountains road-hor road-vert road-ul road-ur road-dl road-dr] tile-size tile-size)
-    {:infantry {:red red-inf
-                :blue blue-inf}
+    {:infantry {:red red-inf :blue blue-inf}
      :field field
      :mountains mountains
      :trees trees
@@ -112,23 +109,24 @@
 ;; units
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-unit-hover-menu [unit]
-  (let [[x _y] (:position unit)
-        x-offset (+ (if (>= x (/ horiz-tiles 2))
-                      (scale 50)
-                      (- screen-size-x (scale 550))))
-        y-offset (scale 50)
-        line-offset (scale 35)]
-    (q/stroke 1)
-    (q/fill (colors :white))
-    (q/stroke-weight (scale 6))
-    (q/rect x-offset y-offset (scale 500) (scale 300))
-    (q/fill 0)
-    (q/text-font (q/create-font "Courier New" (scale 30)))
-    (q/text (:unit-name unit) (+ (scale 20) x-offset) (+ (* 0 line-offset) (scale 40) y-offset))
-    (q/text (str "Soldiers: " (:soldiers unit)) (+ (scale 20) x-offset) (+ (* 1 line-offset) (scale 40) y-offset))
-    (q/stroke-weight 1)
-    (q/fill (colors :menu-select))))
+(defn draw-unit-hover-menu [unit _camera]
+  (when unit
+    (let [[x _y] (:position unit)
+          x-offset (+ (if (>= x (/ horiz-tiles 2))
+                        (scale 50)
+                        (- screen-size-x (scale 550))))
+          y-offset (scale 50)
+          line-offset (scale 35)]
+      (q/stroke 1)
+      (q/fill (colors :white))
+      (q/stroke-weight (scale 6))
+      (q/rect x-offset y-offset (scale 500) (scale 300))
+      (q/fill 0)
+      (q/text-font (q/create-font "Courier New" (scale 30)))
+      (q/text (:unit-name unit) (+ (scale 20) x-offset) (+ (* 0 line-offset) (scale 40) y-offset))
+      (q/text (str "Soldiers: " (:soldiers unit)) (+ (scale 20) x-offset) (+ (* 1 line-offset) (scale 40) y-offset))
+      (q/stroke-weight 1)
+      (q/fill (colors :menu-select)))))
 
 (defn draw-unit [{:keys [position short-name sprite]} camera color]
   (let [[x y] (camera-offset position camera)]
@@ -142,40 +140,24 @@
       (q/image-mode :corner)
       (q/image sprite x (+ y (scale 15))))))
 
-(defn filter-units-by-position-set [units pos-set]
-  (filter (fn [u] (pos-set (:position u))) units))
+(defn draw-units [units camera]
+  (doseq [unit units]
+    (let [side (:side unit)
+          color (cond
+                  (zero? (:move-points unit)) (get-in colors [side :spent])
+                  (:move-over unit) (get-in colors [side :spent])
+                  :else (get-in colors [side :default]))]
+      (draw-unit unit camera color))))
 
-(defn draw-units [game-state side]
-  (let [units (vals (get-in game-state [side :units]))
-        units (if (and (:viewsheds game-state) (not= (:turn game-state) side)) (filter-units-by-position-set units (:viewsheds game-state)) units)
-        units (filter #(forces/unit-in-view? % (:camera game-state)) units)]
-    (doseq [unit units]
-      (let [color (cond
-                    (zero? (:move-points unit)) (get-in colors [side :spent])
-                    (:move-over unit) (get-in colors [side :spent])
-                    :else (get-in colors [side :default]))]
-        (draw-unit unit (:camera game-state) color))))
-  (doseq [[x y] (set/difference (set (keys (:field game-state))) (:viewsheds game-state))]
+(defn draw-viewsheds [viewsheds camera]
+  (doseq [[x y] viewsheds]
     (q/stroke 0)
     (q/stroke-weight 0)
-    (draw-tile (camera-offset [x y] (:camera game-state))
+    (draw-tile (camera-offset [x y] camera)
                (:fow colors))))
 
 ;; other on-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn draw-cursor [cursor camera]
-  (draw-tile (camera-offset cursor camera) (colors :cursor)))
-
-(defn draw-highlights [coords camera]
-  (doseq [coord coords]
-    (draw-tile (camera-offset coord camera)
-               (colors :map-highlight))))
-
-(defn draw-routing [coords camera]
-  (doseq [coord coords]
-    (draw-tile (camera-offset coord camera)
-               (colors :routing))))
 
 (defn draw-attack-cursor [coord camera]
   (let [[x y] (coord+ (camera-offset coord camera) [(scale 50) (scale 50)])]
@@ -185,10 +167,27 @@
     (q/ellipse x y
                (scale 70) (scale 70))))
 
+(defn draw-cursor [{:keys [type cursor]} camera]
+  (if (= type :attack)
+    (draw-attack-cursor cursor camera)
+    (draw-tile (camera-offset cursor camera) (colors :cursor))))
+
+(defn draw-highlights [coords camera]
+  (when coords
+    (doseq [coord coords]
+      (draw-tile (camera-offset coord camera)
+                 (colors :map-highlight)))))
+
+(defn draw-routing [coords camera]
+  (when coords
+    (doseq [coord coords]
+      (draw-tile (camera-offset coord camera)
+                 (colors :routing)))))
+
 ;; menus
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn draw-turn-indicator [side turn-number]
+(defn draw-turn-indicator [[side turn-number] _camera]
   (q/stroke nil)
   (q/fill (vec (take 3 (get-in colors [side :default]))))
   (q/rect 0 0 (scale 160) (scale 60))
@@ -196,71 +195,68 @@
   (q/text-font (q/create-font "Courier New" (scale 30)))
   (q/text (str "Turn: " turn-number) (scale 10) (scale 40)))
 
-(defn draw-menu [game-state]
-  (let [x-offset (scale 50) y-offset (scale 50)
-        line-offset (scale 35)]
-    (q/stroke 1)
-    (q/fill (colors :white))
-    (q/stroke-weight (scale 6))
-    (q/rect x-offset y-offset (scale 300) (scale 300))
-    (q/fill 0)
-    (q/text-font (q/create-font "Courier New" (scale 30)))
-    (doseq [[row item] (map-indexed vector (vals (get-in game-state [:menu :options])))]
-      (q/text item (+ (scale 20) x-offset) (+ (* row line-offset) (scale 40) y-offset)))
-    (q/stroke-weight 1)
-    (q/fill (colors :menu-select))
-    (q/rect (+ x-offset (scale 10)) (+ (* line-offset (get-in game-state [:menu :selection])) (+ y-offset (scale 10))) (scale 250) (scale 35))))
+(defn draw-menu [menu _camera]
+  (when menu
+    (let [x-offset (scale 50) y-offset (scale 50)
+          line-offset (scale 35)]
+      (q/stroke 1)
+      (q/fill (colors :white))
+      (q/stroke-weight (scale 6))
+      (q/rect x-offset y-offset (scale 300) (scale 300))
+      (q/fill 0)
+      (q/text-font (q/create-font "Courier New" (scale 30)))
+      (doseq [[row item] (map-indexed vector (vals (get-in menu [:options])))]
+        (q/text item (+ (scale 20) x-offset) (+ (* row line-offset) (scale 40) y-offset)))
+      (q/stroke-weight 1)
+      (q/fill (colors :menu-select))
+      (q/rect (+ x-offset (scale 10)) (+ (* line-offset (get-in menu [:selection])) (+ y-offset (scale 10))) (scale 250) (scale 35)))))
 
 (defn debug-text-item [line-num text]
   (q/text text
           (+ (scale 25) (scale 3))
           (- (+ (* line-num (scale 30)) (scale 50)) (scale 3))))
 
-(defn draw-debug-box [game-state]
-  (let [{:keys [cursor selected
-                unit-under-cursor
-                unit-selected
-                route-selection route route-cost
-                attack-option camera]} (game/debug-data game-state)]
-    (q/stroke 1)
-    (q/fill (colors :white))
-    (q/stroke-weight (scale 6))
-    (q/rect (scale 3) (scale 3) (scale 1000) (scale 300))
-    (q/fill 0)
-    (q/text-font (q/create-font "Courier New" (scale 30)))
-    (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected " Camera: " camera))
+(defn draw-debug-box [debug-data _camera]
+  (when debug-data
+    (let [{:keys [cursor selected
+                  unit-under-cursor
+                  unit-selected
+                  route-selection route route-cost
+                  attack-option camera]} debug-data]
+      (q/stroke 1)
+      (q/fill (colors :white))
+      (q/stroke-weight (scale 6))
+      (q/rect (scale 3) (scale 3) (scale 1000) (scale 300))
+      (q/fill 0)
+      (q/text-font (q/create-font "Courier New" (scale 30)))
+      (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected " Camera: " camera))
 
-    (when unit-under-cursor
-      (debug-text-item 1 (str "CURSOR: " (:id unit-under-cursor)))
-      (debug-text-item 2 (str (:soldiers unit-under-cursor) " soldiers"))
-      (debug-text-item 3 (str "Attack option: " attack-option))
-      (debug-text-item 4 (str "Move points: " (:move-points unit-under-cursor))))
-    (when (and selected (not unit-under-cursor))
-      (debug-text-item 1 (str "SELECTED: " (:id unit-selected)))
-      (debug-text-item 2 (str (:soldiers unit-selected) " soldiers"))
-      (debug-text-item 3 (str "Attack option: " attack-option))
-      (debug-text-item 4 (str "Move points: " (:move-points unit-selected))))
-    (when route-selection
-      (debug-text-item 5 (str "Route: " route))
-      (debug-text-item 6 (str "Route cost: " route-cost)))))
+      (when unit-under-cursor
+        (debug-text-item 1 (str "CURSOR: " (:id unit-under-cursor)))
+        (debug-text-item 2 (str (:soldiers unit-under-cursor) " soldiers"))
+        (debug-text-item 3 (str "Attack option: " attack-option))
+        (debug-text-item 4 (str "Move points: " (:move-points unit-under-cursor))))
+      (when (and selected (not unit-under-cursor))
+        (debug-text-item 1 (str "SELECTED: " (:id unit-selected)))
+        (debug-text-item 2 (str (:soldiers unit-selected) " soldiers"))
+        (debug-text-item 3 (str "Attack option: " attack-option))
+        (debug-text-item 4 (str "Move points: " (:move-points unit-selected))))
+      (when route-selection
+        (debug-text-item 5 (str "Route: " route))
+        (debug-text-item 6 (str "Route cost: " route-cost))))))
 
 (defn draw-state [game-state]
-  (draw-terrain (vals (field/terrain-in-view (:field game-state) (:camera game-state)))
-                (:images game-state)
-                (:camera game-state))
-  (when (:route-selection game-state) (draw-routing (:route game-state) (:camera game-state)))
-  (draw-units game-state :red)
-  (draw-units game-state :blue)
-  (when (:highlight game-state) (draw-highlights (:highlight game-state) (:camera game-state)))
-  (if (:attack-mode game-state)
-    (draw-attack-cursor (:cursor game-state) (:camera game-state))
-    (draw-cursor (:cursor game-state) (:camera game-state)))
-  (when (and (:unit-under-cursor game-state)
-             ((:viewsheds game-state) (:cursor game-state)))
-    (draw-unit-hover-menu (:unit-under-cursor game-state)))
-  (when (:menu game-state) (draw-menu game-state))
-  (when (:debug game-state) (draw-debug-box game-state))
-  (draw-turn-indicator (:turn game-state) (int (/ (:turn-number game-state) 2))))
+  (let [{:keys [images camera]} (layers/constants game-state)]
+    (draw-terrain (layers/field-layer game-state) images camera)
+    (draw-units (layers/unit-layer game-state) camera)
+    (draw-highlights (layers/highlight-layer game-state) camera)
+    (draw-routing (layers/route-layer game-state) camera)
+    (draw-viewsheds (layers/viewsheds-layer game-state) camera)
+    (draw-cursor (layers/cursor-layer game-state) camera)
+    (draw-unit-hover-menu (layers/hover-info-layer game-state) camera)
+    (draw-menu (layers/menu-layer game-state) camera)
+    (draw-debug-box (layers/debug-layer game-state) camera)
+    (draw-turn-indicator (layers/turn-indicator-layer game-state) camera)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup and run
