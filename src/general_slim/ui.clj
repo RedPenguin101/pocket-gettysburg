@@ -270,15 +270,15 @@
                add-sprites-to-units)]
     ss))
 
-(q/defsketch game
-  :host "map"
-  :size [screen-size-x screen-size-y]
-  :setup setup
-  :settings #(q/smooth 2)
-  :draw draw-state
-  :update #(do (reset! debug %) (tick %))
-  :key-pressed key-handler
-  :middleware [m/fun-mode])
+#_(q/defsketch game
+    :host "map"
+    :size [screen-size-x screen-size-y]
+    :setup setup
+    :settings #(q/smooth 2)
+    :draw draw-state
+    :update #(do (reset! debug %) (tick %))
+    :key-pressed key-handler
+    :middleware [m/fun-mode])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; debug
