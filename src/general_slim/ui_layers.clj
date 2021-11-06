@@ -2,7 +2,8 @@
   (:require [general-slim.field :as field]
             [clojure.set :as set]
             [general-slim.game :as game]
-            [general-slim.forces :as forces]))
+            [general-slim.forces :as forces]
+            [general-slim.viewsheds :as vs]))
 
 (def other-side {:red :blue :blue :red})
 
@@ -21,12 +22,12 @@
 (defn unit-layer [game-state]
   (let [my-side (:turn game-state)
         my-units (forces/units game-state my-side)
-        viewsheds (:viewsheds game-state)
+        viewsheds (or (vs/all-viewsheds game-state) #{})
         visible-enemy-units (filter #(viewsheds (:position %)) (forces/units game-state (other-side my-side)))]
     (concat my-units visible-enemy-units)))
 
 (defn viewsheds-layer [game-state]
-  (set/difference (set (keys (:field game-state))) (:viewsheds game-state)))
+  (set/difference (set (keys (:field game-state))) (vs/all-viewsheds game-state)))
 
 (defn cursor-layer [game-state]
   {:type (if (:attack-mode game-state) :attack :move)
@@ -34,7 +35,7 @@
 
 (defn hover-info-layer [game-state]
   (when (and (:unit-under-cursor game-state)
-             ((:viewsheds game-state) (:cursor game-state)))
+             ((vs/all-viewsheds game-state) (:cursor game-state)))
     (:unit-under-cursor game-state)))
 
 (defn menu-layer [game-state]

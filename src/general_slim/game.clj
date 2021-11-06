@@ -2,7 +2,7 @@
   (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.dispatches :as d]
-            [general-slim.viewsheds :as v]
+            [general-slim.viewsheds :as vs]
             [general-slim.field :as field]
             [general-slim.utils :refer [relative-coord]]
             [general-slim.scenarios :refer [load-scenario]]))
@@ -10,7 +10,11 @@
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def game-state (v/add-viewsheds (assoc (load-scenario "aw_ft1") :camera [0 0])))
+(def game-state
+  (-> (load-scenario "aw_ft1")
+      (assoc  :camera [0 0])
+      (vs/add-viewshed-to-units :red)
+      (vs/add-viewshed-to-units :blue)))
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
@@ -273,8 +277,7 @@
   (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
     (update (inputs/handle-input game-state) :ticks (fnil inc 0))
     (-> game-state
-        (update :ticks (fnil inc 0))
-        (v/add-viewsheds))))
+        (update :ticks (fnil inc 0)))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)

@@ -15,6 +15,10 @@
   ([game-state side]
    (map #(assoc % :side side) (vals (get-in game-state [side :units])))))
 
+(defn units-map
+  [game-state]
+  (merge (get-in game-state [:red :units]) (get-in game-state [:blue :units])))
+
 (defn occupied-grids
   ([game-state] (set (map :position (units game-state))))
   ([game-state side] (set (map :position (units game-state side)))))
@@ -37,3 +41,9 @@
 
 (defn unit-in-view? [unit camera]
   (in-view? camera (:position unit)))
+
+(defn units-at-locations [game-state locations]
+  (into {} (filter (fn [[_ unit]] (locations (:position unit))) (units-map game-state))))
+
+(defn unit-with-id [game-state unit-id]
+  (get (units-map game-state) unit-id))

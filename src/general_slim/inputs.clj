@@ -4,7 +4,9 @@
             [general-slim.route-calc :as routing :refer [accessible-squares]]
             [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
             [general-slim.field :as field]
-            [general-slim.combat :as combat]))
+            [general-slim.combat :as combat]
+            [general-slim.viewsheds :as vs]
+            [general-slim.sightings :as sightings]))
 
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -93,6 +95,7 @@
           (-> game-state
               (assoc-in [side :units unit-id :position] (first route))
               (update-in [side :units unit-id :move-points] - move-cost)
+              (vs/update-viewshed unit-id)
               (update-move-order)))))
 
 ;; Retreating
