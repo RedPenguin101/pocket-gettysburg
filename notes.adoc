@@ -14,18 +14,6 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * _No base building_
 * _No air or sea_
 
-== Code structure
-
-----
-        ui
-  |------|
-game     |
-  |------|-----|
-input    |     |
-  |-----||     |
-       forces field
-----
-
 == DONE
 
 * DONE Onscreen General
@@ -44,7 +32,7 @@ input    |     |
 
 * DONE Add individual viewsheds to units
 * DONE Add turn number to ui
-* Side has 'sightings'. Each sighting is an estimate of where an enemy unit is, its strength etc.
+* Side has 'sightings'. Each sighting is an 
 * When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
 * The sighting tracks how many turns ago since the sighting was made
 * When that location comes into visibility again, the counter is replaced by the actual unit (even if they are not in the same location)
@@ -70,6 +58,7 @@ input    |     |
 * Sprite for general
 * Sprite for cav
 * Sprite for art
+* Refactor units to remove side as a top level key?
 
 === Large
 

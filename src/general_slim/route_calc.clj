@@ -15,20 +15,31 @@
          :when (adjacent? this-grid other-grid)]
      [this-grid other-grid mv])))
 
-(defn shortest-path [graph start end]
+(defn shortest-path* [graph start end]
+  (alg/shortest-path graph {:start-node start
+                            :end-node end
+                            :cost-attr :weight}))
+
+(defn shortest-path-cost [graph start end]
   (:cost (alg/shortest-path graph {:start-node start
                                    :end-node end
                                    :cost-attr :weight})))
+
+(defn shortest-path [point nodes target]
+  (let [graph (build-graph nodes)]
+    (shortest-path* graph point target)))
 
 (defn accessible-squares
   "Given a sequence of coords with their movement costs,
    as well as the unit's location and movement points
    will return a set of the squares that can be reached
-   by the unit on that turn"
+   by the unit on that turn
+   target-points is like [[2 6] 1], where first is the location
+   and second is the cost (for that unit)"
   [current move-points target-points]
   (let [graph (build-graph target-points)]
     (->> (map first target-points)
-         (map #(vector % (shortest-path graph current %)))
+         (map #(vector % (shortest-path-cost graph current %)))
          (remove #(nil? (second %)))
          (filter #(>= move-points (second %)))
          (map first) ;; get coord only

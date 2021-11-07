@@ -1,5 +1,4 @@
-(ns general-slim.forces
-  (:require [general-slim.utils :refer [map-vals]]))
+(ns general-slim.forces)
 
 (require '[clojure.test :refer [deftest is]])
 
@@ -18,10 +17,14 @@
 (defn defence-value [unit terrain]
   (get-in unit [:terrain-defense terrain]))
 
+(defn can-move? [unit]
+  (> (:move-points unit) 0))
+
+(defn move [unit location]
+  (assoc unit :position location))
+
 ;; Operations on a map of units
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn reset [unit-map] (map-vals reset unit-map))
 
 (defn filter-side [side]
   (fn  [units-map]
@@ -53,8 +56,11 @@
 (defn at-locations [game-state locations]
   (into {} (filter (fn [[k _v]] (locations k)) (by-location game-state))))
 
-(defn with-ids [game-state ids]
-  (into {} (filter (fn [[k _v]] (ids k)) (all game-state))))
+(defn at-location [game-state location]
+  (second (first (into {} (filter (fn [[k _v]] (#{location} k)) (by-location game-state))))))
+
+(defn with-id [game-state id]
+  (second (first (into {} (filter (fn [[k _v]] (id k)) (all game-state))))))
 
 (deftest x
   (let [gs {:units {:abc {:id :abc :side :red :position [1 1]}
@@ -74,4 +80,12 @@
            (by-location gs :blue)))
     (is (= {[1 1] (:abc (:units gs))
             [2 2] (:def (:units gs))}
-           (at-locations gs #{[1 1] [2 2]})))))
+           (at-locations gs #{[1 1] [2 2]})))
+    (is (= (:abc (:units gs))
+           (at-location gs [1 1])))
+    (is (= (:def (:units gs))
+           (at-location gs [2 2])))
+    (is (nil? (at-location gs [3 3])))))
+
+(defn add-to-unit [game-state unit-id k v]
+  (assoc-in game-state [:units unit-id k] v))

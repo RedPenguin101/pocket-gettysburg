@@ -1,5 +1,5 @@
 (ns general-slim.game
-  (:require [general-slim.forces :refer [can-move? unit-in-square defence-value]]
+  (:require [general-slim.forces :as forces]
             [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
             [general-slim.dispatches :as d]
             [general-slim.viewsheds :as vs]
@@ -71,7 +71,7 @@
 ;; Cursors
 
 (defn add-unit-under-cursor [game-state new-cursor]
-  (if-let [uuc (unit-in-square game-state new-cursor)]
+  (if-let [uuc (forces/at-location game-state new-cursor)]
     (assoc game-state :unit-under-cursor uuc)
     (dissoc game-state :unit-under-cursor)))
 
@@ -82,12 +82,12 @@
       (update :camera new-camera new-cursor)))
 
 (defn cursor-with-selection [game-state new-cursor]
-  (let [selected-unit (unit-in-square game-state (:selected game-state))]
+  (let [selected-unit (forces/at-location game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
           game-state
 
           ;; can't move through units
-          (and (unit-in-square game-state new-cursor)
+          (and (forces/at-location game-state new-cursor)
                (not= new-cursor (:position selected-unit)))
           game-state
 
@@ -132,7 +132,7 @@
 
 (defn action-select [game-state]
   (let [cursor (:cursor game-state)
-        unit-under-cursor? (unit-in-square game-state cursor)
+        unit-under-cursor? (forces/at-location game-state cursor)
         my-side (:turn game-state)]
     (cond
       (not unit-under-cursor?)
@@ -143,7 +143,7 @@
 
       ;; trying to select your unit, select and turn on route selection
       (and (= my-side (:side unit-under-cursor?))
-           (can-move? unit-under-cursor?))
+           (forces/can-move? unit-under-cursor?))
       (assoc game-state
              :route-selection true
              :route (list cursor)
@@ -153,7 +153,7 @@
 
       ;; selecting the other sides unit, show the movement range
       (and (not= my-side (:side unit-under-cursor?))
-           (can-move? unit-under-cursor?))
+           (forces/can-move? unit-under-cursor?))
       (assoc game-state :highlight (can-move-to game-state unit-under-cursor?))
 
       :else (do (println "Selection fall through") game-state))))
@@ -163,10 +163,10 @@
 
 (defn action-move-plan [game-state]
   (let [cursor (:cursor game-state)
-        unit-under-cursor? (unit-in-square game-state cursor)
+        unit-under-cursor? (forces/at-location game-state cursor)
         my-side (:turn game-state)
         selected? (:selected game-state)
-        selected-unit? (unit-in-square game-state selected?)]
+        selected-unit? (forces/at-location game-state selected?)]
 
     (when (and selected-unit? (not= unit-under-cursor? selected-unit?))
       (println "Main move plan branch"))
@@ -209,7 +209,7 @@
       (do (println "Menu Fallthrough") game-state))))
 
 (defn action-attack [game-state]
-  (let [defender-id (:id (unit-in-square game-state (:cursor game-state)))]
+  (let [defender-id (:id (forces/at-location game-state (:cursor game-state)))]
     (-> game-state
         (update :dispatch d/add-attack-order defender-id)
         (d/send-order)
@@ -257,15 +257,15 @@
 (defn debug-data [game-state]
   (let [cursor (:cursor game-state)
         selected (:selected game-state)
-        uuc (unit-in-square game-state cursor)
-        su (unit-in-square game-state selected)]
+        uuc (forces/at-location game-state cursor)
+        su (forces/at-location game-state selected)]
     {:camera (:camera game-state)
      :cursor cursor
      :selected selected
      :unit-under-cursor uuc
-     :uuc-defence (when uuc (defence-value uuc (get-in game-state [:field (:position uuc) :terrain])))
+     :uuc-defence (when uuc (forces/defence-value uuc (get-in game-state [:field (:position uuc) :terrain])))
      :unit-selected su
-     :selected-defence (when su (defence-value su (get-in game-state [:field (:position su) :terrain])))
+     :selected-defence (when su (forces/defence-value su (get-in game-state [:field (:position su) :terrain])))
      :route-selection (:route-selection game-state)
      :route (:route game-state)
      :route-cost (when (:route game-state) (route-cost game-state su (reverse (:route game-state))))
