@@ -8,6 +8,10 @@
 (def opposing-dirs
   {:up :down :down :up :left :right :right :left})
 
+(defn distance [[x1 y1] [x2 y2]]
+  (+ (Math/abs (- x2 x1))
+     (Math/abs (- y2 y1))))
+
 (defn relative-coord [[x y] dir]
   (case dir
     :up [x (dec y)]

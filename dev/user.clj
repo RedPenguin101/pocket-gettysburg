@@ -12,3 +12,5 @@
   (start!)
   (tap> @debug)
   (prn @p))
+
+(get-in @debug [:red :units])
