@@ -1,9 +1,15 @@
-(ns general-slim.coordinates)
+(ns general-slim.coordinates
+  "A set of utility functions for working with coordinates /
+   2 dimensional vectors."
+  (:require [clojure.set :as set]))
 
-(defn coordinate
+(defn coord-grid->map
   "Turns a 2d grid (coll of coll of x) into a map of coord->x"
   [grid]
-  (into {} (apply concat (map-indexed (fn [y x-row] (map-indexed (fn [x v] [[x y] v]) x-row)) grid))))
+  (->> grid
+       (map-indexed (fn [y x-row] (map-indexed (fn [x v] [[x y] v]) x-row)))
+       (apply concat)
+       (into {})))
 
 (def opposing-dirs
   {:up :down :down :up :left :right :right :left})

@@ -1,4 +1,23 @@
-(ns general-slim.bresenham)
+(ns general-slim.bresenham
+  "An implementation of the Bresenham line drawing algorithm,
+   with an extention to drawing circles, in two dimensions.
+
+   Bresenham is an algorthim for approximating vectorized shapes
+   to a raster (grid). It's commonly used for drawing things to
+   pixel-based screens
+
+   For example, an approximation of a vector [0,0]->[7,5] would
+   look like this
+   # . . . . . . .
+   . # # . . . . .
+   . . . # . . . .
+   . . . . # . . .
+   . . . . . # # .
+   . . . . . . . #
+
+   In Pocket General, this is used for path calculation and 
+   calculating viewsheds.
+   ")
 
 (defn- point-add [[x1 y1] [x2 y2]]
   [(+ x1 x2) (+ y1 y2)])

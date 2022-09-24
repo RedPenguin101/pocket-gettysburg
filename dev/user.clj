@@ -14,3 +14,7 @@
   (prn @p))
 
 (get-in @debug [:red :units])
+
+(comment
+  "Starting a game"
+  (ui/go))
