@@ -5,7 +5,7 @@
             [general-slim.viewsheds :as vs]
             [general-slim.field :as field]
             [general-slim.utils :refer [relative-coord]]
-            [general-slim.scenarios :refer [load-scenario]]))
+            [general-slim.scenario-loader :refer [load-scenario]]))
 
 ;; state and constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,9 +15,11 @@
       (assoc  :camera [0 0])
       (vs/add-viewshed-to-units :red)
       (vs/add-viewshed-to-units :blue)))
+
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)
   (def vert-tiles y))
+
 (def tile-size (* 2 32))
 (def colors {:cursor [183 183 183 75]
              :attack-cursor [215 221 33 90]
