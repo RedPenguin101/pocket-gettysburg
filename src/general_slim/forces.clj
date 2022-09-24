@@ -41,8 +41,11 @@
 (defn refresh-units [units]
   units)
 
-(defn units [game-state side]
-  (:units game-state))
+(defn units
+  "Returns a sequence (not a map) of the units for the given
+   side."
+  [game-state side]
+  (vals (get-in game-state [side :units])))
 
 (defn unit-with-id [game-state unit-id]
   (get-in game-state [:units unit-id]))
