@@ -2,7 +2,7 @@
   (:require [clojure.set :refer [intersection difference]]
             [general-slim.utils :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position manhattan]]
             [general-slim.route-calc :as routing :refer [accessible-squares]]
-            [general-slim.forces :as forces :refer [can-move? unit-in-square refresh-units occupied-grids]]
+            [general-slim.forces :as forces :refer [can-move? refresh-units occupied-grids]]
             [general-slim.field :as field]
             [general-slim.combat :as combat]
             [general-slim.viewsheds :as vs]
@@ -80,7 +80,7 @@
 (defn execute-move-order
   [game-state move-type side unit-id route]
   (let [unit (get-in game-state [side :units unit-id])
-        target-occupied? (unit-in-square game-state (first route))
+        target-occupied? (forces/unit-at-location game-state (first route))
         move-cost (if (= :retreat move-type) 0 ((:movement-table unit) (get-in game-state [:field (first route) :terrain])))]
     (cond (and target-occupied? (not= target-occupied? unit))
           (do (println "Cannot move to an occupied square")

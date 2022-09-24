@@ -73,7 +73,7 @@
 ;; Cursors
 
 (defn add-unit-under-cursor [game-state new-cursor]
-  (if-let [uuc (forces/at-location game-state new-cursor)]
+  (if-let [uuc (forces/unit-at-location game-state new-cursor)]
     (assoc game-state :unit-under-cursor uuc)
     (dissoc game-state :unit-under-cursor)))
 
@@ -84,12 +84,12 @@
       (update :camera new-camera new-cursor)))
 
 (defn cursor-with-selection [game-state new-cursor]
-  (let [selected-unit (forces/at-location game-state (:selected game-state))]
+  (let [selected-unit (forces/unit-at-location game-state (:selected game-state))]
     (cond (= new-cursor (:cursor game-state))
           game-state
 
           ;; can't move through units
-          (and (forces/at-location game-state new-cursor)
+          (and (forces/unit-at-location game-state new-cursor)
                (not= new-cursor (:position selected-unit)))
           game-state
 
@@ -134,7 +134,7 @@
 
 (defn action-select [game-state]
   (let [cursor (:cursor game-state)
-        unit-under-cursor? (forces/at-location game-state cursor)
+        unit-under-cursor? (forces/unit-at-location game-state cursor)
         my-side (:turn game-state)]
     (cond
       (not unit-under-cursor?)
@@ -165,10 +165,10 @@
 
 (defn action-move-plan [game-state]
   (let [cursor (:cursor game-state)
-        unit-under-cursor? (forces/at-location game-state cursor)
+        unit-under-cursor? (forces/unit-at-location game-state cursor)
         my-side (:turn game-state)
         selected? (:selected game-state)
-        selected-unit? (forces/at-location game-state selected?)]
+        selected-unit? (forces/unit-at-location game-state selected?)]
 
     (when (and selected-unit? (not= unit-under-cursor? selected-unit?))
       (println "Main move plan branch"))
@@ -211,7 +211,7 @@
       (do (println "Menu Fallthrough") game-state))))
 
 (defn action-attack [game-state]
-  (let [defender-id (:id (forces/at-location game-state (:cursor game-state)))]
+  (let [defender-id (:id (forces/unit-at-location game-state (:cursor game-state)))]
     (-> game-state
         (update :dispatch d/add-attack-order defender-id)
         (d/send-order)
@@ -259,8 +259,8 @@
 (defn debug-data [game-state]
   (let [cursor (:cursor game-state)
         selected (:selected game-state)
-        uuc (forces/at-location game-state cursor)
-        su (forces/at-location game-state selected)]
+        uuc (forces/unit-at-location game-state cursor)
+        su (forces/unit-at-location game-state selected)]
     {:camera (:camera game-state)
      :cursor cursor
      :selected selected
