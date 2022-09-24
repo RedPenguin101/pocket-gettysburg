@@ -1,5 +1,9 @@
-{:paths ["src" "test" "dev"]
- :deps {quil/quil {:mvn/version "3.1.0"}
+{:paths ["src" "test" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        quil/quil {:mvn/version "3.1.0"}
         ubergraph/ubergraph {:mvn/version "0.8.2"}}
  :aliases {:dev {:extra-paths ["dev"]
-                 :extra-deps {djblue/portal {:mvn/version "0.16.3"}}}}}
+                 :extra-deps {djblue/portal {:mvn/version "0.16.3"}}}
+            ;; Run with clj -T:build uber
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.3" :git/sha "0d20256"}}
+                   :ns-default build}}}
