@@ -6,7 +6,7 @@
             [general-slim.field :as field]
             [general-slim.combat :as combat]
             [general-slim.viewsheds :as vs]
-            [general-slim.sightings :as sightings]))
+            #_[general-slim.sightings :as sightings]))
 
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

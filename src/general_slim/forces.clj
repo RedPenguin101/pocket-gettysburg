@@ -30,6 +30,24 @@
   (fn  [units-map]
     (into {} (filter (fn [[_ unit]] (= side (:side unit))) units-map))))
 
+;; make it compile!
+
+(defn unit-in-square [game-state position]
+  (first (filter #(= position (:position %)) (vals (:units game-state)))))
+
+(defn occupied-grids [game-state x]
+  (set (map :position (vals (:units game-state)))))
+
+(defn refresh-units [units]
+  units)
+
+(defn units [game-state side]
+  (:units game-state))
+
+(defn unit-with-id [game-state unit-id]
+  (get-in game-state [:units unit-id]))
+
+
 (deftest y
   (let [units {:abc {:id :abc :side :red :position [1 1]}
                :def {:id :def :side :blue :position [2 2]}}]
