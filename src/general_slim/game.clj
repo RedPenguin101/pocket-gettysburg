@@ -1,6 +1,6 @@
 (ns general-slim.game
   (:require [general-slim.forces :as forces]
-            [general-slim.inputs :as inputs :refer [can-move-to route-cost]]
+            [general-slim.inputs :as inputs :refer [route-cost]]
             [general-slim.dispatches :as d]
             [general-slim.viewsheds :as vs]
             [general-slim.field :as field]
@@ -151,12 +151,12 @@
              :route (list cursor)
              :selected cursor
              :dispatch (d/start-dispatch my-side (:id unit-under-cursor?))
-             :highlight (can-move-to game-state unit-under-cursor?))
+             :highlight (inputs/can-move-to game-state unit-under-cursor?))
 
       ;; selecting the other sides unit, show the movement range
       (and (not= my-side (:side unit-under-cursor?))
            (forces/can-move? unit-under-cursor?))
-      (assoc game-state :highlight (can-move-to game-state unit-under-cursor?))
+      (assoc game-state :highlight (inputs/can-move-to game-state unit-under-cursor?))
 
       :else (do (println "Selection fall through") game-state))))
 
