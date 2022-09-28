@@ -22,11 +22,13 @@
 
   (ui/go)
   "Debug"
-  (def debug @ui/debug)
-  (keys debug)
-  (:cursor debug)
   (require '[general-slim.forces :as f]
            '[general-slim.inputs :as i])
+  (def debug @ui/debug)
+  (keys debug)
+  (:attack-option debug)
+  (:cursor debug)
+
   (f/unit-at-location debug [5 3])
   (:turn debug)
   (let [u (f/unit-at-location debug [5 3])]
