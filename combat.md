@@ -1,8 +1,8 @@
-= Combat system
+# Combat system
 
 Trying to turn this into a semi-realistic combat system
 
-== Infantry vs. Infantry
+## Infantry vs. Infantry
 
 The basic unit of maneuver is the *regiment*. For infantry, this means a strength of 1000 men (though usually less in practice)
 
@@ -12,7 +12,7 @@ When two regiments engage they stand opposed (the assulting side and the defendi
 
 A turn length in this game is 10 minutes. In most cases this will be sufficient time for two regiments to fully engage, with one side driving off the other.
 
-=== Volley
+### Volley
 
 A combat round is comprised of several volleys, each killing or wounding members of the opposing force. Only unwounded men can fire their rifle, and thus will count towards the volley force.
 
@@ -29,7 +29,7 @@ The algorithm for calculation of hits is as follows
 
 Under this system, the average hits for different volleys are as follows.
 
-----
+```
 Firing men  |   Enemy   |   Casualties
 1000        |   1000    |   181 (18%)
 500         |   500     |   91  (18%)
@@ -47,7 +47,7 @@ Force proportion  |  Casualty rate
        0.3        |        48%
        0.2        |        63%
        0.1        |        86%
-----
+```
 
 The to-hit change is modified by the terrain the receiving unit is standing on. Trees will provide cover.
 
@@ -55,7 +55,7 @@ After each volley, the commander of the regiment will make a call on whether to 
 
 One Volley takes 2 minutes of game time. so there are potentially 5 volleys in a turn, though likely one unit will retreat or charge before that.
 
-== Retreating
+## Retreating
 
 After each volley the unit commander will decide whether to retreat or not. The factors that go into this include:
 

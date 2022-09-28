@@ -1,4 +1,4 @@
-= General Slim
+# General Slim
 
 A slimmed down version of general intended to operate at a small scale, similar to Advance Wars, aimed at testing out some of the ideas I have for a larger scale version of this game. The intention is to build effectively a limited Advance wars-system clone, and then evolve some of the ideas. Expected features of the clone product are as follows, with differences from advance wars in italics
 
@@ -14,7 +14,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * _No base building_
 * _No air or sea_
 
-== DONE
+## DONE
 
 * DONE Onscreen General
 * DONE LOS increased on hills
@@ -26,9 +26,9 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * DONE Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options)
 * DONE Set up proper dev/repl space
 
-== DOING
+## DOING
 
-=== Enemy Intel
+### Enemy Intel
 
 * DONE Add individual viewsheds to units
 * DONE Add turn number to ui
@@ -38,14 +38,14 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * When that location comes into visibility again, the counter is replaced by the actual unit (even if they are not in the same location)
 * Move intel counters: If displaying an intel card instead of a unit, A general should be able to move that intel card, changing his estimation of where the unit is
 
-== TODO
+## TODO
 
-=== Small
+### Small
 
 * retreat improve: a retreating unit should prefer to escape into forests or hills if they are available
 * QOL: When turn ends, cursor is moved to the nearest unit (Camera moves too)
 
-=== Medium
+### Medium
 
 * Put in actual time, display in top right
 * when in attack mode, menu should show the attributes of the two sides are
@@ -60,9 +60,9 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Sprite for art
 * Refactor units to remove side as a top level key?
 
-=== Large
+### Large
 
-==== Morale
+#### Morale
 
 * Units have morale score that causes them to route if they fail a roll during a battle. A routed unit disappers from the map.
 * Unit morale recovers over time where they are not engaged
@@ -70,7 +70,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Morale recovery is nil if the unit has no food
 * Morale is damaged by not having food or ammunition
 
-==== Reframe all actions in terms of time taken
+#### Reframe all actions in terms of time taken
 
 * Decide on turn length and square size
 * Each unit has a mph rating for each terrain type
@@ -79,11 +79,11 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * A units movement pool then gets framed in minutes remaining in a turn, and the actions they can perform are dependent on that.
 
 
-==== Pre-battle stuff
-==== Cavalry combat system
-==== Artillery combat and indirect fire
-==== Facing and flanking
-==== Supplies / Wagons
+#### Pre-battle stuff
+#### Cavalry combat system
+#### Artillery combat and indirect fire
+#### Facing and flanking
+#### Supplies / Wagons
 
 * Units have supplies of food and ammunition
 * Units have hunger, affects fighting and marching speed
@@ -93,7 +93,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * You can order wagons to units
 * Wagons can be interdicted/captured by enemy
 
-==== Message system
+#### Message system
 
 * Units can send messages to eachother
 * Unit can send a combat report to their commander, reporting the result of an engagement
@@ -102,7 +102,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Messengers are displayed on screen
 * Messengers can be intercepted by enemy, meaning the message will never reach its destination
 
-==== Unit Status: Forming up
+#### Unit Status: Forming up
 
 * Additional menu option: Form up. A unit that isn't formed up is much less combat effective
 * Indicate formed up on unit counter somehow
@@ -111,13 +111,13 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * A unit's movement highlight has a distinguishing tint: white for where they can move and still form up and attack, red for where they can move, but will not be able to form up and attack afterwards
 * Moving while formed up is possible, but much slower
 
-==== Unit differentiation
+#### Unit differentiation
 
 * Units can have modifiers to hit rates
 * Units can have modifiers to move speeds
 * Units can have modifiers to morale recovery
 
-==== Commanders
+#### Commanders
 
 * Each regiment has a commander
 * Commanders can be 'stubborn', and be less likely to order a retreat
@@ -125,11 +125,11 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Commanders can be 'caring', which improves morale recovery at the cost of movement rate
 * Commanders can be 'taskmasters', which improves movement rate but reduces morale recovery
 
-=== Huge
+### Huge
 
-==== Enemy AI
+#### Enemy AI
 
-==== Rework order system to be more indirect
+#### Rework order system to be more indirect
 
 * General can order units to move to any location on the map
 * General can provide general orders:
@@ -138,7 +138,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 ** Report on enemy movements but avoid combat
 * Unit will be responsible for creating and execting its own order on each turn
 
-=== Maybes
+### Maybes
 
 * Friendly FOW
 * Variable FOV: units that come into LOS within 3 distance are directly in sight. Units that come into LOS within 4 distance generate a sighting, but are not directly visible
@@ -146,16 +146,16 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * Unit status: Dugin / Encamped
 * Unit status: Organizing
 
-== Old Done
+## Old Done
 
-=== Iteration goals
+### Iteration goals
 
 * Moveable units
 * Combat
 * Terrain
 * AI
 
-=== Iteration 1: A map with movable units
+### Iteration 1: A map with movable units
 
 * DONE A small ~10x10 map with no terrain features 
 * DONE Two opposing forces of two infantry units each  
@@ -175,7 +175,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * DONE Iteration 1b: box display of cursor coord, whose turn  
 * DONE Status box moves if cursor is over it  
 
-=== Iteration 2: Combat
+### Iteration 2: Combat
 
 * DONE units have HP  
 * DONE Units name and HP displayed in status box  
@@ -194,7 +194,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * DONE Cavalry have different attack characteristics  
 * DONE Attack/Def chars in menu  
 
-=== Iteration 3: Terrain and features
+### Iteration 3: Terrain and features
 
 * DONE Map has forests
 * DONE and lower movement rate
