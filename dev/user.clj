@@ -3,7 +3,8 @@
             [general-slim.ui :as ui]
             [general-slim.combat :as combat]
             [general-slim.forces :as f]
-            [general-slim.inputs :as i]))
+            [general-slim.inputs :as i]
+            [general-slim.utils :as u]))
 
 
 
@@ -22,15 +23,18 @@
 
   (ui/go)
   "Debug"
-  (require '[general-slim.forces :as f]
-           '[general-slim.inputs :as i])
-  (def debug @ui/debug)
+  (require '[general-slim.forces :as forces]
+           '[general-slim.inputs :as i]
+           '[general-slim.utils :as u])
+  (def game-state @ui/debug)
   (keys debug)
-  (:attack-option debug)
-  (:cursor debug)
 
-  (f/unit-at-location debug [5 3])
-  (:turn debug)
-  (let [u (f/unit-at-location debug [5 3])]
-    (f/can-move? u)
-    (i/can-move-to debug u)))
+  (keys (get-in game-state [:red :units "3a41c465-6141-40e2-a1fd-cf581a80f91c"]))
+
+  (forces/occupied-grids game-state :blue)
+  ;; => #{[13 8] [9 4]}
+  (u/manhattan [8 4] 1)
+  ;; => #{[8 4] [7 4] [8 3] [8 5] [9 4]}
+  (:viewshed game-state)
+  ;; => nil
+  (get-in game-state [:red :units "3a41c465-6141-40e2-a1fd-cf581a80f91c" :viewshed]))

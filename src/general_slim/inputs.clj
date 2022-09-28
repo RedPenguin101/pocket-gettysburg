@@ -1,8 +1,8 @@
 (ns general-slim.inputs
   (:require [clojure.set :refer [intersection difference]]
-            [general-slim.utils :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position manhattan]]
+            [general-slim.utils :as u :refer [dissoc-in map-vals opposing-dirs relative-coord relative-position]]
             [general-slim.route-calc :as routing :refer [accessible-squares]]
-            [general-slim.forces :as forces :refer [can-move? refresh-units occupied-grids]]
+            [general-slim.forces :as forces :refer [can-move? refresh-units]]
             [general-slim.field :as field]
             [general-slim.combat :as combat]
             [general-slim.viewsheds :as vs]
@@ -29,8 +29,8 @@
   (accessible-squares
    position
    move-points
-   (->> (manhattan position (+ 3 move-points)) ;; might have to expand this, maybe do some cacheing
-        (remove (occupied-grids game-state))
+   (->> (u/manhattan position (+ 3 move-points)) ;; might have to expand this, maybe do some cacheing
+        (remove (forces/occupied-grids game-state))
         (cons position) ;; yuk
         (field/terrain-map (:field game-state))
         (map-vals movement-table)
@@ -57,7 +57,9 @@
    units are in adjacent locations (and so are attackable)"
   [game-state side unit-id unit-loc]
   (let [attacking-unit (get-in game-state [side :units unit-id])
-        targets (intersection (occupied-grids game-state (other-side side)) (:viewsheds game-state) (manhattan unit-loc 1))]
+        targets (intersection (forces/occupied-grids game-state (other-side side))
+                              (get attacking-unit :viewshed)
+                              (u/manhattan unit-loc 1))]
     (if (or (empty? targets) (#{:general} (:unit-type attacking-unit)))
       (assoc game-state :attack-option :no-targets)
       (assoc game-state :attack-option [side unit-id unit-loc targets]))))
@@ -103,7 +105,7 @@
 
 (defn find-retreat-square
   [retreater-pos enemy-pos occupied-squares]
-  (let [retreatable-squares (difference (manhattan retreater-pos 1) occupied-squares)
+  (let [retreatable-squares (difference (u/manhattan retreater-pos 1) occupied-squares)
         rel-pos-of-enemy (relative-position retreater-pos enemy-pos)
         preferred-retreat (relative-coord retreater-pos (opposing-dirs rel-pos-of-enemy))]
     (cond (empty? retreatable-squares) nil
@@ -121,8 +123,8 @@
 (defn handle-combat-outcome [game-state resolution attacker defender]
   (case resolution
     :turn-finished      game-state
-    :attacker-retreats (add-retreat-order game-state (:side attacker) (:id attacker) (find-retreat-square (:position attacker) (:position defender) (occupied-grids game-state)))
-    :defender-retreats (add-retreat-order game-state (:side defender) (:id defender) (find-retreat-square (:position defender) (:position attacker) (occupied-grids game-state)))))
+    :attacker-retreats (add-retreat-order game-state (:side attacker) (:id attacker) (find-retreat-square (:position attacker) (:position defender) (forces/occupied-grids game-state)))
+    :defender-retreats (add-retreat-order game-state (:side defender) (:id defender) (find-retreat-square (:position defender) (:position attacker) (forces/occupied-grids game-state)))))
 
 (defn execute-attack-order
   [game-state my-side my-unit-id enemy-unit-id]
