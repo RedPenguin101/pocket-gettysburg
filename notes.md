@@ -14,6 +14,13 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * _No base building_
 * _No air or sea_
 
+## Controls
+* arrow keys/wasd: move cursor
+* space: Action
+* q: cancel action
+* e: end turn
+* g: debug menu
+
 ## DONE
 
 * DONE Onscreen General
@@ -25,13 +32,15 @@ A slimmed down version of general intended to operate at a small scale, similar 
 * DONE Improve road drawings: tiles depend on surrounding
 * DONE Bug: If a general tries to attack, it throws (make it so a general doesn't have any attack options)
 * DONE Set up proper dev/repl space
+* DONE Add individual viewsheds to units
+* DONE Add turn number to ui
 
 ## DOING
 
+* BUG: Units don't have available targets when next to another unit
+
 ### Enemy Intel
 
-* DONE Add individual viewsheds to units
-* DONE Add turn number to ui
 * Side has 'sightings'. Each sighting is an 
 * When your unit loses sight of an enemy unit, an intel counter is created and placed at the location the enemy unit was last seen
 * The sighting tracks how many turns ago since the sighting was made
