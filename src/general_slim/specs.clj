@@ -45,6 +45,9 @@
 (s/def ::tile (s/keys :req-un [::grid ::terrain]))
 (s/def ::field (s/map-of ::coord ::tile))
 
+(s/def ::tile (s/keys :req-un [::grid ::terrain]))
+(s/def ::field (s/map-of ::coord ::tile))
+
 (s/def ::units (s/map-of uuid-str? ::unit))
 
 (s/def ::game-state
@@ -61,6 +64,11 @@
           :opt-un [::is-current]))
 
 (comment
+  (s/valid? (s/map-of some? ::intel-report)
+            {:b {:id :b, :position [3 2], :age 4},
+             :c {:id :c, :position [3 3], :age 0},
+             :e {:id :e, :position [5 5], :age 0}})
+
   (s/valid? (s/map-of some? ::intel-report)
             {:b {:id :b, :position [3 2], :age 4},
              :c {:id :c, :position [3 3], :age 0},
@@ -92,4 +100,5 @@
                       :side :blue,
                       :unit-name "inf2",
                       :position [8 8]}}))
+
 
