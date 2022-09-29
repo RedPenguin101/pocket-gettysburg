@@ -3,6 +3,7 @@
             [general-slim.inputs :as inputs :refer [route-cost]]
             [general-slim.dispatches :as d]
             [general-slim.viewsheds :as vs]
+            [general-slim.intel :as intel]
             [general-slim.field :as field]
             [general-slim.utils :refer [relative-coord]]
             [general-slim.scenario-loader :refer [load-scenario]]))
@@ -14,7 +15,8 @@
   (-> (load-scenario "aw_ft1")
       (assoc :camera [0 0])
       (vs/add-viewshed-to-units :red)
-      (vs/add-viewshed-to-units :blue)))
+      (vs/add-viewshed-to-units :blue)
+      (intel/update-all-unit-intel)))
 
 (let [[x y] (:field-size game-state)]
   (def horiz-tiles x)

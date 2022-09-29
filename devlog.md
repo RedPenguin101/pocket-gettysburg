@@ -106,3 +106,106 @@ I took the opportunity to do some fn-speccing too.
   :ret map?)
 ```
 
+In a new namespace `intel` I made
+
+```
+units-in-fov :: game-state, unit -> [unit]
+age-intel :: intel -> intel
+update-intelligence :: old-intel, [unit], new-intel
+update-unit-intel :: game-state, unit-id -> game-state
+```
+
+Only the last of these is public.
+The 'intel' spec is new:
+
+```clojure
+(s/def ::intel-report
+  (s/keys :req-un [::id ::position ::age ::side]))
+
+(spec/nilable (spec/map-of :general-slim.specs/id :general-slim.specs/intel-report))
+```
+
+Now, where do I put this in the actual game?
+Long time since I looked at this, I assume there's a loop that iterates through every unit...
+
+...
+
+So top level tick looks like this:
+
+```clojure
+(defn tick [game-state]
+  (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
+    (update (inputs/handle-input game-state) :ticks (fnil inc 0))
+    (update game-state :ticks (fnil inc 0))))
+
+(defn handle-input [game-state]
+  (cond (:current-order game-state)
+        (let [[order-type side unit target] (:current-order game-state)]
+          (case order-type
+            :move (execute-move-order game-state order-type side unit target)
+            :retreat (execute-move-order game-state order-type side unit target)
+            :end-turn (end-turn game-state side)
+            :attack (execute-attack-order game-state side unit target)))
+        (not-empty (:order-queue game-state))
+        (-> game-state
+            (assoc :current-order (first (:order-queue game-state)))
+            (update :order-queue rest))
+
+        :else (do (println "Erroneous input handle")
+                  game-state)))
+```
+
+The 'current-order' and 'order-queue' ... I don't remember what they are.
+I should spec that.
+According to the `let`, an order is a tuple of `type`, `side`, `id`, `target`.
+Type can be move, retreat, end-turn, or attack.
+`target` has different meanings in different contexts, but I think it's always a sequence of coords. 
+
+Anyway, I think the right place to put the intel updates is in `execute-move-order` - it already has an `update-viewshed` call in it.
+
+```clojure
+(-> game-state
+    (assoc-in [side :units unit-id :position] (first route))
+    (update-in [side :units unit-id :move-points] - move-cost)
+    (vs/update-viewshed unit-id)
+    (intel/update-unit-intel unit-id) ;; new
+    (update-move-order))
+```
+
+There's a major problem with this though, and that is that unit intel is only updated when the unit moves _not when other units move_.
+So if another unit moves out of view, the intel won't be displayed.
+I think this will be OK for now, but lets see.
+
+... 
+
+This didn't cause any game crashes, which is good.
+I want to put the 'intel' in the debug window.
+This was trivial, putting a new item in `draw-debug-window` in the ui ns.
+
+The problem with this implementation is that no units start with any intel.
+I think I can fix this in the setup function maybe?
+OK, not in there.
+There must be a place where viewsheds are added for the first time, that's probably the right way to do it.
+
+OK, so there is 
+
+```clojure
+(def game-state
+  (-> (load-scenario "aw_ft1")
+      (assoc :camera [0 0])
+      (vs/add-viewshed-to-units :red)
+      (vs/add-viewshed-to-units :blue)))
+```
+
+But this doesn't work great with how intel updating works.
+I added a utility function in intel 
+
+```clojure
+(defn update-all-unit-intel [game-state]
+  (reduce update-unit-intel
+          game-state
+          (map :id (forces/units game-state))))
+```
+
+Then just added it to the game-state def.
+That worked fine.
