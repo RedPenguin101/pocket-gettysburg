@@ -12,7 +12,7 @@
 
 (def game-state
   (-> (load-scenario "aw_ft1")
-      (assoc  :camera [0 0])
+      (assoc :camera [0 0])
       (vs/add-viewshed-to-units :red)
       (vs/add-viewshed-to-units :blue)))
 
@@ -278,14 +278,12 @@
 (defn tick [game-state]
   (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
     (update (inputs/handle-input game-state) :ticks (fnil inc 0))
-    (-> game-state
-        (update :ticks (fnil inc 0)))))
+    (update game-state :ticks (fnil inc 0))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)
     state
-    (recur (-> state
-               tick))))
+    (recur (tick state))))
 
 (comment
   "Debug area"

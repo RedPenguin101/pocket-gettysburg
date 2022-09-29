@@ -24,7 +24,7 @@
   (ui/go)
   "Debug"
   (require '[general-slim.forces :as forces]
-           '[general-slim.inputs :as i]
+           '[general-slim.inputs :as inputs]
            '[general-slim.utils :as u])
   (def game-state @ui/debug)
   (keys debug)
@@ -37,4 +37,4 @@
   ;; => #{[8 4] [7 4] [8 3] [8 5] [9 4]}
   (:viewshed game-state)
   ;; => nil
-  (get-in game-state [:red :units "3a41c465-6141-40e2-a1fd-cf581a80f91c" :viewshed]))
+  (get-in game-state [:red :units "3a41c465-6141-40e2-a1fd-cf581a80f91c"]))

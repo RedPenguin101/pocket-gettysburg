@@ -37,7 +37,7 @@ A slimmed down version of general intended to operate at a small scale, similar 
 
 ## DOING
 
-* BUG: Units don't have available targets when next to another unit
+* **DONE** BUG: Units don't have available targets when next to another unit
 
 ### Enemy Intel
 
