@@ -264,6 +264,7 @@
         uuc (forces/unit-at-location game-state cursor)
         su (forces/unit-at-location game-state selected)]
     {:camera (:camera game-state)
+     :ticks (:ticks game-state)
      :cursor cursor
      :selected selected
      :unit-under-cursor uuc
@@ -278,9 +279,10 @@
 ;; Top lvl tick
 
 (defn tick [game-state]
-  (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
-    (update (inputs/handle-input game-state) :ticks (fnil inc 0))
-    (update game-state :ticks (fnil inc 0))))
+  (intel/update-all-unit-intel
+   (if (or (:current-order game-state) (not-empty (:order-queue game-state)))
+     (update (inputs/handle-input game-state) :ticks (fnil inc 0))
+     (update game-state :ticks (fnil inc 0)))))
 
 (defn main-loop [state]
   (if (> (:turn-number state) 10)

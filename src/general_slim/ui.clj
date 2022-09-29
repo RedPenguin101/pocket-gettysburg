@@ -216,27 +216,30 @@
           (+ (scale 25) (scale 3))
           (- (+ (* line-num (scale 30)) (scale 50)) (scale 3))))
 
+(keys @debug)
+
 (defn draw-debug-box [debug-data _camera]
   (when debug-data
     (let [{:keys [cursor selected
                   unit-under-cursor
                   unit-selected
                   route-selection route route-cost
-                  attack-option camera]} debug-data]
+                  attack-option camera
+                  ticks]} debug-data]
       (q/stroke 1)
       (q/fill (colors :white))
       (q/stroke-weight (scale 6))
       (q/rect (scale 3) (scale 3) (scale 1000) (scale 300))
       (q/fill 0)
       (q/text-font (q/create-font "Courier New" (scale 30)))
-      (debug-text-item 0 (str "Cursor: " cursor " Selected: " selected " Camera: " camera))
+      (debug-text-item 0 (str "            Tick: " ticks " Cursor: " cursor " Selected: " selected " Camera: " camera))
 
       (when unit-under-cursor
         (debug-text-item 1 (str "CURSOR: " (:id unit-under-cursor)))
         (debug-text-item 2 (str (:soldiers unit-under-cursor) " soldiers"))
         (debug-text-item 3 (str "Attack option: " attack-option))
         (debug-text-item 4 (str "Move points: " (:move-points unit-under-cursor)))
-        (debug-text-item 5 (str "Intel: " (mapv (juxt :position :side :age) (vals (:intel unit-under-cursor))))))
+        (debug-text-item 5 (str "Intel: " (mapv (juxt :position :side :sight-time :is-current) (vals (:intel unit-under-cursor))))))
       (when (and selected (not unit-under-cursor))
         (debug-text-item 1 (str "SELECTED: " (:id unit-selected)))
         (debug-text-item 2 (str (:soldiers unit-selected) " soldiers"))

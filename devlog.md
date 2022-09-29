@@ -209,3 +209,55 @@ I added a utility function in intel
 
 Then just added it to the game-state def.
 That worked fine.
+
+Next to work on the UI implementation.
+I think it's a new UI layer.
+One of the interesting things here is that you can have different units with different intelligence.
+So unit A could've seen enemy X 2 turns ago at [1 1], but unit B could've seen enemy X _1_ turn ago at [2 2].
+
+Ultimately, I want friendly FOW in here, which implies that the intel you see should only be the _generals_ intel (including reports from your subordinates.)
+But for now I'll just assume that 'you' know as soon as your subordinates do, and you filter the latest.
+
+I think the implementation of updating info when moving will cause some issues here, because age is relative to how recently a unit moved. So if a unit hasn't moved, it won't update the intel, or the _age_ of the intel.
+There are two things I can think of here, not mutually exclusive:
+
+* Call update-intel on tick rather than on move. This would also solve the problem I mention above about intel not updating on enemy moves. It's probably quite expensive though.
+* store the _turn_ (or tick?) on which the sighting was made, and calculate the age dynamically from that.
+
+I did the first, which is pretty simple: just add `intel/update-all-unit-intel` into the tick fn.
+But then it has this age counter which incremnts the age every tick (30 times per second), which I don't love.
+
+If I put the tick in the intel report _once_, instead of putting age and then incrementing, what does that do?
+It makes it harder to see if something is current I think?
+Does that matter?
+
+So I've got
+
+```clojure
+(defn- update-intelligence [old-intel units]
+  (merge
+   (when old-intel (age-intel old-intel))
+   (update-vals (->> units
+                     (map #(vector (:id %) (select-keys % [:position :id :side])))
+                     (into {}))
+                #(assoc % :age 0))))
+```
+
+If I put 'tick' in there instead of age, and removed the age-intel, the merge would still take care of overwrites.
+But tick is advancing all the time, so you can't tell if the unit is still in view or not.
+I could add a 'in-fov' key to the new intel, and then replace 'age-intel' with 'remove-current' or something. I think that might work.
+
+```clojure
+(defn- update-intelligence [old-intel units sight-time]
+  (merge
+   (when old-intel (update-vals old-intel #(assoc % :is-current false)))
+   (update-vals (->> units
+                     (map #(vector (:id %) (select-keys % [:position :id :side])))
+                     (into {}))
+                #(assoc % :sight-time sight-time
+                        :is-current true))))
+```
+
+This has the consequence that _current_ sightings will have their 'sight-time' updated every tick, but I think that's OK.
+
+

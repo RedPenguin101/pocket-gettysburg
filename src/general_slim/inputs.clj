@@ -5,8 +5,7 @@
             [general-slim.forces :as forces :refer [can-move? refresh-units]]
             [general-slim.field :as field]
             [general-slim.combat :as combat]
-            [general-slim.viewsheds :as vs]
-            [general-slim.intel :as intel]))
+            [general-slim.viewsheds :as vs]))
 
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -98,7 +97,6 @@
               (assoc-in [side :units unit-id :position] (first route))
               (update-in [side :units unit-id :move-points] - move-cost)
               (vs/update-viewshed unit-id)
-              (intel/update-unit-intel unit-id)
               (update-move-order)))))
 
 ;; Retreating

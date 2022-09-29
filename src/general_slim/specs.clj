@@ -6,7 +6,7 @@
 (s/def ::atom (s/or ::string string? ::number number? ::keyword keyword?))
 (s/def ::not-neg-int (s/or :zero zero? :pos-int pos-int?))
 (s/def ::not-neg-num (s/or :zero zero? :pos-int pos?))
-(s/def ::coord (s/coll-of ::not-neg-int :kind vector? :count 2))
+(s/def ::coord (s/coll-of int? :kind vector? :count 2))
 
 ;; units
 (s/def ::movement-table (s/map-of keyword? (s/and number? pos?)))
@@ -54,9 +54,11 @@
 
 ;; intel reports
 
-(s/def ::age ::not-neg-int)
+(s/def ::sight-time ::not-neg-int)
+(s/def ::is-current boolean?)
 (s/def ::intel-report
-  (s/keys :req-un [::id ::position ::age ::side]))
+  (s/keys :req-un [::id ::position ::sight-time ::side]
+          :opt-un [::is-current]))
 
 (comment
   (s/valid? (s/map-of some? ::intel-report)
