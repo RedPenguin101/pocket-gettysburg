@@ -1,30 +1,49 @@
 (ns general-slim.specs
   (:require [clojure.spec.alpha :as s]
-            [clojure.edn :as edn]))
+            [clojure.spec.gen.alpha :as gen]))
 
-
+;; general/utility
+(s/def ::atom (s/or ::string string? ::number number? ::keyword keyword?))
+(s/def ::not-neg-int (s/or :zero zero? :pos-int pos-int?))
+(s/def ::not-neg-num (s/or :zero zero? :pos-int pos?))
 (s/def ::coord (s/coll-of ::not-neg-int :kind vector? :count 2))
-(s/def ::tile (s/keys :req-un [::grid ::terrain]))
-(s/def ::field (s/map-of ::coord ::tile))
 
+;; units
 (s/def ::movement-table (s/map-of keyword? (s/and number? pos?)))
-
+(s/def ::id ::atom)
+(s/def ::side keyword?)
+(s/def ::unit-type keyword?)
+(s/def ::position ::coord)
+(s/def ::short-name string?)
+(s/def ::unit-name string?)
+(s/def ::move-points ::not-neg-num)
+(s/def ::max-move-points ::not-neg-num)
+(s/def ::soldiers pos-int?)
+(s/def ::move-over boolean?)
 (s/def ::unit
-  (s/keys :req-un [::short-name
+  (s/keys :req-un [::id
+                   ::side
+                   ::position]
+          :opt-un [::short-name
                    ::move-points
                    ::max-move-points
                    ::unit-type
                    ::soldiers
                    ::movement-table
                    ::move-over
-                   ::id
-                   ::side
-                   ::unit-name
-                   ::position]))
+                   ::unit-name]))
+
+(comment
+  (gen/sample (s/gen ::move-points))
+  (last (gen/sample (s/gen ::unit)))
+  (s/exercise ::position))
 
 (defn uuid-str? [s]
   (try (java.util.UUID/fromString s)
        (catch IllegalArgumentException _ false)))
+
+(s/def ::tile (s/keys :req-un [::grid ::terrain]))
+(s/def ::field (s/map-of ::coord ::tile))
 
 (s/def ::units (s/map-of uuid-str? ::unit))
 
@@ -33,7 +52,18 @@
                    ::red ::blue
                    ::field]))
 
+;; intel reports
+
+(s/def ::age ::not-neg-int)
+(s/def ::intel-report
+  (s/keys :req-un [::id ::position ::age ::side]))
+
 (comment
+  (s/valid? (s/map-of some? ::intel-report)
+            {:b {:id :b, :position [3 2], :age 4},
+             :c {:id :c, :position [3 3], :age 0},
+             :e {:id :e, :position [5 5], :age 0}})
+
   (s/valid? ::movement-table {:field 1, :road 0.5, :trees 1, :mountains 2})
 
   (s/valid? ::units {"c864afe-6f34-4161-a73c-5885ec915958"
@@ -60,3 +90,4 @@
                       :side :blue,
                       :unit-name "inf2",
                       :position [8 8]}}))
+
