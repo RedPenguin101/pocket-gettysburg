@@ -3,7 +3,7 @@
             [clojure.edn :as edn]))
 
 
-(s/def ::coord (s/coll-of pos-int? :kind vector? :count 2))
+(s/def ::coord (s/coll-of ::not-neg-int :kind vector? :count 2))
 (s/def ::tile (s/keys :req-un [::grid ::terrain]))
 (s/def ::field (s/map-of ::coord ::tile))
 

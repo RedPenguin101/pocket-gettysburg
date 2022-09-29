@@ -1,4 +1,5 @@
-(ns general-slim.forces)
+(ns general-slim.forces
+  (:require [clojure.spec.alpha :as spec]))
 
 (defn make-unit [type side id name short pos unit-templates]
   (assoc (type unit-templates)
@@ -57,6 +58,16 @@
        (into {})
        first
        second))
+
+(defn units-at-locations [game-state locations]
+  (select-keys (units-by-location game-state) (vec locations)))
+
+(spec/fdef units-at-locations
+  :args (spec/cat
+         :game-state map?
+         :locations (spec/nilable
+                     (spec/coll-of :general-slim.specs/coord)))
+  :ret map?)
 
 (defn occupied-grids
   ([game-state side]

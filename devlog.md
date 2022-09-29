@@ -1,6 +1,6 @@
 # Devlog
 
-## 28th September
+## 28th and 29th September
 ### Fixing bug: Units don't have targets
 When a unit move to a square adjacent to an enemy unit, the enemy unit should show up as a potential target.
 Right now it doesn't.
@@ -47,7 +47,7 @@ It looks like it's stored as an attribute of the _unit_.
 Which does make more sense.
 
 ```clojure
-(get-in game-state [:red :units "id" :viewshed])
+(get-in game-state [:red :units "dummy-id" :viewshed])
 ;; => #{[8 8] [7 6] [8 7] [9 8] etc.
 ```
 
@@ -56,3 +56,53 @@ So I think just changing `add-attack-option` to look at the unit's viewshed is t
 ...
 
 Fixed! Easy one.
+
+### Sightings
+I think I partially worked on this.
+There's an import for a 'sightings' namespace that doesn't exist.
+
+Anyway, the idea is that each unit has its own record of what it has seen and when.
+So if a unit sees an enemy (meaning it's come into their field of view), and the enemy _leaves_ it's field of view, the unit 'remembers' where it last saw the unit and when.
+
+On the UI, the 'shadow' of the unit would be displayed, along with how recently it had been seen.
+
+I think the way to do it is like this:
+
+At the end of each tick, a unit 'scans' it's surroundings for any units and calculates the 'units in view'.
+(This is just an intersection of the unit's viewshed and occupied squares.)
+
+It stores this 'intel' record, and if, on the subsequent tick, the unit is still in view, then it updates the record.
+If it's _not_ still in view, then it 'ages' the record.
+What age is, in this case, I'm not completely sure yet.
+
+```clojure
+;; intel
+{"unit-id" {:location [1 2] :age 10}
+ "unit-id" {:location [2 2] :age 0}}
+```
+
+So specifically:
+
+```
+get-units-in-fov-of unit game-state :: [unit]
+update-intel unit [unit] :: unit 
+```
+
+The first thing I think I need is a function which gets all units in a set of coordinates.
+I already have a `unit-at-location`, but I think I need one which is more general.
+Maybe even replace that `unit-at-location` altogether.
+
+It's pretty simple I think.
+I took the opportunity to do some fn-speccing too.
+(Also, some tests)
+
+```clojure
+(defn units-at-locations [game-state locations]
+  (select-keys (units-by-location game-state) locations))
+
+(spec/fdef units-at-locations
+  :args (spec/cat :game-state map?
+                  :locations (spec/coll-of :general-slim.specs/coord))
+  :ret map?)
+```
+
